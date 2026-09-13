@@ -1,0 +1,20 @@
+{
+  "apiVmName": "vm-orderjsonpoc-api",
+  "apiVmPrincipalId": "cb0a43fd-ada0-4861-ba32-059921733828",
+  "apiVmPublicIp": "20.25.151.76",
+  "appInsightsConnectionString": "InstrumentationKey=dea68454-7e7f-441a-b816-8cbd201091b5;IngestionEndpoint=https://westus3-1.in.applicationinsights.azure.com/;LiveEndpoint=https://westus3.livediagnostics.monitor.azure.com/;ApplicationId=b91f033b-4c29-4cd3-ba06-a7ed0041fc3f",
+  "archiveFilesystem": "raw",
+  "cosmosAccountName": "cosmos-orderjsonpoc-ga4no75mtkrv4",
+  "cosmosContainerName": "orders",
+  "cosmosDatabaseName": "orderdb",
+  "cosmosEndpoint": "https://cosmos-orderjsonpoc-ga4no75mtkrv4.documents.azure.com:443/",
+  "loadVmName": "vm-orderjsonpoc-load",
+  "loadVmPrincipalId": "aa9be5a9-b03b-4313-b795-aff263e4a7c1",
+  "loadVmPublicIp": "20.169.45.116",
+  "location": "westus3",
+  "logAnalyticsWorkspaceId": "/subscriptions/e7dbfbc9-31f1-4b77-ae5d-0394f173915d/resourceGroups/rg-order-json-poc-westus3/providers/Microsoft.OperationalInsights/workspaces/log-orderjsonpoc",
+  "resourceGroupName": "rg-order-json-poc-westus3",
+  "sqlDatabaseName": "OrderDb",
+  "sqlServerFqdn": "sql-orderjsonpoc-ga4no75mtkrv4.database.windows.net",
+  "storageAccountName": "storderjsonpocga4no75mtk"
+}

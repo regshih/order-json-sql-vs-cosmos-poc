@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "baseName":        { "value": "orderjsonpoc" },
+    "location":        { "value": "westus3" },
+    "sqlSkuName":      { "value": "GP_S_Gen5_2" },
+    "sqlMaxCapacity":  { "value": 4 },
+    "sqlMinCapacity":  { "value": "0.5" },
+    "cosmosMaxThroughput": { "value": 4000 }
+  }
+}

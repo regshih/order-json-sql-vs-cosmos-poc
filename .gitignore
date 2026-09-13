@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------
+# CUSTOMER-DERIVED DATA — NEVER COMMIT
+# ---------------------------------------------------------------
+data/source/
+data/source/*
+*.MASKED.json
+*.MASKED.json.json
+*_Order.json
+
+# Generated synthetic datasets (large; regenerate with a seed)
+data/generated/
+data/negative/
+
+# ---------------------------------------------------------------
+# Secrets / environment
+# ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pfx
+*.pem
+*.key
+azure.env
+local.settings.json
+
+# ---------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------
+# Tooling / OS
+# ---------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# ---------------------------------------------------------------
+# Benchmark scratch (machine-readable results ARE committed)
+# ---------------------------------------------------------------
+results/**/raw/
+loadtests/**/*.tmp
+scratch/

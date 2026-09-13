@@ -1,0 +1,1948 @@
+{
+  "generatedUtc": "2026-09-13T18:01:32.931584+00:00",
+  "sourceFile": "150159_Order.MASKED.json.json",
+  "sourceSha256": "fffe0b19d324ee3ccebd11569376ad1a6bdc5c4f638aa5dbb15d8ae92e485c26",
+  "note": "STRUCTURE ONLY. No customer values appear in this file. Strings are reduced to byte lengths; GUIDs to occurrence counts.",
+  "envelope": {
+    "extractDetailKeys": [
+      "CustomerSerialNumber",
+      "ExtractDateTimeUTC",
+      "ExtractServer",
+      "ExtractType"
+    ],
+    "objectDetailKeys": [
+      "ObjectType",
+      "OrderID",
+      "OrderVersion"
+    ],
+    "extractObjectCount": 1,
+    "objectDataTopLevelPropertyCount": 106
+  },
+  "size": {
+    "rawFileBytes": 881010,
+    "compactUtf8Bytes": 551747,
+    "compactKiB": 538.8,
+    "rawKiB": 860.4,
+    "whitespaceOverheadPct": 37.4,
+    "objectDataCompactBytes": 551440
+  },
+  "shape": {
+    "maxNestingDepth": 16,
+    "totalObjects": 4552,
+    "totalArrays": 872,
+    "totalScalars": 18000,
+    "totalKeys": 22558
+  },
+  "sparsity": {
+    "emptyStrings": 5911,
+    "emptyObjects": 1556,
+    "emptyArrays": 457,
+    "nullValues": 0,
+    "emptyStringPctOfScalars": 32.8
+  },
+  "topLevelSections": [
+    {
+      "name": "CDFs",
+      "compactBytes": 199337,
+      "prettyBytes": 395266,
+      "kind": "array",
+      "treatment": "json-block-large-split-candidate",
+      "arrayLength": 1,
+      "elementKeyCount": 36,
+      "maxElementCompactBytes": 199335,
+      "meanElementCompactBytes": 199335.0
+    },
+    {
+      "name": "Title",
+      "compactBytes": 163859,
+      "prettyBytes": 233547,
+      "kind": "object",
+      "treatment": "json-block-large-split-candidate",
+      "keyCount": 21,
+      "children": [
+        {
+          "name": "TitleProducts",
+          "compactBytes": 48294,
+          "kind": "array",
+          "arrayLength": 3
+        },
+        {
+          "name": "Commitments",
+          "compactBytes": 42688,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "LoanPolicies",
+          "compactBytes": 28051,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "AdditionalCharges",
+          "compactBytes": 15332,
+          "kind": "array",
+          "arrayLength": 6
+        },
+        {
+          "name": "Endorsements",
+          "compactBytes": 11607,
+          "kind": "array",
+          "arrayLength": 4
+        },
+        {
+          "name": "OwnersPolicies",
+          "compactBytes": 7668,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "PreliminaryTitleOpinions",
+          "compactBytes": 4563,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "TitleInsuranceCalculations",
+          "compactBytes": 1436,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "TitleProductSplitDefaults",
+          "compactBytes": 1236,
+          "kind": "object",
+          "arrayLength": null
+        },
+        {
+          "name": "EndorsementSplitDefaults",
+          "compactBytes": 1231,
+          "kind": "object",
+          "arrayLength": null
+        },
+        {
+          "name": "FinalTitleOpinions",
+          "compactBytes": 361,
+          "kind": "array",
+          "arrayLength": 1
+        },
+        {
+          "name": "CompletedBy",
+          "compactBytes": 326,
+          "kind": "object",
+          "arrayLength": null
+        },
+        {
+          "name": "Officer",
+          "compactBytes": 326,
+          "kind": "object",
+          "arrayLength": null
+        },
+        {
+          "name": "EndorsementCountersignature",
+          "compactBytes": 230,
+          "kind": "object",
+          "arrayLength": null
+        },
+        {
+          "name": "Office",
+          "compactBytes": 47,
+          "kind": "object",
+          "arrayLength": null
+        }
+      ]
+    },
+    {
+      "name": "ChecklistTasks",
+      "compactBytes": 23313,
+      "prettyBytes": 30778,
+      "kind": "array",
+      "treatment": "json-block-large-split-candidate",
+      "arrayLength": 48,
+      "elementKeyCount": 13,
+      "maxElementCompactBytes": 980,
+      "meanElementCompactBytes": 484.7
+    },
+    {
+      "name": "RequestedTasks",
+      "compactBytes": 18666,
+      "prettyBytes": 25904,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 22,
+      "elementKeyCount": 29,
+      "maxElementCompactBytes": 3462,
+      "meanElementCompactBytes": 847.4
+    },
+    {
+      "name": "CDFAmounts",
+      "compactBytes": 17136,
+      "prettyBytes": 27952,
+      "kind": "object",
+      "treatment": "json-block",
+      "keyCount": 5,
+      "children": [
+        {
+          "name": "Disbursements",
+          "compactBytes": 15474,
+          "kind": "array",
+          "arrayLength": 8
+        },
+        {
+          "name": "Receipts",
+          "compactBytes": 1525,
+          "kind": "array",
+          "arrayLength": 2
+        },
+        {
+          "name": "Guid",
+          "compactBytes": 38,
+          "kind": "scalar",
+          "arrayLength": null
+        },
+        {
+          "name": "TotalDisbursements",
+          "compactBytes": 11,
+          "kind": "scalar",
+          "arrayLength": null
+        },
+        {
+          "name": "TotalReceipts",
+          "compactBytes": 11,
+          "kind": "scalar",
+          "arrayLength": null
+        }
+      ]
+    },
+    {
+      "name": "Properties",
+      "compactBytes": 14597,
+      "prettyBytes": 22238,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 66,
+      "maxElementCompactBytes": 14595,
+      "meanElementCompactBytes": 14595.0
+    },
+    {
+      "name": "Loans",
+      "compactBytes": 13412,
+      "prettyBytes": 19541,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 29,
+      "maxElementCompactBytes": 13410,
+      "meanElementCompactBytes": 13410.0
+    },
+    {
+      "name": "GeneralNotes",
+      "compactBytes": 12036,
+      "prettyBytes": 15495,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 13,
+      "elementKeyCount": 11,
+      "maxElementCompactBytes": 973,
+      "meanElementCompactBytes": 924.8
+    },
+    {
+      "name": "Notes",
+      "compactBytes": 12036,
+      "prettyBytes": 15495,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 13,
+      "elementKeyCount": 11,
+      "maxElementCompactBytes": 973,
+      "meanElementCompactBytes": 924.8
+    },
+    {
+      "name": "Others",
+      "compactBytes": 10108,
+      "prettyBytes": 13673,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 6,
+      "elementKeyCount": 36,
+      "maxElementCompactBytes": 1983,
+      "meanElementCompactBytes": 1683.5
+    },
+    {
+      "name": "Buyers",
+      "compactBytes": 7752,
+      "prettyBytes": 11348,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 42,
+      "maxElementCompactBytes": 7750,
+      "meanElementCompactBytes": 7750.0
+    },
+    {
+      "name": "TitleCompanies",
+      "compactBytes": 6601,
+      "prettyBytes": 8952,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 3,
+      "elementKeyCount": 34,
+      "maxElementCompactBytes": 2247,
+      "meanElementCompactBytes": 2199.0
+    },
+    {
+      "name": "Invoices",
+      "compactBytes": 4046,
+      "prettyBytes": 6011,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 3,
+      "elementKeyCount": 20,
+      "maxElementCompactBytes": 2866,
+      "meanElementCompactBytes": 1347.3
+    },
+    {
+      "name": "Lenders",
+      "compactBytes": 3883,
+      "prettyBytes": 5547,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 35,
+      "maxElementCompactBytes": 3881,
+      "meanElementCompactBytes": 3881.0
+    },
+    {
+      "name": "Sellers",
+      "compactBytes": 3640,
+      "prettyBytes": 5027,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 42,
+      "maxElementCompactBytes": 3638,
+      "meanElementCompactBytes": 3638.0
+    },
+    {
+      "name": "ExistingLiens",
+      "compactBytes": 3441,
+      "prettyBytes": 5439,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 21,
+      "maxElementCompactBytes": 3439,
+      "meanElementCompactBytes": 3439.0
+    },
+    {
+      "name": "SettlementAgents",
+      "compactBytes": 3405,
+      "prettyBytes": 4881,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 34,
+      "maxElementCompactBytes": 3403,
+      "meanElementCompactBytes": 3403.0
+    },
+    {
+      "name": "Deeds",
+      "compactBytes": 3368,
+      "prettyBytes": 4289,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 17,
+      "maxElementCompactBytes": 3366,
+      "meanElementCompactBytes": 3366.0
+    },
+    {
+      "name": "ListingAgentBrokers",
+      "compactBytes": 2909,
+      "prettyBytes": 4189,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 32,
+      "maxElementCompactBytes": 2907,
+      "meanElementCompactBytes": 2907.0
+    },
+    {
+      "name": "Governments",
+      "compactBytes": 2898,
+      "prettyBytes": 4015,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 2,
+      "elementKeyCount": 30,
+      "maxElementCompactBytes": 1448,
+      "meanElementCompactBytes": 1447.5
+    },
+    {
+      "name": "Underwriters",
+      "compactBytes": 2866,
+      "prettyBytes": 3932,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 1,
+      "elementKeyCount": 38,
+      "maxElementCompactBytes": 2864,
+      "meanElementCompactBytes": 2864.0
+    },
+    {
+      "name": "RecordingAndTransferTaxes",
+      "compactBytes": 2569,
+      "prettyBytes": 3680,
+      "kind": "object",
+      "treatment": "json-block",
+      "keyCount": 7
+    },
+    {
+      "name": "MilestoneTasks",
+      "compactBytes": 2405,
+      "prettyBytes": 3122,
+      "kind": "array",
+      "treatment": "json-block",
+      "arrayLength": 4,
+      "elementKeyCount": 12,
+      "maxElementCompactBytes": 940,
+      "meanElementCompactBytes": 600.0
+    },
+    {
+      "name": "PayoffLenders",
+      "compactBytes": 1711,
+      "prettyBytes": 2270,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 1,
+      "elementKeyCount": 30,
+      "maxElementCompactBytes": 1709,
+      "meanElementCompactBytes": 1709.0
+    },
+    {
+      "name": "Escrow",
+      "compactBytes": 1576,
+      "prettyBytes": 2130,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 13
+    },
+    {
+      "name": "Attorneys",
+      "compactBytes": 1521,
+      "prettyBytes": 2098,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 1,
+      "elementKeyCount": 33,
+      "maxElementCompactBytes": 1519,
+      "meanElementCompactBytes": 1519.0
+    },
+    {
+      "name": "SellingAgentBrokers",
+      "compactBytes": 1489,
+      "prettyBytes": 2060,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 1,
+      "elementKeyCount": 32,
+      "maxElementCompactBytes": 1487,
+      "meanElementCompactBytes": 1487.0
+    },
+    {
+      "name": "HazardInsuranceAgents",
+      "compactBytes": 1460,
+      "prettyBytes": 2019,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 1,
+      "elementKeyCount": 30,
+      "maxElementCompactBytes": 1458,
+      "meanElementCompactBytes": 1458.0
+    },
+    {
+      "name": "SettlementLocation",
+      "compactBytes": 1285,
+      "prettyBytes": 1767,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 6
+    },
+    {
+      "name": "SalesContract",
+      "compactBytes": 1067,
+      "prettyBytes": 1513,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 8
+    },
+    {
+      "name": "CDFOptions",
+      "compactBytes": 840,
+      "prettyBytes": 929,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 22
+    },
+    {
+      "name": "Acknowledgment",
+      "compactBytes": 774,
+      "prettyBytes": 1002,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 21
+    },
+    {
+      "name": "BuyerData",
+      "compactBytes": 611,
+      "prettyBytes": 686,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 11
+    },
+    {
+      "name": "SellerData",
+      "compactBytes": 591,
+      "prettyBytes": 666,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 11
+    },
+    {
+      "name": "CEMA",
+      "compactBytes": 544,
+      "prettyBytes": 676,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 11
+    },
+    {
+      "name": "ReceivedBy",
+      "compactBytes": 325,
+      "prettyBytes": 374,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 12
+    },
+    {
+      "name": "Notary",
+      "compactBytes": 251,
+      "prettyBytes": 320,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 8
+    },
+    {
+      "name": "TimeZone",
+      "compactBytes": 197,
+      "prettyBytes": 218,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 5
+    },
+    {
+      "name": "StatusHistory",
+      "compactBytes": 156,
+      "prettyBytes": 185,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 7
+    },
+    {
+      "name": "IRS1099S",
+      "compactBytes": 154,
+      "prettyBytes": 171,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 4
+    },
+    {
+      "name": "OwnershipProfile",
+      "compactBytes": 138,
+      "prettyBytes": 155,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 4
+    },
+    {
+      "name": "Settings",
+      "compactBytes": 115,
+      "prettyBytes": 128,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 3
+    },
+    {
+      "name": "FileHeld",
+      "compactBytes": 82,
+      "prettyBytes": 99,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 4
+    },
+    {
+      "name": "ProductType",
+      "compactBytes": 55,
+      "prettyBytes": 64,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 2
+    },
+    {
+      "name": "EmailSubjectLine",
+      "compactBytes": 53,
+      "prettyBytes": 53,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Type",
+      "compactBytes": 46,
+      "prettyBytes": 55,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 2
+    },
+    {
+      "name": "PolicyType",
+      "compactBytes": 40,
+      "prettyBytes": 49,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 2
+    },
+    {
+      "name": "Guid",
+      "compactBytes": 38,
+      "prettyBytes": 38,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "RelatedOrders",
+      "compactBytes": 34,
+      "prettyBytes": 34,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Project",
+      "compactBytes": 31,
+      "prettyBytes": 31,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "CreatedDate",
+      "compactBytes": 22,
+      "prettyBytes": 22,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "DueDate",
+      "compactBytes": 22,
+      "prettyBytes": 22,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "ReceivedDate",
+      "compactBytes": 22,
+      "prettyBytes": 22,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "SettlementDate",
+      "compactBytes": 22,
+      "prettyBytes": 22,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "CreatedWithVersion",
+      "compactBytes": 15,
+      "prettyBytes": 15,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Information",
+      "compactBytes": 13,
+      "prettyBytes": 13,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "DisbursementDate",
+      "compactBytes": 11,
+      "prettyBytes": 11,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "ProrationDate",
+      "compactBytes": 11,
+      "prettyBytes": 11,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Status",
+      "compactBytes": 11,
+      "prettyBytes": 11,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "LockStatus",
+      "compactBytes": 10,
+      "prettyBytes": 10,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Number",
+      "compactBytes": 10,
+      "prettyBytes": 10,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "TransactionType",
+      "compactBytes": 10,
+      "prettyBytes": 10,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "HasRescissionPeriod",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsCashSale",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsCDFForNonSellerTransactions",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsCommercial",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsConstruction",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsOutOfCounty",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsRush",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsSaturdayInRescission",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsSettlementDateEstimated",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsTemplate",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "SettlementType",
+      "compactBytes": 5,
+      "prettyBytes": 5,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsBuyerChargedForProrationDate",
+      "compactBytes": 4,
+      "prettyBytes": 4,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Balance",
+      "compactBytes": 3,
+      "prettyBytes": 3,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Abstractors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "Appraisers",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "Builders",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "CompletedBy",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "CompletedDate",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "ConsummationDate",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "CSSAmounts",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "CSSOptions",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "CSSs",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "EscrowCompanies",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "GeneralContractors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "HOAManagements",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "HOAs",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "HomeInspectors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "HUD1Amounts",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "HUDOption",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "HUDs",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "IsRestrictedTemplate",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "IsSubEscrow",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "LoanServicers",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "MortgageBrokers",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "PestInspectors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "QualifiedIntermediaries",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "RescissionDate",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "ReservedBy",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "ReservedDate",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Source",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "StatusComment",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "scalar",
+      "treatment": "relational-candidate-scalar"
+    },
+    {
+      "name": "Subcontractors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    },
+    {
+      "name": "SubEscrow",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "object",
+      "treatment": "relational-candidate-small",
+      "keyCount": 0
+    },
+    {
+      "name": "Surveyors",
+      "compactBytes": 2,
+      "prettyBytes": 2,
+      "kind": "array",
+      "treatment": "json-block-small",
+      "arrayLength": 0
+    }
+  ],
+  "arrayCardinalities": [
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks",
+      "occurrences": 1,
+      "min": 48,
+      "max": 48,
+      "total": 48
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.TitleProducts[].Exceptions",
+      "occurrences": 3,
+      "min": 0,
+      "max": 21,
+      "total": 30
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks",
+      "occurrences": 1,
+      "min": 22,
+      "max": 22,
+      "total": 22
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Exceptions",
+      "occurrences": 1,
+      "min": 21,
+      "max": 21,
+      "total": 21
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges[].Payors",
+      "occurrences": 10,
+      "min": 2,
+      "max": 2,
+      "total": 20
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 11,
+      "total": 19
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].Payees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 11,
+      "total": 19
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines",
+      "occurrences": 1,
+      "min": 19,
+      "max": 19,
+      "total": 19
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Charges",
+      "occurrences": 19,
+      "min": 1,
+      "max": 1,
+      "total": 19
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToBuyerSection.Lines",
+      "occurrences": 1,
+      "min": 17,
+      "max": 17,
+      "total": 17
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToBuyerSection.Lines[].Charges",
+      "occurrences": 17,
+      "min": 1,
+      "max": 1,
+      "total": 17
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToSellerSection.Lines",
+      "occurrences": 1,
+      "min": 16,
+      "max": 16,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToSellerSection.Lines[].Charges",
+      "occurrences": 16,
+      "min": 1,
+      "max": 1,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines[].Charges[].Payors",
+      "occurrences": 8,
+      "min": 2,
+      "max": 2,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OriginationChargeSection.Lines[].Charges[].Payors",
+      "occurrences": 8,
+      "min": 2,
+      "max": 2,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OtherCostSection.Lines[].Charges[].Payors",
+      "occurrences": 8,
+      "min": 2,
+      "max": 2,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceShoppedForSection.Lines[].Charges[].Payees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 3,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceShoppedForSection.Lines[].Charges[].Payors",
+      "occurrences": 8,
+      "min": 2,
+      "max": 2,
+      "total": 16
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromBuyerSection.Lines",
+      "occurrences": 1,
+      "min": 15,
+      "max": 15,
+      "total": 15
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromBuyerSection.Lines[].Charges",
+      "occurrences": 15,
+      "min": 1,
+      "max": 1,
+      "total": 15
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.GeneralNotes",
+      "occurrences": 1,
+      "min": 13,
+      "max": 13,
+      "total": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Notes",
+      "occurrences": 1,
+      "min": 13,
+      "max": 13,
+      "total": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OtherCostSection.Lines[].Charges[].Payees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 3,
+      "total": 10
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].PrepaidSection.Lines[].Charges[].Payors",
+      "occurrences": 5,
+      "min": 2,
+      "max": 2,
+      "total": 10
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines",
+      "occurrences": 1,
+      "min": 10,
+      "max": 10,
+      "total": 10
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges",
+      "occurrences": 10,
+      "min": 1,
+      "max": 1,
+      "total": 10
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges[].Payees",
+      "occurrences": 10,
+      "min": 1,
+      "max": 1,
+      "total": 10
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ClosingCostComparisons",
+      "occurrences": 1,
+      "min": 9,
+      "max": 9,
+      "total": 9
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Invoices[].Lines",
+      "occurrences": 3,
+      "min": 0,
+      "max": 8,
+      "total": 9
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Requirements",
+      "occurrences": 1,
+      "min": 9,
+      "max": 9,
+      "total": 9
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.LoanPolicies[].Exceptions",
+      "occurrences": 1,
+      "min": 9,
+      "max": 9,
+      "total": 9
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements",
+      "occurrences": 1,
+      "min": 8,
+      "max": 8,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Charges[].Payees",
+      "occurrences": 19,
+      "min": 0,
+      "max": 1,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Charges[].Payors",
+      "occurrences": 19,
+      "min": 0,
+      "max": 1,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines",
+      "occurrences": 1,
+      "min": 8,
+      "max": 8,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines[].Charges",
+      "occurrences": 8,
+      "min": 1,
+      "max": 1,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines[].Charges[].Payees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 1,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OriginationChargeSection.Lines",
+      "occurrences": 1,
+      "min": 8,
+      "max": 8,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OriginationChargeSection.Lines[].Charges",
+      "occurrences": 8,
+      "min": 1,
+      "max": 1,
+      "total": 8
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].OriginationChargeSection.Lines[].Charges[].Payees",
+      "occurrences": 8,
+      "min": 1,
+      "max": 1,
+      "total": 8
+    }
+  ],
+  "guidReferences": {
+    "distinctGuidValues": 1194,
+    "totalGuidOccurrences": 2133,
+    "guidValuesAppearingMoreThanOnce": 209,
+    "maxOccurrencesOfASingleGuid": 129,
+    "topGuidPaths": [
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].Guid",
+        "count": 48
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.TitleProducts[].Exceptions[].Guid",
+        "count": 30
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].Guid",
+        "count": 22
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Exceptions[].Guid",
+        "count": 21
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges[].Payors[].Contact.Guid",
+        "count": 20
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges[].Payors[].Guid",
+        "count": 20
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].ServiceNotShoppedForSection.Lines[].Charges[].Payors[].OnBehalfOf.Guid",
+        "count": 20
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].CDFAmount.Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].Contact.Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].PayTo.Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].Payees[].Contact.Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].Payees[].Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Charges[].Calculation.Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Charges[].Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueFromSellerSection.Lines[].Guid",
+        "count": 19
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].CompletedBy.ID",
+        "count": 18
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToBuyerSection.Lines[].Charges[].Calculation.Guid",
+        "count": 17
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToBuyerSection.Lines[].Charges[].Guid",
+        "count": 17
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToBuyerSection.Lines[].Guid",
+        "count": 17
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToSellerSection.Lines[].Charges[].Calculation.Guid",
+        "count": 16
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToSellerSection.Lines[].Charges[].Guid",
+        "count": 16
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DueToSellerSection.Lines[].Guid",
+        "count": 16
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines[].Charges[].Payors[].Contact.Guid",
+        "count": 16
+      },
+      {
+        "path": "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].EscrowSection.Lines[].Charges[].Payors[].Guid",
+        "count": 16
+      }
+    ]
+  },
+  "stableIdentifierPaths": [
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.BorrowerLookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.CivilDivisionTitle.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.GeneralLookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.JuratLookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.SellerLookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Acknowledgment.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].ALTAUniversalID",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].License.IssuingAuthorityLevel.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].License.IssuingState.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].License.Number",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].LicenseNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].LookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].NationwideMortgageLicenseID",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].PaymentInfo.ABARoutingNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].PaymentInfo.AccountNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Attorneys[].ReferenceNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.BuyerData.HUD1Title.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.BuyerData.Title.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].ForwardingAddress.Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].ForwardingAddress.Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.ForwardingAddress.Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.ForwardingAddress.Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.LicenseNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.LookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.NationwideMortgageLicenseID",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual1.Relationship.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.ForwardingAddress.Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.ForwardingAddress.Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.LicenseNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.LookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.NationwideMortgageLicenseID",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].Individual2.Relationship.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].LookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].PaymentInfo.ABARoutingNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].PaymentInfo.AccountNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].People[].Address.SiteNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].People[].Address.State.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].People[].LicenseNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].People[].LookupCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.Buyers[].People[].NationwideMortgageLicenseID",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].BillCode.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Disbursements[].CDFPayees[].BillCode.GLCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Receipts[].CDFPayors[].BillCode.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFAmounts.Receipts[].CDFPayors[].BillCode.GLCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].BuyerCashToCloseSection.Lines[].Charges[].Payors[].BillCode.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].BuyerCashToCloseSection.Lines[].Charges[].Payors[].BillCode.GLCode",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].BuyerCashToCloseSection.Lines[].Number",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].BuyerCashToCloseSection.Lines[].SectionNumber",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DeliveryTracking.Statements[].Approvals[].Evidence.Code",
+    "$.ExtractData.ExtractObjects[].ObjectData.CDFs[].DeliveryTracking.Statements[].Deliveries[].DeliveryMethod.Code"
+  ],
+  "largeTextFields": {
+    "thresholdBytes": 512,
+    "count": 0,
+    "totalBytes": 0,
+    "maxBytes": 0,
+    "topPathsByTotalBytes": []
+  },
+  "rtfFields": {
+    "count": 95,
+    "totalBytes": 54912,
+    "maxBytes": 1706,
+    "paths": [
+      "$.ExtractData.ExtractObjects[].ObjectData.Deeds[].Exceptions[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Properties[].CommitmentLegal.Description",
+      "$.ExtractData.ExtractObjects[].ObjectData.Properties[].EscrowLegal.Description",
+      "$.ExtractData.ExtractObjects[].ObjectData.Properties[].PolicyLegal.Description",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Countersignature.Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].CurrentOwner",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Exceptions[].Phrases[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Exceptions[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Requirements[].Phrases[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.Commitments[].Requirements[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.EndorsementCountersignature.Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.LoanPolicies[].Countersignature.Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.LoanPolicies[].Exceptions[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.TitleProducts[].Countersignature.Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.TitleProducts[].Exceptions[].Phrases[].Text",
+      "$.ExtractData.ExtractObjects[].ObjectData.Title.TitleProducts[].Exceptions[].Text"
+    ]
+  },
+  "datePaths": [
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].CreatedDate",
+      "count": 48
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].CreatedDate",
+      "count": 22
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].CompletedBy.LastModifiedOn",
+      "count": 18
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].CompletedDate",
+      "count": 18
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.GeneralNotes[].CreatedBy.LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.GeneralNotes[].CreatedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.GeneralNotes[].LastModifiedBy.LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.GeneralNotes[].LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Notes[].CreatedBy.LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Notes[].CreatedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Notes[].LastModifiedBy.LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.Notes[].LastModifiedOn",
+      "count": 13
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.ChecklistTasks[].AssignedTo.LastModifiedOn",
+      "count": 6
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.MilestoneTasks[].CreatedDate",
+      "count": 4
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].CompletedBy.LastModifiedOn",
+      "count": 3
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].CompletedDate",
+      "count": 3
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].RequestedBy.LastModifiedOn",
+      "count": 3
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].RequestedDate",
+      "count": 3
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.MilestoneTasks[].AssignedTo.LastModifiedOn",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.MilestoneTasks[].CompletedBy.LastModifiedOn",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.MilestoneTasks[].CompletedDate",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].AssignedTo.LastModifiedOn",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].Notes[].CreatedBy.LastModifiedOn",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].Notes[].CreatedOn",
+      "count": 2
+    },
+    {
+      "path": "$.ExtractData.ExtractObjects[].ObjectData.RequestedTasks[].Notes[].LastModifiedBy.LastModifiedOn",
+      "count": 2
+    }
+  ],
+  "designCandidates": {
+    "concentration": {
+      "top10SectionBytes": 484500,
+      "top10SectionPct": 87.9,
+      "sectionsUnder1KiB": 76,
+      "sectionsOver10KiB": 9
+    },
+    "relationalCandidateSections": [
+      "Escrow",
+      "SettlementLocation",
+      "SalesContract",
+      "CDFOptions",
+      "Acknowledgment",
+      "BuyerData",
+      "SellerData",
+      "CEMA",
+      "ReceivedBy",
+      "Notary",
+      "TimeZone",
+      "StatusHistory",
+      "IRS1099S",
+      "OwnershipProfile",
+      "Settings",
+      "FileHeld",
+      "ProductType",
+      "EmailSubjectLine",
+      "Type",
+      "PolicyType",
+      "Guid",
+      "RelatedOrders",
+      "Project",
+      "CreatedDate",
+      "DueDate",
+      "ReceivedDate",
+      "SettlementDate",
+      "CreatedWithVersion",
+      "Information",
+      "DisbursementDate",
+      "ProrationDate",
+      "Status",
+      "LockStatus",
+      "Number",
+      "TransactionType",
+      "HasRescissionPeriod",
+      "IsCashSale",
+      "IsCDFForNonSellerTransactions",
+      "IsCommercial",
+      "IsConstruction",
+      "IsOutOfCounty",
+      "IsRush",
+      "IsSaturdayInRescission",
+      "IsSettlementDateEstimated",
+      "IsTemplate",
+      "SettlementType",
+      "IsBuyerChargedForProrationDate",
+      "Balance",
+      "CompletedBy",
+      "CompletedDate",
+      "ConsummationDate",
+      "CSSAmounts",
+      "CSSOptions",
+      "HUD1Amounts",
+      "HUDOption",
+      "IsRestrictedTemplate",
+      "IsSubEscrow",
+      "RescissionDate",
+      "ReservedBy",
+      "ReservedDate",
+      "Source",
+      "StatusComment",
+      "SubEscrow"
+    ],
+    "jsonBlockCandidateSections": [
+      {
+        "section": "CDFs",
+        "compactBytes": 199337,
+        "pctOfObjectData": 36.15,
+        "splitCandidate": true
+      },
+      {
+        "section": "Title",
+        "compactBytes": 163859,
+        "pctOfObjectData": 29.71,
+        "splitCandidate": true
+      },
+      {
+        "section": "ChecklistTasks",
+        "compactBytes": 23313,
+        "pctOfObjectData": 4.23,
+        "splitCandidate": true
+      },
+      {
+        "section": "RequestedTasks",
+        "compactBytes": 18666,
+        "pctOfObjectData": 3.38,
+        "splitCandidate": false
+      },
+      {
+        "section": "CDFAmounts",
+        "compactBytes": 17136,
+        "pctOfObjectData": 3.11,
+        "splitCandidate": false
+      },
+      {
+        "section": "Properties",
+        "compactBytes": 14597,
+        "pctOfObjectData": 2.65,
+        "splitCandidate": false
+      },
+      {
+        "section": "Loans",
+        "compactBytes": 13412,
+        "pctOfObjectData": 2.43,
+        "splitCandidate": false
+      },
+      {
+        "section": "GeneralNotes",
+        "compactBytes": 12036,
+        "pctOfObjectData": 2.18,
+        "splitCandidate": false
+      },
+      {
+        "section": "Notes",
+        "compactBytes": 12036,
+        "pctOfObjectData": 2.18,
+        "splitCandidate": false
+      },
+      {
+        "section": "Others",
+        "compactBytes": 10108,
+        "pctOfObjectData": 1.83,
+        "splitCandidate": false
+      },
+      {
+        "section": "Buyers",
+        "compactBytes": 7752,
+        "pctOfObjectData": 1.41,
+        "splitCandidate": false
+      },
+      {
+        "section": "TitleCompanies",
+        "compactBytes": 6601,
+        "pctOfObjectData": 1.2,
+        "splitCandidate": false
+      },
+      {
+        "section": "Invoices",
+        "compactBytes": 4046,
+        "pctOfObjectData": 0.73,
+        "splitCandidate": false
+      },
+      {
+        "section": "Lenders",
+        "compactBytes": 3883,
+        "pctOfObjectData": 0.7,
+        "splitCandidate": false
+      },
+      {
+        "section": "Sellers",
+        "compactBytes": 3640,
+        "pctOfObjectData": 0.66,
+        "splitCandidate": false
+      },
+      {
+        "section": "ExistingLiens",
+        "compactBytes": 3441,
+        "pctOfObjectData": 0.62,
+        "splitCandidate": false
+      },
+      {
+        "section": "SettlementAgents",
+        "compactBytes": 3405,
+        "pctOfObjectData": 0.62,
+        "splitCandidate": false
+      },
+      {
+        "section": "Deeds",
+        "compactBytes": 3368,
+        "pctOfObjectData": 0.61,
+        "splitCandidate": false
+      },
+      {
+        "section": "ListingAgentBrokers",
+        "compactBytes": 2909,
+        "pctOfObjectData": 0.53,
+        "splitCandidate": false
+      },
+      {
+        "section": "Governments",
+        "compactBytes": 2898,
+        "pctOfObjectData": 0.53,
+        "splitCandidate": false
+      },
+      {
+        "section": "Underwriters",
+        "compactBytes": 2866,
+        "pctOfObjectData": 0.52,
+        "splitCandidate": false
+      },
+      {
+        "section": "RecordingAndTransferTaxes",
+        "compactBytes": 2569,
+        "pctOfObjectData": 0.47,
+        "splitCandidate": false
+      },
+      {
+        "section": "MilestoneTasks",
+        "compactBytes": 2405,
+        "pctOfObjectData": 0.44,
+        "splitCandidate": false
+      },
+      {
+        "section": "PayoffLenders",
+        "compactBytes": 1711,
+        "pctOfObjectData": 0.31,
+        "splitCandidate": false
+      },
+      {
+        "section": "Attorneys",
+        "compactBytes": 1521,
+        "pctOfObjectData": 0.28,
+        "splitCandidate": false
+      }
+    ],
+    "aggregateBoundaries": [
+      {
+        "blockType": "CDFS",
+        "compactBytes": 199337,
+        "needsSubSplit": true,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "TITLE",
+        "compactBytes": 163859,
+        "needsSubSplit": true,
+        "naturalSubSplit": [
+          "TitleProducts",
+          "Commitments",
+          "LoanPolicies",
+          "AdditionalCharges",
+          "Endorsements",
+          "OwnersPolicies"
+        ]
+      },
+      {
+        "blockType": "CHECKLISTTASKS",
+        "compactBytes": 23313,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "REQUESTEDTASKS",
+        "compactBytes": 18666,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "CDFAMOUNTS",
+        "compactBytes": 17136,
+        "needsSubSplit": false,
+        "naturalSubSplit": [
+          "Disbursements",
+          "Receipts",
+          "Guid",
+          "TotalDisbursements",
+          "TotalReceipts"
+        ]
+      },
+      {
+        "blockType": "PROPERTIES",
+        "compactBytes": 14597,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "LOANS",
+        "compactBytes": 13412,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "GENERALNOTES",
+        "compactBytes": 12036,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "NOTES",
+        "compactBytes": 12036,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "OTHERS",
+        "compactBytes": 10108,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "BUYERS",
+        "compactBytes": 7752,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      },
+      {
+        "blockType": "TITLECOMPANIES",
+        "compactBytes": 6601,
+        "needsSubSplit": false,
+        "naturalSubSplit": []
+      }
+    ]
+  }
+}
