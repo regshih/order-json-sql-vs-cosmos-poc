@@ -143,7 +143,7 @@ def test_search_is_equivalent(repos, ingested) -> None:
         b = cosmos.search_orders(criteria, _m())
         ka = sorted((r["orderId"], r["status"], r["state"]) for r in a)
         kb = sorted((r["orderId"], r["status"], r["state"]) for r in b)
-        assert ka == kb, f"search результат differs for {criteria}"
+        assert ka == kb, f"search results differ for {criteria}"
 
 
 @pytest.mark.parametrize("profile", PROFILE_NAMES)
