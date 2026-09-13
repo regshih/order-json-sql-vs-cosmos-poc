@@ -62,6 +62,11 @@ def to_datetime(value: Any) -> datetime | None:
     return None
 
 
+def _money(value: float | None) -> float | None:
+    """Quantise a monetary amount to cents."""
+    return None if value is None else round(value + 0.0, 2)
+
+
 def _deterministic_id(*parts: str) -> str:
     """Stable surrogate key for a row that has no usable natural GUID."""
     return hashlib.sha256("|".join(parts).encode()).hexdigest()[:32]
@@ -189,8 +194,16 @@ def extract(envelope: dict[str, Any]) -> dict[str, Any]:
         "state": first_prop.get("State"),
         "county": first_prop.get("County"),
         "city": first_prop.get("City"),
-        "maxLoanAmount": max((l["LoanAmount"] for l in loans if l["LoanAmount"] is not None), default=None),
-        "totalLoanAmount": sum((l["LoanAmount"] for l in loans if l["LoanAmount"] is not None), 0.0) or None,
+        # Money is quantised to cents. SQL aggregates LoanAmount in
+        # decimal(19,2) and returns an exact value; summing the same numbers as
+        # Python floats does not, so without rounding the two backends disagree
+        # on totals in the last decimal places. Caught by the contract tests.
+        "maxLoanAmount": _money(
+            max((l["LoanAmount"] for l in loans if l["LoanAmount"] is not None), default=None)
+        ),
+        "totalLoanAmount": _money(
+            sum((l["LoanAmount"] for l in loans if l["LoanAmount"] is not None), 0.0) or None
+        ),
         "loanCount": len(loans),
         "propertyCount": len(properties),
         "partyCount": len(parties),

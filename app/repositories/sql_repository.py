@@ -231,8 +231,10 @@ class SqlOrderRepository(OrderRepository):
                     "parties": row.PartyCount,
                 },
                 "loanTotals": {
-                    "maxLoanAmount": float(row.MaxLoanAmount) if row.MaxLoanAmount is not None else None,
-                    "totalLoanAmount": float(row.TotalLoanAmount) if row.TotalLoanAmount is not None else None,
+                    # Quantised to cents to match the Cosmos header projection;
+                    # see ingestion/parser/relational_extract.py::_money.
+                    "maxLoanAmount": round(float(row.MaxLoanAmount), 2) if row.MaxLoanAmount is not None else None,
+                    "totalLoanAmount": round(float(row.TotalLoanAmount), 2) if row.TotalLoanAmount is not None else None,
                 },
                 "roles": roles,
                 "payloadBytes": row.PayloadBytes,
@@ -378,7 +380,7 @@ class SqlOrderRepository(OrderRepository):
                 "settlementDate": _iso(r.SettlementDate),
                 "state": r.PrimaryState,
                 "county": r.PrimaryCounty,
-                "maxLoanAmount": float(r.MaxLoanAmount) if r.MaxLoanAmount is not None else None,
+                "maxLoanAmount": round(float(r.MaxLoanAmount), 2) if r.MaxLoanAmount is not None else None,
                 "payloadBytes": r.PayloadBytes,
             }
             for r in rows
