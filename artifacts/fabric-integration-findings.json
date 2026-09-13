@@ -1,0 +1,98 @@
+{
+  "generatedUtc": "2026-09-13T19:36:20.368835+00:00",
+  "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+  "nativeSqlMirroring": {
+    "attempted": true,
+    "succeeded": true,
+    "httpStatus": 201,
+    "response": {
+      "id": "b94554ec-6bc0-4477-b3d4-b65325d83418",
+      "type": "MirroredDatabase",
+      "displayName": "mir_sql_orders_native",
+      "description": "Native Fabric mirroring of Azure SQL OrderDb (POC attempt)",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3"
+    },
+    "requiredTables": [
+      "Customers",
+      "Orders",
+      "OrderVersions",
+      "Properties",
+      "Parties",
+      "OrderParties",
+      "Loans",
+      "OrderJsonBlocks"
+    ],
+    "note": "Fabric connects outbound to the source. With publicNetworkAccess=Disabled it needs a Fabric managed private endpoint or an on-premises/VNet data gateway.",
+    "mirroredDatabaseId": "b94554ec-6bc0-4477-b3d4-b65325d83418",
+    "startMirroringStatus": 400,
+    "startMirroringResponse": {
+      "requestId": "a37ebf47-bef9-4b23-bd66-f988f2dc534a",
+      "errorCode": "OperationNotAllowedInCurrentStatus",
+      "message": "Operation is not allowed in current status: Initializing.",
+      "isRetriable": false
+    },
+    "mirroringStatus": {
+      "requestId": "2ee0b97a-75bf-49b6-bdf8-3c3eb92ed345",
+      "errorCode": "EntityNotFound",
+      "message": "The requested resource could not be found",
+      "isRetriable": false
+    }
+  },
+  "nativeCosmosMirroring": {
+    "attempted": true,
+    "succeeded": true,
+    "httpStatus": 201,
+    "response": {
+      "id": "4489c2f7-7bc3-4d93-8f1d-f549438e8394",
+      "type": "MirroredDatabase",
+      "displayName": "mir_cosmos_orders_native",
+      "description": "Native Fabric mirroring of Cosmos DB for NoSQL (POC attempt)",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3"
+    },
+    "note": "Same outbound-connectivity requirement as the SQL mirroring path."
+  },
+  "openMirroring": {
+    "sql": {
+      "name": "mir_sql_orders",
+      "id": "1a4d54aa-ee7e-45bb-ac76-520552419d30",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+      "startMirroringHttp": 400,
+      "started": false,
+      "oneLakeTablesPath": null,
+      "landingZoneUrl": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/1a4d54aa-ee7e-45bb-ac76-520552419d30/Files/LandingZone",
+      "landingZoneDfsPath": "1a4d54aa-ee7e-45bb-ac76-520552419d30/Files/LandingZone",
+      "sqlEndpoint": {
+        "connectionString": null,
+        "id": null,
+        "provisioningStatus": "InProgress"
+      },
+      "mirroringStatus": {
+        "requestId": "46d1a2dd-1b4d-498e-8918-9f604e30e0cd",
+        "errorCode": "EntityNotFound",
+        "message": "The requested resource could not be found",
+        "isRetriable": false
+      }
+    },
+    "cosmos": {
+      "name": "mir_cosmos_orders",
+      "id": "f7e7e51b-1b92-49ff-8eba-82d0573e728c",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+      "startMirroringHttp": 400,
+      "started": false,
+      "oneLakeTablesPath": null,
+      "landingZoneUrl": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
+      "landingZoneDfsPath": "f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
+      "sqlEndpoint": {
+        "connectionString": null,
+        "id": null,
+        "provisioningStatus": "InProgress"
+      },
+      "mirroringStatus": {
+        "requestId": "ac5654e1-b5d4-4db5-b62b-4222fe2efa00",
+        "errorCode": "EntityNotFound",
+        "message": "The requested resource could not be found",
+        "isRetriable": false
+      }
+    }
+  }
+}

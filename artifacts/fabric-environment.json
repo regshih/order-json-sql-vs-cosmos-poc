@@ -42,5 +42,49 @@
       "name": "lh_orders_poc",
       "id": "8c03385b-240c-42e4-a5a8-f3d27013ffc7"
     }
-  ]
+  ],
+  "mirrors": {
+    "sql": {
+      "name": "mir_sql_orders",
+      "id": "1a4d54aa-ee7e-45bb-ac76-520552419d30",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+      "startMirroringHttp": 400,
+      "started": false,
+      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/1a4d54aa-ee7e-45bb-ac76-520552419d30/Tables",
+      "landingZoneUrl": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/1a4d54aa-ee7e-45bb-ac76-520552419d30/Files/LandingZone",
+      "landingZoneDfsPath": "1a4d54aa-ee7e-45bb-ac76-520552419d30/Files/LandingZone",
+      "sqlEndpoint": {
+        "connectionString": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
+        "id": "af4a7888-2417-47be-ab65-8313539d06bd",
+        "provisioningStatus": "Success"
+      },
+      "mirroringStatus": {
+        "requestId": "46d1a2dd-1b4d-498e-8918-9f604e30e0cd",
+        "errorCode": "EntityNotFound",
+        "message": "The requested resource could not be found",
+        "isRetriable": false
+      }
+    },
+    "cosmos": {
+      "name": "mir_cosmos_orders",
+      "id": "f7e7e51b-1b92-49ff-8eba-82d0573e728c",
+      "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+      "startMirroringHttp": 400,
+      "started": false,
+      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/f7e7e51b-1b92-49ff-8eba-82d0573e728c/Tables",
+      "landingZoneUrl": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
+      "landingZoneDfsPath": "f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
+      "sqlEndpoint": {
+        "connectionString": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
+        "id": "ad21b0b3-b27b-4f9c-bba5-02d8def14220",
+        "provisioningStatus": "Success"
+      },
+      "mirroringStatus": {
+        "requestId": "ac5654e1-b5d4-4db5-b62b-4222fe2efa00",
+        "errorCode": "EntityNotFound",
+        "message": "The requested resource could not be found",
+        "isRetriable": false
+      }
+    }
+  }
 }

@@ -26,11 +26,14 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fabric.provision_fabric import Fabric, get_token
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from fabric.provision_fabric import Fabric, get_token  # noqa: E402
 
 STATE = Path("artifacts/fabric-environment.json")
 FINDINGS = Path("artifacts/fabric-integration-findings.json")
