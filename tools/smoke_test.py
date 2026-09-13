@@ -105,7 +105,7 @@ def main() -> int:
 
     print(f"\nserver-side timing breakdown ({backend}):")
     for op, m in metrics.get("byOperation", {}).items():
-        line = (f"  {op:<10} n={m['count']:<4} total p50={m['total_ms']['p50']:>7.1f} "
+        line = (f"  {op:<10} n={m['requests']:<4} total p50={m['total_ms']['p50']:>7.1f} "
                 f"p95={m['total_ms']['p95']:>7.1f}  db={m['db_ms']['p50']:>6.1f} "
                 f"recon={m['reconstruct_ms']['p50']:>6.1f} ser={m['serialize_ms']['p50']:>6.1f} "
                 f"bytes={m['response_bytes']['p50']:>9,}")
