@@ -205,7 +205,7 @@ class SqlOrderRepository(OrderRepository):
         with m.reconstruct():  # type: ignore[attr-defined]
             roles = self._roles(order_id, m)
             body = {
-                "orderId": str(row.OrderId),
+                "orderId": _guid(row.OrderId),
                 "customerId": row.CustomerId,
                 "orderVersion": row.CurrentVersion,
                 "orderNumber": row.OrderNumber,
@@ -289,7 +289,8 @@ class SqlOrderRepository(OrderRepository):
                 for r in rows
             ]
             return block_response(
-                order_id, rows[0].CurrentVersion, rows[0].CustomerId, block_type, sections, parts
+                _guid(order_id), rows[0].CurrentVersion, rows[0].CustomerId,
+                block_type, sections, parts
             )
 
     def get_full_order(self, order_id: str, m: RequestMetrics) -> dict[str, Any] | None:
@@ -330,7 +331,7 @@ class SqlOrderRepository(OrderRepository):
             object_data = reassemble(blocks)
             return build_envelope(
                 head.CustomerId,
-                order_id,
+                _guid(order_id),
                 head.CurrentVersion,
                 object_data,
                 extract_timestamp=_iso(head.ExtractTimestamp),
@@ -367,7 +368,7 @@ class SqlOrderRepository(OrderRepository):
 
         return [
             {
-                "orderId": str(r.OrderId),
+                "orderId": _guid(r.OrderId),
                 "customerId": r.CustomerId,
                 "orderVersion": r.CurrentVersion,
                 "orderNumber": r.OrderNumber,
@@ -392,7 +393,7 @@ class SqlOrderRepository(OrderRepository):
             )
             return [
                 {
-                    "orderId": str(r.OrderId),
+                    "orderId": _guid(r.OrderId),
                     "customerId": r.CustomerId,
                     "orderVersion": r.CurrentVersion,
                     "payloadBytes": r.PayloadBytes,
@@ -698,6 +699,17 @@ class _CursorCtx:
             self.broken = True
         if self.conn is not None:
             self.repo.pool.release(self.conn, broken=self.broken)
+
+
+def _guid(value: Any) -> str:
+    """Canonical GUID form for API output.
+
+    Azure SQL's ``uniqueidentifier`` renders uppercase; the source extract and
+    Cosmos both carry lowercase. Without normalising here the two backends
+    return different strings for the same order - which the contract tests
+    correctly flag as an API inconsistency.
+    """
+    return str(value).lower()
 
 
 def _iso(value: Any) -> str | None:
