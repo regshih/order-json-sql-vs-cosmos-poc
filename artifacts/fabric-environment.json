@@ -1,0 +1,46 @@
+{
+  "capacityName": "fabordjsonpoc915d",
+  "capacityId": "8a39a2f9-be75-4370-bfa7-b4ff961e106a",
+  "capacitySku": "F2",
+  "workspaceName": "ws-order-json-poc",
+  "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
+  "lakehouseName": "lh_orders_poc",
+  "lakehouseId": "8c03385b-240c-42e4-a5a8-f3d27013ffc7",
+  "lakehouseProperties": {
+    "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/8c03385b-240c-42e4-a5a8-f3d27013ffc7/Tables",
+    "oneLakeFilesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/8c03385b-240c-42e4-a5a8-f3d27013ffc7/Files",
+    "sqlEndpointProperties": {
+      "connectionString": null,
+      "id": null,
+      "provisioningStatus": "InProgress"
+    }
+  },
+  "warehouseName": "wh_orders_poc",
+  "warehouseId": "308a7097-d2bb-42fc-a275-9eb009913647",
+  "warehouseProperties": {
+    "connectionInfo": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
+    "connectionString": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
+    "createdDate": "2026-09-13T19:29:31.2005216",
+    "lastUpdatedTime": "2026-09-13T19:29:36.1839611",
+    "collationType": "Latin1_General_100_BIN2_UTF8",
+    "creationMode": "New"
+  },
+  "oneLakeAbfss": "abfss://a79fe519-8b20-442c-a8b5-8d8539733cb3@onelake.dfs.fabric.microsoft.com/8c03385b-240c-42e4-a5a8-f3d27013ffc7",
+  "items": [
+    {
+      "type": "SQLEndpoint",
+      "name": "lh_orders_poc",
+      "id": "008e03dc-750a-42f2-9599-85b67b410f73"
+    },
+    {
+      "type": "Warehouse",
+      "name": "wh_orders_poc",
+      "id": "308a7097-d2bb-42fc-a275-9eb009913647"
+    },
+    {
+      "type": "Lakehouse",
+      "name": "lh_orders_poc",
+      "id": "8c03385b-240c-42e4-a5a8-f3d27013ffc7"
+    }
+  ]
+}
