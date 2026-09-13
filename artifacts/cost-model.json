@@ -1,0 +1,305 @@
+{
+  "generatedUtc": "2026-09-13T19:19:22.649070+00:00",
+  "pricingSnapshot": {
+    "retrievedUtc": "2026-09-13T19:18:55.005049+00:00",
+    "region": "westus3",
+    "source": "https://prices.azure.com/api/retail/prices",
+    "meters": {
+      "cosmos_provisioned_ru": {
+        "retailPrice": 0.008,
+        "unitOfMeasure": "1/Hour",
+        "meterName": "100 RU/s",
+        "skuName": "RUs",
+        "productName": "Azure Cosmos DB",
+        "serviceName": "Azure Cosmos DB",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2021-04-20T00:00:00Z",
+        "unitNote": "per 100 RU/s per hour",
+        "matchCount": 1
+      },
+      "cosmos_autoscale_ru": {
+        "retailPrice": 0.012,
+        "unitOfMeasure": "1/Hour",
+        "meterName": "AP1 100 RUs",
+        "skuName": "AP1",
+        "productName": "Azure Cosmos DB autoscale",
+        "serviceName": "Azure Cosmos DB",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2021-04-20T00:00:00Z",
+        "unitNote": "per 100 RU/s per hour (autoscale)",
+        "matchCount": 1
+      },
+      "cosmos_storage": {
+        "retailPrice": 0.25,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "Data Stored",
+        "skuName": "RUs",
+        "productName": "Azure Cosmos DB",
+        "serviceName": "Azure Cosmos DB",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2021-04-20T00:00:00Z",
+        "unitNote": "per GB per month",
+        "matchCount": 1
+      },
+      "sql_gp_serverless_vcore": {
+        "retailPrice": 0.521758,
+        "unitOfMeasure": "1 Hour",
+        "meterName": "vCore",
+        "skuName": "1 vCore",
+        "productName": "SQL Database General Purpose - Serverless - Compute Gen5",
+        "serviceName": "SQL Database",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per vCore per hour (serverless, billed per second while active)",
+        "matchCount": 2
+      },
+      "sql_gp_provisioned_vcore": {
+        "retailPrice": 0.152217,
+        "unitOfMeasure": "1 Hour",
+        "meterName": "vCore",
+        "skuName": "vCore",
+        "productName": "SQL Database Single/Elastic Pool General Purpose - Compute Gen5",
+        "serviceName": "SQL Database",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2025-06-01T00:00:00Z",
+        "unitNote": "per vCore per hour",
+        "matchCount": 1
+      },
+      "sql_bc_provisioned_vcore": {
+        "retailPrice": 0.304435,
+        "unitOfMeasure": "1 Hour",
+        "meterName": "vCore",
+        "skuName": "1 vCore",
+        "productName": "SQL Database Single/Elastic Pool Business Critical - Compute Gen5",
+        "serviceName": "SQL Database",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2025-07-01T00:00:00Z",
+        "unitNote": "per vCore per hour",
+        "matchCount": 2
+      },
+      "sql_hs_vcore": {
+        "retailPrice": 0.18266,
+        "unitOfMeasure": "1 Hour",
+        "meterName": "vCore",
+        "skuName": "vCore",
+        "productName": "SQL Database SingleDB/Elastic Pool Hyperscale - Compute Gen5",
+        "serviceName": "SQL Database",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2025-07-01T00:00:00Z",
+        "unitNote": "per vCore per hour",
+        "matchCount": 1
+      },
+      "sql_gp_storage": {
+        "retailPrice": 0.115,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "General Purpose Data Stored",
+        "skuName": "General Purpose",
+        "productName": "SQL Database Single/Elastic Pool General Purpose - Storage",
+        "serviceName": "SQL Database",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per GB per month",
+        "matchCount": 2
+      },
+      "adls_hot_lrs": {
+        "retailPrice": 0.0169,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "Hot LRS Data Stored",
+        "skuName": "Hot LRS",
+        "productName": "Azure Data Lake Storage Gen2 Hierarchical Namespace",
+        "serviceName": "Storage",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per GB per month (ADLS Gen2, hot, LRS)",
+        "matchCount": 3
+      },
+      "adls_cool_lrs": {
+        "retailPrice": 0.01,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "Cool LRS Data Stored",
+        "skuName": "Cool LRS",
+        "productName": "Azure Data Lake Storage Gen2 Hierarchical Namespace",
+        "serviceName": "Storage",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per GB per month (ADLS Gen2, cool, LRS)",
+        "matchCount": 1
+      },
+      "blob_hot_lrs": {
+        "retailPrice": 0.016928,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "Hot LRS Data Stored",
+        "skuName": "Hot LRS",
+        "productName": "General Block Blob v2",
+        "serviceName": "Storage",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per GB per month",
+        "matchCount": 3
+      },
+      "blob_cool_lrs": {
+        "retailPrice": 0.01,
+        "unitOfMeasure": "1 GB/Month",
+        "meterName": "Cool LRS Data Stored",
+        "skuName": "Cool LRS",
+        "productName": "General Block Blob v2",
+        "serviceName": "Storage",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2022-08-01T00:00:00Z",
+        "unitNote": "per GB per month",
+        "matchCount": 1
+      },
+      "fabric_capacity_cu": {
+        "retailPrice": 0.18,
+        "unitOfMeasure": "1 Hour",
+        "meterName": "Data Warehouse Capacity Usage CU",
+        "skuName": "Data Warehouse Capacity Usage",
+        "productName": "Fabric Capacity",
+        "serviceName": "Microsoft Fabric",
+        "armRegionName": "westus3",
+        "effectiveStartDate": "2023-11-01T00:00:00Z",
+        "unitNote": "per CU per hour",
+        "matchCount": 1
+      }
+    },
+    "unavailable": [
+      {
+        "key": "onelake_storage_hot",
+        "filter": "serviceName eq 'Microsoft Fabric' and productName eq 'OneLake' and meterName eq 'OneLake Storage Data Stored' and armRegionName eq 'westus3'",
+        "reason": "no consumption meter matched"
+      }
+    ]
+  },
+  "measuredRu": {
+    "source": [],
+    "byOperation": {}
+  },
+  "measuredWriteRu": {},
+  "workloadMix": {
+    "summary": 0.5,
+    "title": 0.2,
+    "cdf": 0.15,
+    "checklist": 0.1,
+    "full": 0.05
+  },
+  "cosmosThroughput": [
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    },
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    },
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    },
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    },
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    },
+    {
+      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+    }
+  ],
+  "cosmosPerOperationAt50Rps": {},
+  "cosmosStorage": {
+    "pricePerGbMonth": 0.25,
+    "hotGb": 441.5,
+    "monthlyUsd": 110.38
+  },
+  "sqlOptions": [
+    {
+      "tier": "gp_serverless",
+      "vCores": 2,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.521758,
+      "monthlyComputeUsd": 761.77,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 812.54
+    },
+    {
+      "tier": "gp_serverless",
+      "vCores": 4,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.521758,
+      "monthlyComputeUsd": 1523.53,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 1574.31
+    },
+    {
+      "tier": "gp_provisioned",
+      "vCores": 2,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.152217,
+      "monthlyComputeUsd": 222.24,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 273.01
+    },
+    {
+      "tier": "gp_provisioned",
+      "vCores": 4,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.152217,
+      "monthlyComputeUsd": 444.47,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 495.25
+    },
+    {
+      "tier": "gp_provisioned",
+      "vCores": 8,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.152217,
+      "monthlyComputeUsd": 888.95,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 939.72
+    },
+    {
+      "tier": "business_critical",
+      "vCores": 4,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.304435,
+      "monthlyComputeUsd": 888.95,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 939.72
+    },
+    {
+      "tier": "hyperscale",
+      "vCores": 4,
+      "activeFraction": 1.0,
+      "unitPricePerVCoreHour": 0.18266,
+      "monthlyComputeUsd": 533.37,
+      "storageGb": 441.5,
+      "storagePricePerGbMonth": 0.115,
+      "monthlyStorageUsd": 50.77,
+      "monthlyTotalUsd": 584.14
+    }
+  ],
+  "archive": {
+    "hotPricePerGbMonth": 0.0169,
+    "coolPricePerGbMonth": 0.01,
+    "archiveGb": 1935.0,
+    "monthlyHotUsd": 32.7,
+    "monthlyCoolUsd": 19.35
+  },
+  "fabric": {
+    "pricePerCuHour": 0.18,
+    "f2MonthlyUsd": 262.8,
+    "f4MonthlyUsd": 525.6,
+    "f64MonthlyUsd": 8409.6,
+    "oneLakePricePerGbMonth": null,
+    "note": "Fabric bills a flat capacity, not per query. Derived from the Capacity Usage CU-hour meter; no per-SKU meter exists."
+  }
+}

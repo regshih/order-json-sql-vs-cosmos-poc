@@ -594,7 +594,8 @@ class OrderFactory:
             "EscrowBriefLegalLookupCode": self.maybe(f"LGL{self.rng.randint(100, 999)}"),
             "EscrowLegal": self.rtf(f"Lot {self.rng.randint(1, 99)} of {self.rng.choice(STREET_NAMES)} Subdivision."),
             "FinalTitleOpinion": {},
-            "Guid": self.guid(0.1),
+            # A property's own Guid is its identity - never reused.
+            "Guid": self.guid(),
             "HOA": {
                 "Guid": self.guid(),
                 "Name": self.maybe(f"{self.rng.choice(STREET_NAMES)} Homeowners Association"),
@@ -649,7 +650,8 @@ class OrderFactory:
                 "FundingAmount": f"{amount:.2f}",
                 "WireReference": self.maybe(f"WR{self.rng.randint(100000, 999999)}"),
             },
-            "Guid": self.guid(0.05),
+            # A loan's own Guid is its identity - never reused.
+            "Guid": self.guid(),
             "HUD": {},
             "InterimInterest": {
                 "Amount": self.money(0, 2500),

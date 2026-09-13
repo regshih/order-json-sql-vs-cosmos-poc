@@ -1,0 +1,172 @@
+{
+  "retrievedUtc": "2026-09-13T19:18:55.005049+00:00",
+  "source": "https://prices.azure.com/api/retail/prices",
+  "currency": "USD",
+  "armRegionName": "westus3",
+  "note": "Fetched live from the Azure Retail Prices API. Consumption meters only; reservation and dev/test rows are filtered out.",
+  "meters": {
+    "cosmos_provisioned_ru": {
+      "retailPrice": 0.008,
+      "unitOfMeasure": "1/Hour",
+      "meterName": "100 RU/s",
+      "skuName": "RUs",
+      "productName": "Azure Cosmos DB",
+      "serviceName": "Azure Cosmos DB",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2021-04-20T00:00:00Z",
+      "unitNote": "per 100 RU/s per hour",
+      "matchCount": 1
+    },
+    "cosmos_autoscale_ru": {
+      "retailPrice": 0.012,
+      "unitOfMeasure": "1/Hour",
+      "meterName": "AP1 100 RUs",
+      "skuName": "AP1",
+      "productName": "Azure Cosmos DB autoscale",
+      "serviceName": "Azure Cosmos DB",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2021-04-20T00:00:00Z",
+      "unitNote": "per 100 RU/s per hour (autoscale)",
+      "matchCount": 1
+    },
+    "cosmos_storage": {
+      "retailPrice": 0.25,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "Data Stored",
+      "skuName": "RUs",
+      "productName": "Azure Cosmos DB",
+      "serviceName": "Azure Cosmos DB",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2021-04-20T00:00:00Z",
+      "unitNote": "per GB per month",
+      "matchCount": 1
+    },
+    "sql_gp_serverless_vcore": {
+      "retailPrice": 0.521758,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "vCore",
+      "skuName": "1 vCore",
+      "productName": "SQL Database General Purpose - Serverless - Compute Gen5",
+      "serviceName": "SQL Database",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per vCore per hour (serverless, billed per second while active)",
+      "matchCount": 2
+    },
+    "sql_gp_provisioned_vcore": {
+      "retailPrice": 0.152217,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "vCore",
+      "skuName": "vCore",
+      "productName": "SQL Database Single/Elastic Pool General Purpose - Compute Gen5",
+      "serviceName": "SQL Database",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2025-06-01T00:00:00Z",
+      "unitNote": "per vCore per hour",
+      "matchCount": 1
+    },
+    "sql_bc_provisioned_vcore": {
+      "retailPrice": 0.304435,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "vCore",
+      "skuName": "1 vCore",
+      "productName": "SQL Database Single/Elastic Pool Business Critical - Compute Gen5",
+      "serviceName": "SQL Database",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2025-07-01T00:00:00Z",
+      "unitNote": "per vCore per hour",
+      "matchCount": 2
+    },
+    "sql_hs_vcore": {
+      "retailPrice": 0.18266,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "vCore",
+      "skuName": "vCore",
+      "productName": "SQL Database SingleDB/Elastic Pool Hyperscale - Compute Gen5",
+      "serviceName": "SQL Database",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2025-07-01T00:00:00Z",
+      "unitNote": "per vCore per hour",
+      "matchCount": 1
+    },
+    "sql_gp_storage": {
+      "retailPrice": 0.115,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "General Purpose Data Stored",
+      "skuName": "General Purpose",
+      "productName": "SQL Database Single/Elastic Pool General Purpose - Storage",
+      "serviceName": "SQL Database",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per GB per month",
+      "matchCount": 2
+    },
+    "adls_hot_lrs": {
+      "retailPrice": 0.0169,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "Hot LRS Data Stored",
+      "skuName": "Hot LRS",
+      "productName": "Azure Data Lake Storage Gen2 Hierarchical Namespace",
+      "serviceName": "Storage",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per GB per month (ADLS Gen2, hot, LRS)",
+      "matchCount": 3
+    },
+    "adls_cool_lrs": {
+      "retailPrice": 0.01,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "Cool LRS Data Stored",
+      "skuName": "Cool LRS",
+      "productName": "Azure Data Lake Storage Gen2 Hierarchical Namespace",
+      "serviceName": "Storage",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per GB per month (ADLS Gen2, cool, LRS)",
+      "matchCount": 1
+    },
+    "blob_hot_lrs": {
+      "retailPrice": 0.016928,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "Hot LRS Data Stored",
+      "skuName": "Hot LRS",
+      "productName": "General Block Blob v2",
+      "serviceName": "Storage",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per GB per month",
+      "matchCount": 3
+    },
+    "blob_cool_lrs": {
+      "retailPrice": 0.01,
+      "unitOfMeasure": "1 GB/Month",
+      "meterName": "Cool LRS Data Stored",
+      "skuName": "Cool LRS",
+      "productName": "General Block Blob v2",
+      "serviceName": "Storage",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2022-08-01T00:00:00Z",
+      "unitNote": "per GB per month",
+      "matchCount": 1
+    },
+    "fabric_capacity_cu": {
+      "retailPrice": 0.18,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "Data Warehouse Capacity Usage CU",
+      "skuName": "Data Warehouse Capacity Usage",
+      "productName": "Fabric Capacity",
+      "serviceName": "Microsoft Fabric",
+      "armRegionName": "westus3",
+      "effectiveStartDate": "2023-11-01T00:00:00Z",
+      "unitNote": "per CU per hour",
+      "matchCount": 1
+    }
+  },
+  "unavailable": [
+    {
+      "key": "onelake_storage_hot",
+      "filter": "serviceName eq 'Microsoft Fabric' and productName eq 'OneLake' and meterName eq 'OneLake Storage Data Stored' and armRegionName eq 'westus3'",
+      "reason": "no consumption meter matched"
+    }
+  ]
+}

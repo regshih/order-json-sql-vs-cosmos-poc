@@ -72,6 +72,24 @@ def _deterministic_id(*parts: str) -> str:
     return hashlib.sha256("|".join(parts).encode()).hexdigest()[:32]
 
 
+def _unique_id(
+    natural: Any, seen: set[str], order_id: str, kind: str, index: int
+) -> str:
+    """Resolve a primary key, guaranteeing uniqueness within the order.
+
+    Prefers the source GUID (it is the natural key and dedupes across orders).
+    Falls back to a deterministic surrogate when the GUID is absent or already
+    used by an earlier row of the same kind in this order - a real condition in
+    the source data that would otherwise abort the whole ingest on a primary-key
+    violation.
+    """
+    candidate = natural if isinstance(natural, str) and natural else None
+    if candidate is None or candidate in seen:
+        candidate = _deterministic_id(order_id, kind, str(index))
+    seen.add(candidate)
+    return candidate
+
+
 def extract(envelope: dict[str, Any]) -> dict[str, Any]:
     """Return the full relational projection for one order version."""
     od = envelope["objectData"]
@@ -98,6 +116,10 @@ def extract(envelope: dict[str, Any]) -> dict[str, Any]:
     }
 
     properties: list[dict[str, Any]] = []
+    # Source GUIDs are not guaranteed unique within one order - the same Guid can
+    # appear on two entries. These are primary keys in the relational model, so a
+    # collision must resolve to a distinct surrogate rather than fail the ingest.
+    seen_property_ids: set[str] = set()
     for i, p in enumerate(od.get("Properties") or []):
         if not isinstance(p, dict):
             continue
@@ -105,7 +127,9 @@ def extract(envelope: dict[str, Any]) -> dict[str, Any]:
         state = addr.get("State") or {}
         properties.append(
             {
-                "PropertyId": p.get("Guid") or _deterministic_id(order_id, "prop", str(i)),
+                "PropertyId": _unique_id(
+                    p.get("Guid"), seen_property_ids, order_id, "prop", i
+                ),
                 "OrderId": order_id,
                 "Sequence": i,
                 "Address1": (addr.get("Address1") or None),
@@ -164,6 +188,7 @@ def extract(envelope: dict[str, Any]) -> dict[str, Any]:
                 add_party(node, resolved, i)
 
     loans: list[dict[str, Any]] = []
+    seen_loan_ids: set[str] = set()
     for i, ln in enumerate(od.get("Loans") or []):
         if not isinstance(ln, dict):
             continue
@@ -175,7 +200,7 @@ def extract(envelope: dict[str, Any]) -> dict[str, Any]:
         amount = to_decimal(ln.get("Amount")) or to_decimal(terms.get("AmountFinanced"))
         loans.append(
             {
-                "LoanId": ln.get("Guid") or _deterministic_id(order_id, "loan", str(i)),
+                "LoanId": _unique_id(ln.get("Guid"), seen_loan_ids, order_id, "loan", i),
                 "OrderId": order_id,
                 "Sequence": i,
                 "LenderPartyId": lender_pid,

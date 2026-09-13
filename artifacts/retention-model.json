@@ -1,0 +1,232 @@
+{
+  "generatedUtc": "2026-09-13T19:14:20.093366+00:00",
+  "measuredInputs": {
+    "average_payload_bytes": 1316797,
+    "median": 990078,
+    "p95": 3193248,
+    "max": 5092224,
+    "orders_measured": 200,
+    "source": "MEASURED from artifacts/generated-dataset-stats.json",
+    "blocks_per_order": 31.0,
+    "cosmos_items_per_order": 31.0,
+    "blocks_source": "fallback default"
+  },
+  "retentionDays": 730,
+  "hotRetentionDays": 180,
+  "gzipRatio": 0.09,
+  "note": "orders/day, versions/order and updates/day are ASSUMPTIONS; payload sizes and block counts are MEASURED.",
+  "scenarios": [
+    {
+      "inputs": {
+        "orders_per_day": 500,
+        "average_versions_per_order": 4.0,
+        "average_updates_per_order_per_day": 0.5,
+        "retention_days": 730,
+        "average_payload_bytes": 1316797,
+        "hot_retention_days": 180,
+        "blocks_per_order": 31.0,
+        "cosmos_items_per_order": 31.0,
+        "customers": 8,
+        "label": "low",
+        "source": "ASSUMPTION"
+      },
+      "total_orders": 365000,
+      "total_versions": 1460000.0,
+      "current_versions": 365000,
+      "hot_orders": 90000,
+      "hot_versions": 360000.0,
+      "archive_versions": 1460000.0,
+      "sql_rows": {
+        "Orders": 90000,
+        "OrderVersions": 360000,
+        "OrderJsonBlocks": 2790000,
+        "Properties": 117000,
+        "Loans": 108000,
+        "OrderParties": 1080000,
+        "Parties": 648000
+      },
+      "sql_hot_bytes": 118511730000,
+      "cosmos_items": 2880000,
+      "cosmos_hot_bytes": 118511730000,
+      "archive_bytes": 1922523620000.0,
+      "archive_bytes_compressed": 173027125800.0,
+      "cosmos_partition": {
+        "hierarchicalKey": "/customerId, /orderId",
+        "logicalPartitionScope": "one order version set",
+        "bytesPerLogicalPartition": 1316797,
+        "limitBytes": 21474836480,
+        "pctOfLimit": 0.0061,
+        "orderVersionsBeforeLimit": 16308.4,
+        "singleLevelCustomerKeyBytes": 60078863125,
+        "singleLevelCustomerKeyPctOfLimit": 279.8,
+        "singleLevelCustomerKeyWouldExceed": true,
+        "ordersPerCustomerOver2y": 45625
+      },
+      "growth": {
+        "hotBytesPerDay": 658398500,
+        "hotGiBPerMonth": 18.4,
+        "archiveGiBPerMonthCompressed": 6.6,
+        "gzipRatioUsed": 0.09
+      }
+    },
+    {
+      "inputs": {
+        "orders_per_day": 2000,
+        "average_versions_per_order": 12.0,
+        "average_updates_per_order_per_day": 2.0,
+        "retention_days": 730,
+        "average_payload_bytes": 1316797,
+        "hot_retention_days": 180,
+        "blocks_per_order": 31.0,
+        "cosmos_items_per_order": 31.0,
+        "customers": 8,
+        "label": "medium",
+        "source": "ASSUMPTION"
+      },
+      "total_orders": 1460000,
+      "total_versions": 17520000.0,
+      "current_versions": 1460000,
+      "hot_orders": 360000,
+      "hot_versions": 4320000.0,
+      "archive_versions": 17520000.0,
+      "sql_rows": {
+        "Orders": 360000,
+        "OrderVersions": 4320000,
+        "OrderJsonBlocks": 11160000,
+        "Properties": 468000,
+        "Loans": 432000,
+        "OrderParties": 4320000,
+        "Parties": 2592000
+      },
+      "sql_hot_bytes": 474046920000,
+      "cosmos_items": 11520000,
+      "cosmos_hot_bytes": 474046920000,
+      "archive_bytes": 23070283440000.0,
+      "archive_bytes_compressed": 2076325509600.0,
+      "cosmos_partition": {
+        "hierarchicalKey": "/customerId, /orderId",
+        "logicalPartitionScope": "one order version set",
+        "bytesPerLogicalPartition": 1316797,
+        "limitBytes": 21474836480,
+        "pctOfLimit": 0.0061,
+        "orderVersionsBeforeLimit": 16308.4,
+        "singleLevelCustomerKeyBytes": 240315452500,
+        "singleLevelCustomerKeyPctOfLimit": 1119.1,
+        "singleLevelCustomerKeyWouldExceed": true,
+        "ordersPerCustomerOver2y": 182500
+      },
+      "growth": {
+        "hotBytesPerDay": 2633594000,
+        "hotGiBPerMonth": 73.6,
+        "archiveGiBPerMonthCompressed": 79.5,
+        "gzipRatioUsed": 0.09
+      }
+    },
+    {
+      "inputs": {
+        "orders_per_day": 5000,
+        "average_versions_per_order": 25.0,
+        "average_updates_per_order_per_day": 4.0,
+        "retention_days": 730,
+        "average_payload_bytes": 1316797,
+        "hot_retention_days": 180,
+        "blocks_per_order": 31.0,
+        "cosmos_items_per_order": 31.0,
+        "customers": 8,
+        "label": "high",
+        "source": "ASSUMPTION"
+      },
+      "total_orders": 3650000,
+      "total_versions": 91250000.0,
+      "current_versions": 3650000,
+      "hot_orders": 900000,
+      "hot_versions": 22500000.0,
+      "archive_versions": 91250000.0,
+      "sql_rows": {
+        "Orders": 900000,
+        "OrderVersions": 22500000,
+        "OrderJsonBlocks": 27900000,
+        "Properties": 1170000,
+        "Loans": 1080000,
+        "OrderParties": 10800000,
+        "Parties": 6480000
+      },
+      "sql_hot_bytes": 1185117300000,
+      "cosmos_items": 28800000,
+      "cosmos_hot_bytes": 1185117300000,
+      "archive_bytes": 120157726250000.0,
+      "archive_bytes_compressed": 10814195362500.0,
+      "cosmos_partition": {
+        "hierarchicalKey": "/customerId, /orderId",
+        "logicalPartitionScope": "one order version set",
+        "bytesPerLogicalPartition": 1316797,
+        "limitBytes": 21474836480,
+        "pctOfLimit": 0.0061,
+        "orderVersionsBeforeLimit": 16308.4,
+        "singleLevelCustomerKeyBytes": 600788631250,
+        "singleLevelCustomerKeyPctOfLimit": 2797.6,
+        "singleLevelCustomerKeyWouldExceed": true,
+        "ordersPerCustomerOver2y": 456250
+      },
+      "growth": {
+        "hotBytesPerDay": 6583985000,
+        "hotGiBPerMonth": 184.0,
+        "archiveGiBPerMonthCompressed": 413.9,
+        "gzipRatioUsed": 0.09
+      }
+    },
+    {
+      "inputs": {
+        "orders_per_day": 2000,
+        "average_versions_per_order": 59.0,
+        "average_updates_per_order_per_day": 4.0,
+        "retention_days": 730,
+        "average_payload_bytes": 1316797,
+        "hot_retention_days": 180,
+        "blocks_per_order": 31.0,
+        "cosmos_items_per_order": 31.0,
+        "customers": 8,
+        "label": "observed-sample",
+        "source": "ASSUMPTION"
+      },
+      "total_orders": 1460000,
+      "total_versions": 86140000.0,
+      "current_versions": 1460000,
+      "hot_orders": 360000,
+      "hot_versions": 21240000.0,
+      "archive_versions": 86140000.0,
+      "sql_rows": {
+        "Orders": 360000,
+        "OrderVersions": 21240000,
+        "OrderJsonBlocks": 11160000,
+        "Properties": 468000,
+        "Loans": 432000,
+        "OrderParties": 4320000,
+        "Parties": 2592000
+      },
+      "sql_hot_bytes": 474046920000,
+      "cosmos_items": 11520000,
+      "cosmos_hot_bytes": 474046920000,
+      "archive_bytes": 113428893580000.0,
+      "archive_bytes_compressed": 10208600422200.0,
+      "cosmos_partition": {
+        "hierarchicalKey": "/customerId, /orderId",
+        "logicalPartitionScope": "one order version set",
+        "bytesPerLogicalPartition": 1316797,
+        "limitBytes": 21474836480,
+        "pctOfLimit": 0.0061,
+        "orderVersionsBeforeLimit": 16308.4,
+        "singleLevelCustomerKeyBytes": 240315452500,
+        "singleLevelCustomerKeyPctOfLimit": 1119.1,
+        "singleLevelCustomerKeyWouldExceed": true,
+        "ordersPerCustomerOver2y": 182500
+      },
+      "growth": {
+        "hotBytesPerDay": 2633594000,
+        "hotGiBPerMonth": 73.6,
+        "archiveGiBPerMonthCompressed": 390.7,
+        "gzipRatioUsed": 0.09
+      }
+    }
+  ]
+}
