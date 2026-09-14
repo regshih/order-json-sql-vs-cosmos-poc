@@ -115,8 +115,10 @@ Both designs decompose the order, so both must reassemble it. The API measures
 the three phases separately (`db_ms`, `reconstruct_ms`, `serialize_ms`) and
 reports them on `/_bench/metrics`.
 
-At the 50 RPS operating point on a ~1 MB full order (see
-[BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) for current numbers):
+Indicative split on a ~1 MB full order. These come from the API's in-process
+telemetry, which is sampled from **one of eight uvicorn workers** - see the
+sampling caveat in [BENCHMARK_METHOD.md](BENCHMARK_METHOD.md) section 6. The
+*direction* is robust and reproducible; the exact milliseconds are not:
 
 | Phase | SQL | Cosmos |
 | --- | ---: | ---: |

@@ -34,9 +34,10 @@ specific: a whole-order read costs **1,149 RU** because it returns ~1 MB across
 SQL.
 
 **That is a statement about this workload, not about Cosmos.** The same
-measurements show Cosmos matching or beating SQL on the operations it is built
-for, and scaling linearly to 200 RPS where SQL's 2-vCore instance was already
-near its ceiling.
+measurements show Cosmos holding flat latency from 10 to 200 RPS once given
+enough throughput - it scales by changing a number. SQL also held flat to 200
+RPS on 2 vCores, so neither engine was pushed to its limit here; the difference
+that showed up was cost, not capability.
 
 ---
 
@@ -60,7 +61,7 @@ Legend: **MEASURED** · *MODELLED* · ~ASSUMED~ · (qualitative judgement)
 | **Observability** | `sys.dm_db_resource_stats` gives CPU/IO/log/worker/session %. Query plans available | RU per request is exact and per-operation, which is *better* than SQL for cost attribution. No plan visibility | MEASURED both |
 | **Cost predictability** | Flat vCore + storage. Cost does **not** move with request shape | Cost is a direct function of request shape and payload size. A whole-order endpoint costs **269x** the RU of a summary endpoint | MEASURED + VERIFIED prices |
 | **Ingestion / write cost** | 500 orders in 333 s (1.5/s, 12 workers). Header update p50 **6.4 ms** | 500 orders in 140 s (3.6/s) — **2.4x faster**. 1,024 RU per order version | MEASURED |
-| **Full-order reconstruction** | db 13 ms + reconstruct 5.5 ms (~34 `json.loads`) | db 28 ms + reconstruct **0.1 ms** (SDK already parsed). Cost moved, not removed | MEASURED |
+| **Full-order reconstruction** | ~34 `json.loads` calls per read; reconstruction is a real, measurable cost | SDK returns parsed objects, so reassembly is a dict merge; the parse cost is paid inside the driver instead | *indicative* - the server-side split is a one-worker sample, see [BENCHMARK_METHOD.md](BENCHMARK_METHOD.md) section 6 |
 | **Analytics integration** | Open Mirroring → Delta. 8 tables, 199 MB Parquet, 104 s for 500 orders | Open Mirroring → Delta. 1 table, 534 KB Parquet, **1.2 s** — 370x less to move | MEASURED |
 | **Data freshness into Fabric** | **107 s** end-to-end (write 81 ms, incremental push 2.8 s, Fabric merge + metadata sync 104 s) | Same mechanism, same order of magnitude | MEASURED |
 | **Maintainability** | 10 tables is a schema a team can hold in its head. The design rule is one sentence | No schema to maintain; the risk moves to the *unwritten* contract in `search.*` and the irreversible partition key | (qualitative) |
@@ -84,19 +85,19 @@ All runs: **0 errors, 0 throttling** at the ceilings stated. Milliseconds.
 
 | Target RPS | SQL mix p50 / p95 | Cosmos mix p50 / p95 |
 | ---: | --- | --- |
-| 10 | 9.0 / 38.7 † | 39.9 / 92.7 |
-| 25 | — | 37.4 / 85.2 |
+| 10 | 9.4 / 48.8 | 39.9 / 92.7 |
+| 25 | 9.0 / 41.6 | 37.4 / 85.2 |
 | 50 | 9.0 / 38.7 | 39.5 / 88.8 |
 | 100 | 8.2 / 28.6 | 45.2 / 98.7 |
 | 200 | 8.4 / 30.1 | 76.1 / 199.1 |
 
-† SQL's low-rate runs are in [`results/sql/`](../results/sql/); latency is flat
-from 10 to 200 RPS, which says the 2-vCore instance was **not** the constraint at
-any tested rate.
+Both are essentially **flat from 10 to 200 RPS** - SQL entirely so, Cosmos with a
+mild rise above 100. Neither engine was pushed to a practical limit, and
+achieved RPS tracked the target to within 0.4% in every run.
 
-**Neither system reached a practical limit before 200 RPS** once provisioned
-correctly. That is worth stating plainly: the 50 RPS requirement is not
-demanding for either engine.
+**The 50 RPS requirement is not demanding for either engine.** That is worth
+stating plainly, because it means the decision should be made on cost,
+maintainability and query flexibility rather than on throughput.
 
 ---
 
