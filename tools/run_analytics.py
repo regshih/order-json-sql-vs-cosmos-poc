@@ -222,7 +222,17 @@ def measure_freshness(backend: str, endpoint: str, database: str,
     if proc.returncode != 0:
         print(f"    {proc.stderr[-500:]}")
 
-    table = "mir_sql_orders.dbo.Orders" if backend == "sql" else "mir_cosmos_orders.dbo.CosmosOrderItems"
+    # Poll the MIRRORED DATABASE directly, not via a three-part cross-database
+    # name from the warehouse. A recreated mirrored database is a new item and
+    # the warehouse's cross-database catalog does not resolve it immediately -
+    # that produced "Invalid object name 'mir_cosmos_orders.dbo.CosmosOrderItems'"
+    # and a false "NOT VISIBLE" verdict while the data was in fact arriving.
+    st_local = json.loads(STATE.read_text()) if STATE.exists() else {}
+    mirror = (st_local.get("mirrors") or {}).get(backend) or {}
+    mirror_db = mirror.get("name") or (
+        "mir_sql_orders" if backend == "sql" else "mir_cosmos_orders")
+    mirror_ep = (mirror.get("sqlEndpoint") or {}).get("connectionString") or endpoint
+    table = "dbo.Orders" if backend == "sql" else "dbo.CosmosOrderItems"
     if backend == "sql":
         query = f"SELECT COUNT(*) FROM {table} WHERE OrderId = ? AND Project = ?"
         params = (oid, marker)
@@ -236,7 +246,7 @@ def measure_freshness(backend: str, endpoint: str, database: str,
                  f"AND CHARINDEX(?, ISNULL(searchJson, '')) > 0")
         params = (oid, marker)
 
-    conn = fabric_conn(endpoint, database)
+    conn = fabric_conn(mirror_ep, mirror_db)
     cur = conn.cursor()
     visible_at = None
     polls = 0
@@ -256,6 +266,9 @@ def measure_freshness(backend: str, endpoint: str, database: str,
     repo.close()
     out = {
         "backend": backend,
+        "polledEndpoint": mirror_ep,
+        "polledDatabase": mirror_db,
+        "polledTable": table,
         "orderId": oid,
         "marker": marker,
         "writeMs": round((write_done - t_write) * 1000, 1),
