@@ -317,3 +317,53 @@ def test_block_endpoints_cover_the_documented_api() -> None:
     for name, (btype, sub) in BLOCK_ENDPOINTS.items():
         assert btype.isupper()
         assert sub is None or sub.isupper()
+
+
+# --------------------------------------------------------------------------
+# Fabric extractor schema stability
+# --------------------------------------------------------------------------
+
+
+def test_cosmos_parquet_schema_is_stable_for_a_header_only_batch() -> None:
+    """An incremental push often contains only header items, whose block columns
+    are all None. Without an explicit schema pyarrow infers those as `null`
+    type, the Parquet no longer matches the Delta table, and Fabric's replicator
+    silently ignores the file - the push reports success and the change never
+    appears. This is the regression guard for that."""
+    import datetime
+
+    import pandas as pd
+    import pyarrow as pa
+
+    from ingestion.fabric.push_to_onelake import COSMOS_SCHEMA
+
+    header_only = {
+        "id": "x", "docType": "orderHeader", "customerId": "C", "orderId": "o",
+        "orderVersion": 1,
+        "blockType": None, "blockSubType": None, "sequence": None,
+        "chunkIndex": None, "chunkCount": None, "payloadBytes": None,
+        "searchJson": "{}", "summaryJson": "{}", "modifiedUtc": "z", "sourceTs": 1,
+        "__rowMarker__": 4, "_extractedUtc": datetime.datetime(2026, 1, 1),
+    }
+    table = pa.Table.from_pandas(
+        pd.DataFrame([header_only]), schema=COSMOS_SCHEMA, preserve_index=False
+    )
+    null_typed = [f.name for f in table.schema if str(f.type) == "null"]
+    assert not null_typed, f"columns inferred as null type: {null_typed}"
+    assert str(table.schema.field("blockType").type) == "string"
+    assert str(table.schema.field("sequence").type) == "int64"
+
+
+def test_cosmos_schema_matches_the_rows_the_extractor_builds() -> None:
+    """The declared schema must cover exactly the columns the extractor emits -
+    a drift in either direction breaks the mirror."""
+    from ingestion.fabric.push_to_onelake import COSMOS_SCHEMA
+
+    emitted = {
+        "id", "docType", "customerId", "orderId", "orderVersion", "blockType",
+        "blockSubType", "sequence", "chunkIndex", "chunkCount", "payloadBytes",
+        "searchJson", "summaryJson", "modifiedUtc", "sourceTs",
+        # added by _mark()
+        "__rowMarker__", "_extractedUtc",
+    }
+    assert set(COSMOS_SCHEMA.names) == emitted

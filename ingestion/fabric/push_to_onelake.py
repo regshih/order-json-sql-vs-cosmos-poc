@@ -65,6 +65,38 @@ SQL_TABLES: dict[str, dict[str, Any]] = {
 COSMOS_TABLE = "CosmosOrderItems"
 COSMOS_KEYS = ["id"]
 
+# EXPLICIT Parquet schema for the Cosmos mirror table.
+#
+# This is not tidiness - it is load-bearing. pyarrow infers column types from the
+# rows in the batch, and an incremental push often contains only *header* items,
+# whose block columns (blockType, blockSubType, sequence, chunkIndex, chunkCount,
+# payloadBytes) are all None. Those six columns then infer as `null` instead of
+# string/int64, the Parquet schema no longer matches the Delta table, and Fabric's
+# replicator silently refuses the file: the push reports success, the landing-zone
+# file is never consumed, and the change never appears in Fabric.
+#
+# Declaring the schema makes every batch byte-compatible regardless of which rows
+# it happens to contain.
+COSMOS_SCHEMA = pa.schema([
+    ("id", pa.string()),
+    ("docType", pa.string()),
+    ("customerId", pa.string()),
+    ("orderId", pa.string()),
+    ("orderVersion", pa.int64()),
+    ("blockType", pa.string()),
+    ("blockSubType", pa.string()),
+    ("sequence", pa.int64()),
+    ("chunkIndex", pa.int64()),
+    ("chunkCount", pa.int64()),
+    ("payloadBytes", pa.int64()),
+    ("searchJson", pa.string()),
+    ("summaryJson", pa.string()),
+    ("modifiedUtc", pa.string()),
+    ("sourceTs", pa.int64()),
+    ("__rowMarker__", pa.int32()),
+    ("_extractedUtc", pa.timestamp("us")),
+])
+
 
 def onelake_client(workspace_id: str):
     from azure.identity import DefaultAzureCredential
@@ -137,10 +169,20 @@ def record_sequence(watermarks: dict[str, Any], lz: str, table: str, seq: int) -
     seen[key] = max(int(seen.get(key, 0)), int(seq))
 
 
-def upload_parquet(fs, lz: str, table: str, df: pd.DataFrame, seq: int) -> dict[str, Any]:
-    """Write one Parquet file into the landing zone."""
+def upload_parquet(fs, lz: str, table: str, df: pd.DataFrame, seq: int,
+                   schema: pa.Schema | None = None) -> dict[str, Any]:
+    """Write one Parquet file into the landing zone.
+
+    ``schema`` pins the column types. Without it, pyarrow infers them from the
+    batch and an all-None column becomes `null` type, which breaks Delta schema
+    compatibility and makes the replicator ignore the file without reporting an
+    error. See COSMOS_SCHEMA.
+    """
     buf = io.BytesIO()
-    tbl = pa.Table.from_pandas(df, preserve_index=False)
+    if schema is not None:
+        tbl = pa.Table.from_pandas(df, schema=schema, preserve_index=False)
+    else:
+        tbl = pa.Table.from_pandas(df, preserve_index=False)
     pq.write_table(tbl, buf, compression="snappy")
     data = buf.getvalue()
     name = f"{seq:020d}.parquet"
@@ -285,7 +327,8 @@ def push_cosmos(mode: str, lz: str, fs, batch_rows: int) -> dict[str, Any]:
     write_metadata(fs, lz, COSMOS_TABLE, COSMOS_KEYS)
     seq = next_sequence(fs, lz, COSMOS_TABLE, watermarks)
     for i in range(0, len(df), batch_rows):
-        r = upload_parquet(fs, lz, COSMOS_TABLE, _mark(df.iloc[i:i + batch_rows]), seq)
+        r = upload_parquet(fs, lz, COSMOS_TABLE, _mark(df.iloc[i:i + batch_rows]), seq,
+                           schema=COSMOS_SCHEMA)
         r["queryMs"] = round(query_ms, 1)
         r["readRu"] = round(ru, 2)
         r["sequence"] = seq
