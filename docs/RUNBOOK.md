@@ -343,4 +343,5 @@ az vm start -g <rg> -n vm-orderjsonpoc-load
 | Incremental push reports success but nothing appears in Fabric | the replicator deletes consumed files, so a listing-derived sequence resets to 1 and Fabric ignores it | already fixed — the highest sequence is persisted in `artifacts/fabric-push-watermarks.json` |
 | `az vm run-command` returns `Conflict` | only one run-command may execute per VM at a time | wait for the current one; the helper scripts retry |
 | VM shows `VM deallocated` mid-run | external cost governance (cause not identified) | `az vm start`, then re-fetch results; disks are intact |
+| `Unable to complete the action because this Fabric capacity is currently not active` | the capacity was paused (by governance, or by `destroy.sh --KeepFabricCapacity`) | `az fabric capacity resume -g <rg> --capacity-name fabordjsonpoc915d` |
 | Server-side metrics show operations from a previous run | each uvicorn worker has its own in-process metrics ring | set `API_WORKERS=1` when the server-side split is the object of study |

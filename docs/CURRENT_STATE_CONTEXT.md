@@ -120,6 +120,25 @@ Practical consequences, which are reflected in
 - A long chunked fetch can fail part-way through for this reason, so the fetcher
   retries and reports rather than silently truncating.
 
+The **Fabric capacity was paused by the same automation**, which surfaces as a
+clear error rather than a hang:
+
+```
+pyodbc.ProgrammingError: ... Unable to complete the action because this Fabric
+capacity is currently not active. Contact the capacity administrator for help.
+```
+
+Recovery is one command, and it is in [RUNBOOK.md](RUNBOOK.md):
+
+```bash
+az fabric capacity resume -g <rg> --capacity-name fabordjsonpoc915d
+```
+
+This is worth knowing for anyone reproducing the POC in a governed subscription:
+**the Fabric steps will fail with a capacity-not-active error rather than a
+timeout**, and a paused capacity costs nothing, which is why the destroy script
+offers `KEEP_FABRIC_CAPACITY=true` as a cheaper alternative to deletion.
+
 ### 3.4 Fabric capacity
 
 A dedicated **F2** capacity (`fabordjsonpoc915d`) was created for the POC rather
