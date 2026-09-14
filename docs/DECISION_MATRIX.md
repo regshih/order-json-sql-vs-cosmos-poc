@@ -128,7 +128,36 @@ and [`results/cosmos/ceiling-4000ru/`](../results/cosmos/ceiling-4000ru/) at
 4,000. The pair *is* the finding — "Cosmos needs ~10–58k RU/s for this workload"
 is only visible by measuring both sides of the constraint.
 
-### Why a whole-order read costs 1,149 RU
+### An open discrepancy in the RU figures
+
+Two independent measurements of the same operations disagree by ~2.4x, and that
+is stated rather than resolved by picking the convenient one:
+
+| Operation | Single-process, isolated | Sampled from the load sweep |
+| --- | ---: | ---: |
+| `full` | 1,148.70 RU | 477.30 RU |
+| `title` | 339.41 RU | 125.75 RU |
+| `cdf` | 352.12 RU | 132.00 RU |
+| `summary` | 4.28 RU | 7.27 RU |
+| `search` | 8.00 RU | 4.38 RU |
+
+Known differences between the two: the isolated measurement ran **before** the
+container was scaled up (and therefore before Cosmos split it across more
+physical partitions), the sweep values are a **one-worker telemetry sample**
+(§[BENCHMARK_METHOD.md](BENCHMARK_METHOD.md) section 6), and the two sampled
+different sets of orders. None of those fully accounts for a 2.4x gap.
+
+**How this POC handles it:** the cost model uses the **higher (isolated)**
+figures, because understating Cosmos RU would understate Cosmos cost, and
+because that measurement accumulated the charge page by page in a single process
+with nothing else running. The lower figures would make Cosmos cheaper, not more
+expensive, so the conclusion in §8 is the conservative one either way.
+
+**This is listed in §10 as evidence still required**: per-operation RU should be
+re-measured single-process on the final container configuration before any
+procurement decision.
+
+### Why a whole-order read costs ~1,149 RU
 
 Cosmos charges queries roughly per KB returned. A full order is ~1 MB spread
 across ~32 items, so the query is charged for all of it. Measured directly, for
@@ -340,4 +369,9 @@ Stated plainly, because the measurements above do not cover it:
    implementation — the API is unauthenticated inside the VNet.
 7. **Cosmos minimum viable RU/s.** The ceiling was set to 40,000 to establish
    parity, not tuned down to the cheapest configuration that still meets 50 RPS.
+   Note also that scaling up is a **one-way door**: after the split the container
+   could not be returned below a 6,000 RU/s autoscale maximum.
+8. **Per-operation RU must be re-measured single-process on the final container
+   configuration.** Two measurements currently disagree by ~2.4x (see section 3);
+   the cost model deliberately uses the higher one.
 8. **Hyperscale evaluation** as the SQL growth path.
