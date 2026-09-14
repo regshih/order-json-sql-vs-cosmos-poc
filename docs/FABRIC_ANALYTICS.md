@@ -267,17 +267,34 @@ Symptoms, in the order they were observed:
    `404 EntityNotFound` for a `GenericMirror` database, so nothing reports the
    halt.
 
-**It is not self-healing.** Fixing the sequence logic stops recurrence but does not
-restart the table. Recovery is:
+**It is not self-healing, and in-place repair is not sufficient.** Two recovery
+attempts were measured:
 
-```
-stopMirroring -> delete every landing-zone file -> startMirroring
-              -> clear the local sequence + extraction watermark
-              -> full re-seed push
-```
+| Attempt | Result |
+| --- | --- |
+| `stopMirroring` -> delete every landing-zone file -> `startMirroring` -> clear watermarks -> full re-seed | **Partial.** The re-seed (sequence 1) was consumed and the table repopulated to 19,944 rows - but the *next* incremental file (sequence 2) then sat unconsumed for **7.5 minutes** with the Delta row count and `MAX(_extractedUtc)` frozen. Ongoing replication did not resume. |
+| **Delete and recreate the MirroredDatabase item**, then seed | **Full recovery.** Seed consumed and visible on the first poll (19,944 rows). |
 
-which is what [`fabric/repair_open_mirror.py`](../fabric/repair_open_mirror.py)
-does. After the repair the table repopulated to **19,944 rows** on the first poll.
+So the mirrored database retains internal state that survives a landing-zone
+wipe. [`fabric/repair_open_mirror.py`](../fabric/repair_open_mirror.py) implements
+the in-place attempt and is worth trying first because it is non-destructive, but
+**plan on recreating the item** if incremental replication does not resume.
+
+Three practical notes from performing the recreation:
+
+1. **Deletion is asynchronous.** Re-creating with the same `displayName`
+   immediately afterwards returns **409 Conflict**; retry until the old item
+   disappears from the item list.
+2. **`startMirroring` returns 400 on a freshly created item** while it is still
+   provisioning. That is *not* benign - it means mirroring did not start, and the
+   seed will sit unconsumed. Re-issue it after the item settles; it then returns
+   200.
+3. **A recreated mirror is a new item with a new id**, so three-part
+   cross-database references from the Warehouse (`mir_cosmos_orders.dbo.…`) fail
+   with `Invalid object name` until the catalog catches up. Poll the mirrored
+   database **directly** rather than through the Warehouse - otherwise a healthy
+   pipeline looks broken. This produced a false "NOT VISIBLE" verdict before it
+   was spotted.
 
 **The fix in the extractor** is to persist the highest sequence used alongside the
 extraction watermarks, and take `max(on_disk, persisted) + 1` - see
