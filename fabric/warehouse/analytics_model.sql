@@ -27,14 +27,16 @@ CREATE TABLE dbo.DimDate (
     DateKey      int          NOT NULL,
     [Date]       date         NOT NULL,
     [Year]       smallint     NOT NULL,
-    [Quarter]    tinyint      NOT NULL,
-    [Month]      tinyint      NOT NULL,
+    [Quarter]    smallint     NOT NULL,
+    [Month]      smallint     NOT NULL,
     MonthName    varchar(12)  NOT NULL,
-    [Day]        tinyint      NOT NULL,
-    DayOfWeek    tinyint      NOT NULL,
+    [Day]        smallint     NOT NULL,
+    DayOfWeek    smallint     NOT NULL,
     YearMonth    varchar(7)   NOT NULL,
     IsWeekend    bit          NOT NULL
 );
+-- NOTE: Fabric Warehouse does not support tinyint; smallint is the narrowest
+-- integer type available. Verified by a CREATE TABLE failure, not assumed.
 
 DROP TABLE IF EXISTS dbo.DimCustomer;
 CREATE TABLE dbo.DimCustomer (
@@ -49,7 +51,7 @@ CREATE TABLE dbo.DimOrderStatus (
     StatusKey     varchar(40)  NOT NULL,
     StatusName    varchar(40)  NOT NULL,
     IsTerminal    bit          NOT NULL,
-    LifecycleStep tinyint      NULL
+    LifecycleStep smallint     NULL
 );
 
 DROP TABLE IF EXISTS dbo.DimProperty;

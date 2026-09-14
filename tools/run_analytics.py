@@ -65,7 +65,13 @@ def split_named(sql_text: str) -> list[tuple[str, str]]:
 
 
 def split_batches(sql_text: str) -> list[str]:
-    """Split on ';' at statement level, skipping comment-only fragments."""
+    """Split on ';' at statement level.
+
+    Block comments are stripped FIRST: a /* ... */ banner spanning several lines
+    otherwise gets cut in half by the statement splitter and the fragment is
+    sent to the server, which rejects it with "Missing end comment mark".
+    """
+    sql_text = re.sub(r"/\*.*?\*/", "", sql_text, flags=re.DOTALL)
     parts, buf, depth = [], [], 0
     for line in sql_text.splitlines():
         stripped = line.strip()
