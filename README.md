@@ -118,7 +118,7 @@ not in capability.
   arrived byte-intact (max 759,857 chars, **0 rows >= 1 MiB, 0 invalid JSON, 0
   length mismatches**), so the same business-boundary split that satisfies the
   Cosmos item limit also clears Fabric's 1 MB LOB truncation ceiling. Measured
-  freshness: **107 s** end-to-end.
+  freshness: **106.9 s** (SQL) and **64.2 s** (Cosmos) end-to-end.
 - **The contract tests caught two real defects** that only appear when two
   implementations are compared: GUID casing and floating-point money
   aggregation. A third - RU under-reporting by ~42x - was caught by measuring the

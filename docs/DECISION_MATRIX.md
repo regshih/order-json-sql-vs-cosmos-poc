@@ -67,7 +67,7 @@ Legend: **MEASURED** · *MODELLED* · ~ASSUMED~ · (qualitative judgement)
 | **Ingestion / write cost** | 500 orders in 333 s (1.5/s, 12 workers). Header update p50 **6.4 ms** | 500 orders in 140 s (3.6/s) — **2.4x faster**. 1,024 RU per order version | MEASURED |
 | **Full-order reconstruction** | ~34 `json.loads` calls per read; reconstruction is a real, measurable cost | SDK returns parsed objects, so reassembly is a dict merge; the parse cost is paid inside the driver instead | *indicative* - the server-side split is a one-worker sample, see [BENCHMARK_METHOD.md](BENCHMARK_METHOD.md) section 6 |
 | **Analytics integration** | Open Mirroring → Delta. 8 tables, 199 MB Parquet, 104 s for 500 orders | Open Mirroring → Delta. 1 table, 534 KB Parquet, **1.2 s** — 370x less to move | MEASURED |
-| **Data freshness into Fabric** | **107 s** end-to-end (write 81 ms, incremental push 2.8 s, Fabric merge + metadata sync 104 s) | Same mechanism, same order of magnitude | MEASURED |
+| **Data freshness into Fabric** | **106.9 s** end-to-end (write 81 ms, push 2.8 s, Fabric merge + sync 104.0 s) | **64.2 s** end-to-end (write 190 ms, push 1.3 s, Fabric merge + sync 62.7 s) | MEASURED both |
 | **Maintainability** | 10 tables is a schema a team can hold in its head. The design rule is one sentence | No schema to maintain; the risk moves to the *unwritten* contract in `search.*` and the irreversible partition key | (qualitative) |
 
 ---
@@ -331,9 +331,9 @@ Two asides that matter more than they look:
 - The SQL path's `nvarchar(max)` blocks arrived **byte-intact** — max 759,857
   chars, 0 rows ≥ 1 MiB, 0 invalid JSON, 0 length mismatches — because
   business-boundary splitting keeps every block under Fabric's 1 MB LOB ceiling.
-- Freshness is the same order of magnitude for both (**107 s** measured for SQL),
-  and is dominated by the Fabric replicator and extractor cadence, not by the
-  source engine.
+- Freshness is measured for both and is the same order of magnitude - **106.9 s**
+  for SQL, **64.2 s** for Cosmos - dominated in both cases by the Fabric
+  replicator and the extractor's cadence, not by the source engine.
 - Fabric capacity cost is identical either way.
 
 **One Fabric-specific caveat does affect the SQL design**: a table containing a

@@ -302,7 +302,7 @@ Three practical notes from performing the recreation:
    pipeline looks broken. This produced a false "NOT VISIBLE" verdict before it
    was spotted.
 
-### Cause 2: Parquet schema drift between batches - the real culprit
+### Cause 2: Parquet schema drift between batches - the actual culprit
 
 `pyarrow` infers column types from the rows in the batch. An **incremental** push
 usually contains only *header* items, and a header item has `None` in all six
@@ -328,15 +328,34 @@ infer correctly) while every incremental was dropped. It also means the earlier
 needed - pinning the schema was.
 
 **The fix** is to declare the Parquet schema explicitly rather than letting it be
-inferred, in [`push_to_onelake.py`](../ingestion/fabric/push_to_onelake.py):
+inferred, in [`push_to_onelake.py`](../ingestion/fabric/push_to_onelake.py).
+
+But *which* types you pin matters, and getting that wrong reproduces the same
+silent failure. The first attempt pinned the nullable numerics to `int64` and it
+still did not work, because **the Delta table is created from the first push** and
+pandas had already built it with `double` columns. Two rules fell out of it:
+
+| Column class | Pin to | Why |
+| --- | --- | --- |
+| Nullable integers (`sequence`, `chunkIndex`, `chunkCount`, `payloadBytes`) | `float64` | pandas represents a nullable integer column as `float64`; pinning `int64` conflicts with the table the snapshot created |
+| Timestamps (`_extractedUtc`) | `timestamp[us]` | pandas defaults to `datetime64[ns]` -> `timestamp[ns]`; Delta works in microseconds |
+| Nullable strings (`blockType`, `blockSubType`) | `string` | otherwise `null` type on a header-only batch |
 
 ```python
-COSMOS_SCHEMA = pa.schema([... ("blockType", pa.string()), ("sequence", pa.int64()), ...])
+COSMOS_SCHEMA = pa.schema([
+    ..., ("blockType", pa.string()), ("sequence", pa.float64()),
+    ("_extractedUtc", pa.timestamp("us")),
+])
 tbl = pa.Table.from_pandas(df, schema=COSMOS_SCHEMA, preserve_index=False)
 ```
 
-Guarded by a regression test that asserts no column infers as `null` type for a
-header-only batch.
+Guarded by two regression tests: no column may infer as `null` type for a
+header-only batch, and a full snapshot and a header-only incremental must produce
+**byte-identical** schemas through the pinned schema (including through the
+extractor's own `_mark()`).
+
+**After pinning the schema correctly, the incremental landed and freshness was
+measurable for the first time.**
 
 **Generalise this.** Any Open Mirroring or Delta-append pipeline that builds
 Parquet from a dynamically-typed source must pin its schema. Type inference over a

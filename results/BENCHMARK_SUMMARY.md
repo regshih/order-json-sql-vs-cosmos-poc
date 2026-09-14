@@ -1,6 +1,6 @@
 # Benchmark Summary
 
-Generated 2026-09-14T13:20:08.349023+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
+Generated 2026-09-14T16:01:13.972253+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
 machine-readable run files in `results/`. **No figure in this document was
 typed by hand.**
 
@@ -26,6 +26,7 @@ Mix: 50% summary, 20% title, 15% CDF, 10% checklist, 5% full order.
 | cosmos | 10 | 10.0 | 39.9 | 92.7 | 155.6 | 246.8 | 0.00 | 2.24 | 0 |
 | cosmos | 25 | 25.0 | 37.4 | 85.2 | 109.2 | 261.1 | 0.00 | 5.37 | 0 |
 | cosmos ⬅ | 50 | 49.9 | 39.5 | 88.8 | 123.0 | 241.1 | 0.00 | 11.23 | 0 |
+| cosmos ⬅ | 50 | 49.4 | 60.2 | 1,095.5 | 1,689.0 | 3,465.6 | 0.00 | 10.51 | 0 |
 | cosmos | 100 | 99.9 | 45.2 | 98.7 | 136.2 | 282.5 | 0.00 | 22.85 | 0 |
 | cosmos | 200 | 199.3 | 76.1 | 199.1 | 295.5 | 999.5 | 0.00 | 43.86 | 0 |
 | sql | 10 | 10.0 | 9.4 | 48.8 | 152.4 | 478.5 | 0.00 | 2.28 | 0 |
@@ -38,16 +39,20 @@ Mix: 50% summary, 20% title, 15% CDF, 10% checklist, 5% full order.
 
 | Workload | Backend | Achieved RPS | p50 ms | p95 ms | p99 ms | Mean resp bytes | MB/s | RU/req | Errors % |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cdf | cosmos | 30.2 | 12,587.5 | 28,925.7 | 34,214.9 | 448,170 | 12.92 | 79.52 | 0.00 |
 | cdf | cosmos | 49.9 | 68.0 | 107.8 | 167.3 | 471,526 | 22.45 | 99.61 | 0.00 |
 | cdf | sql | 50.0 | 11.3 | 26.9 | 42.2 | 455,884 | 21.73 | — | 0.00 |
+| full | cosmos | 11.7 | 69,069.7 | 135,597.3 | 145,435.4 | 1,373,683 | 15.26 | 89.65 | 0.00 |
 | full | cosmos | 49.9 | 110.4 | 194.3 | 251.3 | 1,464,274 | 69.62 | 236.17 | 0.00 |
 | full | fabric | 50.0 | 144.3 | 224.8 | 292.8 | 1,364,122 | 33.98 | — | 47.73 |
 | full | sql | 50.0 | 37.5 | 110.7 | 169.3 | 1,413,635 | 67.36 | — | 0.00 |
 | search | cosmos | 50.0 | 30.1 | 76.7 | 116.0 | 8,574 | 0.41 | 166.05 | 0.00 |
 | search | sql | 50.0 | 6.9 | 8.7 | 9.9 | 8,878 | 0.42 | — | 0.00 |
+| summary | cosmos | 50.0 | 37.9 | 42.5 | 45.8 | 754 | 0.04 | 5.71 | 0.00 |
 | summary | cosmos | 50.0 | 33.9 | 37.1 | 40.1 | 753 | 0.04 | 47.71 | 0.00 |
 | summary | fabric | 48.2 | 2,965.7 | 3,364.0 | 3,583.9 | 753 | 0.02 | — | 31.29 |
 | summary | sql | 50.0 | 8.2 | 9.8 | 11.4 | 753 | 0.04 | — | 0.00 |
+| title | cosmos | 34.2 | 8,242.7 | 20,996.2 | 25,859.7 | 403,899 | 13.16 | 33.82 | 0.00 |
 | title | cosmos | 50.0 | 56.4 | 77.5 | 105.5 | 440,943 | 21.00 | 56.05 | 0.00 |
 | title | fabric | 49.9 | 70.5 | 125.5 | 200.2 | 406,522 | 19.33 | — | 0.13 |
 | title | sql | 50.0 | 10.9 | 19.2 | 27.2 | 428,796 | 20.44 | — | 0.00 |
@@ -61,6 +66,7 @@ This is the payload-size stress test. At 50 RPS a mean ~1.3 MB response is
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | cosmos | 10 | 9.2 | 99.4 | 3,259.4 | 7,245.1 | 1,426,285 | 12.53 | 0.22 | 1.8 |
 | cosmos | 25 | 25.0 | 101.1 | 164.3 | 221.9 | 1,429,557 | 34.03 | 0.00 | 1.8 |
+| cosmos | 50 | 11.7 | 69,069.7 | 135,597.3 | 145,435.4 | 1,373,683 | 15.26 | 0.00 | 112,367.1 |
 | cosmos | 50 | 49.9 | 110.4 | 194.3 | 251.3 | 1,464,274 | 69.62 | 0.00 | 1.6 |
 | fabric | 10 | 10.0 | 131.1 | 197.4 | 253.1 | 1,352,694 | 12.86 | 0.22 | 2.0 |
 | fabric | 25 | 24.9 | 130.8 | 201.3 | 265.5 | 1,369,915 | 32.45 | 0.36 | 1.6 |
@@ -87,10 +93,15 @@ meaningful, and mixing the two made identical-looking duplicate rows.
 | cosmos | full | 25 | 1.25-2MB | 246 | 106.2 | 139.9 | 187.5 | 1,573,805 |
 | cosmos | full | 25 | 2-4MB | 228 | 122.1 | 165.1 | 190.1 | 2,422,984 |
 | cosmos | full | 25 | >4MB | 32 | 198.2 | 255.4 | 262.7 | 5,089,303 |
+| cosmos | full | 50 | <0.75MB | 433 | 71,062.1 | 132,623.7 | 144,528.1 | 526,613 |
 | cosmos | full | 50 | <0.75MB | 437 | 92.3 | 149.2 | 218.8 | 514,978 |
+| cosmos | full | 50 | 0.75-1.25MB | 950 | 67,470.8 | 137,665.2 | 145,730.2 | 1,108,143 |
 | cosmos | full | 50 | 0.75-1.25MB | 817 | 103.6 | 158.8 | 204.2 | 987,128 |
+| cosmos | full | 50 | 1.25-2MB | 434 | 64,287.0 | 131,891.1 | 139,996.7 | 1,546,619 |
 | cosmos | full | 50 | 1.25-2MB | 458 | 113.1 | 185.7 | 258.0 | 1,573,810 |
+| cosmos | full | 50 | 2-4MB | 390 | 73,678.6 | 136,368.8 | 144,909.1 | 2,369,710 |
 | cosmos | full | 50 | 2-4MB | 457 | 131.8 | 191.7 | 241.3 | 2,472,669 |
+| cosmos | full | 50 | >4MB | 43 | 76,711.3 | 134,446.4 | 146,890.2 | 4,990,860 |
 | cosmos | full | 50 | >4MB | 81 | 207.2 | 266.1 | 349.7 | 5,089,789 |
 | fabric | full | 10 | <0.75MB | 84 | 115.6 | 133.7 | 150.7 | 515,593 |
 | fabric | full | 10 | 0.75-1.25MB | 191 | 128.3 | 136.6 | 162.1 | 986,773 |
@@ -130,10 +141,12 @@ The full set, including the `mix` contributions, is in
 
 | Backend | Workload | DB ms | Reconstruct ms | Serialize ms | Client p50 ms | App CPU % | SQL CPU % | SQL IO % |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cosmos | full | 3,261.78 | 0.05 | 0.32 | 69,069.7 | 0.0 | — | — |
 | cosmos | full | 109.32 | 0.13 | 1.31 | 110.4 | 0.0 | — | — |
 | fabric | full | 474.19 | 3.40 | 0.55 | 144.3 | 0.0 | — | — |
 | sql | full | 0.00 | 0.00 | 0.00 | 37.5 | 1.2 | 28.15 | 8.69 |
 | cosmos | mix | 38.19 | 0.03 | 0.20 | 39.5 | 0.0 | — | — |
+| cosmos | mix | 55.75 | 0.03 | 0.17 | 60.2 | 0.0 | — | — |
 | sql | mix | 4.45 | 2.26 | 0.17 | 9.0 | 0.0 | 7.61 | 13.22 |
 
 **Reconstruction overhead** is the `Reconstruct ms` column: the cost of turning
@@ -152,32 +165,108 @@ pay for decomposing the order, and it is directly comparable between them.
 
 | Operation | Requests | RU/request (mean) | RU p95 (max seen) | DB p50 ms | 429s |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `full` | 3,678 | 583.52 | 1,175.05 | 10,485.0 | 0 |
-| `cdf` | 4,506 | 149.50 | 368.92 | 1,272.0 | 0 |
-| `title` | 7,511 | 127.98 | 356.20 | 850.2 | 0 |
-| `checklist` | 1,763 | 22.00 | 23.12 | 47.5 | 0 |
-| `summary` | 12,811 | 7.28 | 7.76 | 34.9 | 0 |
+| `full` | 4,054 | 552.28 | 1,175.05 | 10,299.3 | 0 |
+| `cdf` | 5,667 | 135.26 | 368.92 | 1,409.9 | 0 |
+| `title` | 8,901 | 119.63 | 356.20 | 967.4 | 0 |
+| `checklist` | 1,887 | 21.73 | 23.12 | 47.4 | 0 |
+| `summary` | 16,252 | 6.94 | 7.76 | 35.2 | 0 |
 | `search` | 628 | 4.34 | 5.30 | 26.8 | 0 |
 
 ## Measured Cosmos RU
 
 | Workload | Target RPS | RU per request | RU/sec at this rate | 429s |
 | --- | ---: | ---: | ---: | ---: |
+| cdf | 50 | 79.52 | 2,404 | 0 |
 | cdf | 50 | 99.61 | 4,974 | 0 |
 | full | 10 | 47.25 | 436 | 0 |
 | full | 25 | 269.15 | 6,718 | 0 |
+| full | 50 | 89.65 | 1,044 | 0 |
 | full | 50 | 236.17 | 11,776 | 0 |
 | mix | 10 | 58.94 | 589 | 0 |
 | mix | 25 | 488.08 | 12,197 | 0 |
 | mix | 50 | 58.88 | 2,939 | 0 |
+| mix | 50 | 46.73 | 2,308 | 0 |
 | mix | 100 | 241.15 | 24,088 | 0 |
 | mix | 200 | 54.98 | 10,959 | 0 |
 | search | 50 | 166.05 | 8,299 | 0 |
+| summary | 50 | 5.71 | 285 | 0 |
 | summary | 50 | 47.71 | 2,384 | 0 |
+| title | 50 | 33.82 | 1,155 | 0 |
 | title | 50 | 56.05 | 2,800 | 0 |
 
 Per-operation RU appears in [COST_ANALYSIS.md](../docs/COST_ANALYSIS.md), which
 prices these measured values against live Azure retail rates.
+
+## Write benchmark
+
+Multiple runs per backend are present. `run` identifies the source file.
+
+| Backend | Run | Shape | Target /s | Achieved /s | p50 ms | p95 ms | p99 ms | RU mean | RU p95 | Rows/items | Failed |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cosmos | `20260914T052002` | cdf | 1 | 1.03 | 64.3 | 66.6 | 78.2 | 20.43 | 22.34 | 1.0 | 0 |
+| cosmos | `20260914T052002` | cdf | 5 | 5.02 | 64.7 | 103.9 | 106.6 | 20.08 | 22.34 | 1.0 | 0 |
+| cosmos | `20260914T052002` | cdf | 10 | 9.99 | 62.2 | 102.0 | 120.8 | 19.94 | 19.87 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 1 | 1.03 | 47.4 | 53.3 | 54.6 | 20.41 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 5 | 5.02 | 47.4 | 51.3 | 56.7 | 20.00 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 10 | 10.02 | 47.1 | 50.4 | 53.5 | 19.97 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 1 | 1.03 | 67.2 | 69.9 | 75.1 | 78.20 | 132.48 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 5 | 5.02 | 66.7 | 74.2 | 88.9 | 64.63 | 132.48 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 10 | 10.01 | 64.7 | 70.8 | 84.4 | 59.62 | 82.39 | 1.0 | 0 |
+| cosmos | `20260914T052002` | version | 1 | 1.02 | 345.1 | 424.8 | 454.6 | 535.09 | 775.63 | 32.0 | 0 |
+| cosmos | `20260914T052002` | version | 5 | 2.62 | 376.6 | 458.4 | 477.5 | 654.26 | 776.17 | 32.0 | 0 |
+| cosmos | `20260914T052002` | version | 10 | 2.61 | 379.8 | 456.1 | 478.2 | 769.40 | 776.86 | 32.0 | 0 |
+| sql | `20260914T033712` | cdf | 1 | 1.03 | — | — | — | — | — | — | 31 |
+| sql | `20260914T033712` | cdf | 5 | 5.03 | — | — | — | — | — | — | 151 |
+| sql | `20260914T033712` | cdf | 10 | 10.02 | — | — | — | — | — | — | 301 |
+| sql | `20260914T033712` | header | 1 | 1.03 | 6.7 | 16.6 | 47.1 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | header | 5 | 5.03 | 6.4 | 8.1 | 9.0 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | header | 10 | 10.03 | 6.4 | 8.8 | 10.6 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | title | 1 | 1.03 | — | — | — | — | — | — | 31 |
+| sql | `20260914T033712` | title | 5 | 5.02 | — | — | — | — | — | — | 151 |
+| sql | `20260914T033712` | title | 10 | 10.03 | — | — | — | — | — | — | 301 |
+| sql | `20260914T033712` | version | 1 | 1.02 | 497.6 | 995.0 | 1,595.4 | — | — | 31.0 | 0 |
+| sql | `20260914T033712` | version | 5 | 2.01 | 488.7 | 1,032.8 | 1,211.9 | — | — | 31.0 | 1 |
+| sql | `20260914T033712` | version | 10 | 2.10 | 494.7 | 736.1 | 1,088.1 | — | — | 31.0 | 2 |
+| sql | `20260914T052741` | cdf | 1 | 1.03 | 31.7 | 41.5 | 54.7 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | cdf | 5 | 5.03 | 32.2 | 41.9 | 46.9 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | cdf | 10 | 10.02 | 31.1 | 43.0 | 46.1 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 1 | 1.03 | 6.8 | 11.1 | 11.4 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 5 | 5.03 | 6.1 | 8.1 | 10.3 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 10 | 10.03 | 6.1 | 9.9 | 13.8 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 1 | 1.03 | 43.3 | 122.5 | 188.5 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 5 | 5.03 | 39.6 | 71.7 | 87.2 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 10 | 10.02 | 34.0 | 61.5 | 80.2 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | version | 1 | 1.02 | 165.1 | 693.0 | 985.6 | — | — | 31.0 | 1 |
+| sql | `20260914T052741` | version | 5 | 2.15 | 492.2 | 708.6 | 1,239.8 | — | — | 31.0 | 1 |
+| sql | `20260914T052741` | version | 10 | 2.15 | 496.2 | 751.3 | 869.0 | — | — | 31.0 | 2 |
+
+Runs containing failures: `sql/writes-20260914T033712.json`, `sql/writes-20260914T052741.json`.
+`results/sql/writes-20260914T033712.json` is the pre-fix run in which
+**every** `title` and `cdf` block update failed with
+`HY104 Invalid precision value (0)` - a raised `conn.maxwrite` forced direct
+binding of long `nvarchar(max)` parameters. It is kept deliberately: the
+post-fix run is the comparable one.
+
+## Bulk ingestion
+
+| Backend | Orders | Failed | Elapsed s | Orders/s | Blocks | Items | Bytes | Chunked | Max item B | Total RU | RU/order |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cosmos | 500 | 0 | 100.4 | 4.98 | 17,026 | 17,526 | 701,327,349 | 0 | 759,857 | 333,448 | 666.9 |
+| cosmos | 500 | 0 | 140.5 | 3.56 | 17,026 | 17,526 | 701,318,634 | 0 | 759,857 | 512,120 | 1,024.2 |
+| cosmos | 5 | 0 | 1.4 | 3.50 | 155 | 160 | 3,990,487 | 0 | 126,093 | 2,333 | 466.5 |
+| sql | 499 | 1 | 190.0 | 2.63 | 16,988 | 16,988 | 699,762,366 | 0 | 759,857 | 0 | 0 |
+| sql | 500 | 0 | 333.3 | 1.50 | 17,026 | 17,026 | 701,318,634 | 0 | 759,857 | 0 | 0 |
+| sql | 5 | 0 | 2.8 | 1.76 | 155 | 155 | 3,990,487 | 0 | 126,093 | 0 | 0 |
+
+## Cosmos negative test — monolithic vs aggregate
+
+| Profile | Monolithic item bytes | Outcome | HTTP | Aggregate items | Largest item bytes | % of limit | Chunked |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| p1_9m | 2,104,375 | rejected | 413 | 39 | 243,766 | 11.6% | 0 |
+| p3m | 3,197,725 | rejected | 413 | 39 | 410,676 | 19.6% | 0 |
+| p5m | 5,089,815 | rejected | 413 | 39 | 743,922 | 35.5% | 0 |
+
+> The monolithic single-item model fails above the documented item-size limit. The semantic aggregate model stores the same orders with the largest item at 35.5% of the limit and no array chunking required. The item-size limit is therefore a constraint on the DOCUMENT MODEL, not a disqualifier for Cosmos DB.
 
 ## Source files
 
@@ -195,9 +284,14 @@ prices these measured values against live Azure retail rates.
 - `results/sql\run-012-full-50rps.json` — sql full @ 50 RPS
 - `results/cosmos\run-012-mix-10rps.json` — cosmos mix @ 10 RPS
 - `results/cosmos\run-013-mix-25rps.json` — cosmos mix @ 25 RPS
+- `results/cosmos\run-013-summary-50rps.json` — cosmos summary @ 50 RPS
 - `results/cosmos\run-014-mix-50rps.json` — cosmos mix @ 50 RPS
+- `results/cosmos\run-014-title-50rps.json` — cosmos title @ 50 RPS
+- `results/cosmos\run-015-cdf-50rps.json` — cosmos cdf @ 50 RPS
 - `results/cosmos\run-015-mix-100rps.json` — cosmos mix @ 100 RPS
 - `results/cosmos\run-016-mix-200rps.json` — cosmos mix @ 200 RPS
+- `results/cosmos\run-016-mix-50rps.json` — cosmos mix @ 50 RPS
+- `results/cosmos\run-017-full-50rps.json` — cosmos full @ 50 RPS
 - `results/cosmos\run-017-summary-50rps.json` — cosmos summary @ 50 RPS
 - `results/cosmos\run-018-title-50rps.json` — cosmos title @ 50 RPS
 - `results/cosmos\run-019-cdf-50rps.json` — cosmos cdf @ 50 RPS
@@ -214,4 +308,7 @@ prices these measured values against live Azure retail rates.
 - `results/fabric\run-007-full-10rps.json` — fabric full @ 10 RPS
 - `results/fabric\run-008-full-25rps.json` — fabric full @ 25 RPS
 - `results/fabric\run-009-full-50rps.json` — fabric full @ 50 RPS
+- `results/sql\writes-20260914T033712.json` — write benchmark
+- `results/cosmos\writes-20260914T052002.json` — write benchmark
+- `results/sql\writes-20260914T052741.json` — write benchmark
 

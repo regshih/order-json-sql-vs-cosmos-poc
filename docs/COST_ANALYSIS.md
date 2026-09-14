@@ -1,6 +1,6 @@
 # Cost Analysis
 
-Generated 2026-09-14T13:57:57.976898+00:00 by [tools/cost_model.py](../tools/cost_model.py).
+Generated 2026-09-14T16:01:14.481747+00:00 by [tools/cost_model.py](../tools/cost_model.py).
 
 ## Pricing basis
 
