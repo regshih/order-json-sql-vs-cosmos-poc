@@ -200,8 +200,72 @@ def price(snapshot: dict[str, Any], key: str) -> float | None:
 # --------------------------------------------------------------------------
 
 
+# Maps the index-impact measurement's operation names onto API endpoint names.
+INDEX_IMPACT_TO_ENDPOINT = {
+    "singlePartitionFullOrder": "full",
+    "tenantScopedSearch": "search",
+}
+BLOCK_TO_ENDPOINT = {"TITLE": "title", "CDF": "cdf", "CHECKLIST": "checklist",
+                     "NOTES": "notes", "PARTIES": "parties"}
+
+
+def load_authoritative_ru(results_dir: Path) -> dict[str, Any]:
+    """Preferred RU source: the single-process, isolated measurement.
+
+    The benchmark API runs 8 uvicorn workers, each with its own in-process
+    metrics ring, so its reported RU is a one-worker sample that can carry
+    residue from a previous run. cosmos/indexing/measure_index_impact.py runs
+    single-process and accumulates the charge page by page, so its numbers are
+    the ones a cost model may rely on.
+    """
+    p = results_dir / "cosmos" / "index-impact.json"
+    if not p.exists():
+        return {}
+    runs = json.loads(p.read_text()).get("runs", [])
+    if not runs:
+        return {}
+    r = runs[-1]
+    ops = r.get("operations", {})
+    lookup = (ops.get("crossPartitionLookup", {}).get("ru", {}) or {}).get("mean", 0.0)
+    point = (ops.get("pointReadWithFullPk", {}).get("ru", {}) or {}).get("mean", 0.0)
+
+    by_op: dict[str, Any] = {}
+    # A summary read is the tenant lookup plus a point read - the API contract
+    # has no tenant in the route. See docs/COSMOS_DESIGN.md.
+    by_op["summary"] = {"mean": round(lookup + point, 3), "p50": round(lookup + point, 3),
+                        "p95": round(lookup + point, 3), "samples": 0,
+                        "composition": "crossPartitionLookup + pointReadWithFullPk"}
+    for key, endpoint in INDEX_IMPACT_TO_ENDPOINT.items():
+        ru = (ops.get(key, {}).get("ru", {}) or {})
+        if ru:
+            extra = lookup if endpoint == "full" else 0.0
+            by_op[endpoint] = {"mean": round(ru.get("mean", 0) + extra, 3),
+                               "p50": round(ru.get("p50", 0) + extra, 3),
+                               "p95": round(ru.get("p95", 0) + extra, 3),
+                               "samples": ru.get("n", 0)}
+    for block, endpoint in BLOCK_TO_ENDPOINT.items():
+        ru = ((ops.get("blockReads", {}) or {}).get(block, {}).get("ru", {}) or {})
+        if ru:
+            by_op[endpoint] = {"mean": round(ru.get("mean", 0) + lookup, 3),
+                               "p50": round(ru.get("p50", 0) + lookup, 3),
+                               "p95": round(ru.get("p95", 0) + lookup, 3),
+                               "samples": ru.get("n", 0)}
+    return {
+        "source": [str(p.relative_to(results_dir))],
+        "label": r.get("label"),
+        "measuredUtc": r.get("measuredUtc"),
+        "method": ("single-process, per-page RU accumulation, tenant-lookup RU "
+                   "added to every endpoint because the API contract carries no "
+                   "tenant in the route"),
+        "byOperation": by_op,
+    }
+
+
 def load_measured_ru(results_dir: Path) -> dict[str, Any]:
-    """Collect measured RU per operation from Cosmos benchmark result files."""
+    """Fallback RU source: the benchmark API's own telemetry.
+
+    INDICATIVE ONLY - see load_authoritative_ru for why.
+    """
     out: dict[str, Any] = {"source": [], "byOperation": {}}
     files = sorted((results_dir / "cosmos").glob("run-*.json")) if (results_dir / "cosmos").exists() else []
     for f in files:
@@ -327,7 +391,15 @@ def main() -> None:
           f"(retrieved {snapshot['retrievedUtc'][:10]}, region {snapshot['armRegionName']})")
 
     results = Path(args.results)
-    ru = load_measured_ru(results)
+    ru = load_authoritative_ru(results)
+    if ru:
+        print(f"RU source: {ru['source'][0]} (single-process, authoritative)")
+    else:
+        ru = load_measured_ru(results)
+        if ru.get("byOperation"):
+            print("RU source: benchmark API telemetry (INDICATIVE - one-worker sample)")
+            ru["caveat"] = ("sampled from one of several uvicorn workers; run "
+                            "cosmos/indexing/measure_index_impact.py for authoritative RU")
     write_ru = load_measured_write_ru(results)
 
     cosmos_rows = []
@@ -457,7 +529,13 @@ def build_md(d: dict[str, Any]) -> str:
         a("> any Cosmos cost figure. This document deliberately shows no estimate.")
         a("")
     else:
-        a(f"Source files: {', '.join(ru['source'])}")
+        a(f"Source: `{', '.join(ru['source'])}`")
+        if ru.get("method"):
+            a("")
+            a(f"Method: {ru['method']}.")
+        if ru.get("caveat"):
+            a("")
+            a(f"> **Caveat:** {ru['caveat']}.")
         a("")
         a("| Operation | RU mean | RU p50 | RU p95 | Requests measured |")
         a("| --- | ---: | ---: | ---: | ---: |")
