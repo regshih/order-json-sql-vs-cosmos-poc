@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -173,6 +174,76 @@ def test_b_aggregate_decomposition_succeeds(repo, profiles, profile: str) -> Non
 
     assert stats.max_item_bytes < COSMOS_HARD_MAX_BYTES
     assert result.items_written > 1
+
+
+@pytest.mark.parametrize("profile", ["p1m", "p1_9m"])
+def test_b2_monolithic_point_read_is_cheaper_in_ru(repo, profiles, profile: str) -> None:
+    """Quantify the RU price of decomposition, for orders that FIT in one item.
+
+    The aggregate model is mandatory above the 2 MB limit, but below it the two
+    models can be compared directly. A point read of one item is charged very
+    differently from a query that returns the same bytes across ~32 items, and
+    the difference decides whether the API should serve whole orders at all.
+    """
+    idx = 810_000 + ["p1m", "p1_9m"].index(profile)
+    doc = build_order(42, idx, profiles[profile], "POCNEG2")
+    env = parse_envelope(doc)
+    source_bytes = compact_bytes(doc)
+
+    mono = {
+        "id": f"{env['orderId']}:MONO2",
+        "docType": "orderMonolithic",
+        "customerId": env["customerId"],
+        "orderId": env["orderId"],
+        "orderVersion": env["orderVersion"],
+        "data": env["objectData"],
+    }
+    mono_bytes = compact_bytes(mono)
+    if mono_bytes > COSMOS_HARD_MAX_BYTES:
+        pytest.skip(f"{profile} is {mono_bytes:,} B - above the item limit, not comparable")
+
+    repo.container.upsert_item(mono)
+    write_ru = float(
+        repo.container.client_connection.last_response_headers.get("x-ms-request-charge", 0))
+
+    # Monolithic: one point read.
+    t0 = time.time()
+    repo.container.read_item(item=mono["id"], partition_key=[env["customerId"], env["orderId"]])
+    mono_read_ms = (time.time() - t0) * 1000
+    mono_read_ru = float(
+        repo.container.client_connection.last_response_headers.get("x-ms-request-charge", 0))
+
+    # Aggregate: the decomposed form, read back the way the API does it.
+    agg = repo.ingest_order(doc)
+    from app.telemetry.metrics import measure
+
+    with measure("cosmos", "negative", "full") as m:
+        back = repo.get_full_order(env["orderId"], m)
+    assert back is not None
+
+    record = {
+        "profile": profile,
+        "sourceBytes": source_bytes,
+        "monolithicItemBytes": mono_bytes,
+        "monolithicWriteRu": round(write_ru, 2),
+        "monolithicPointReadRu": round(mono_read_ru, 2),
+        "monolithicPointReadMs": round(mono_read_ms, 1),
+        "aggregateItems": agg.items_written,
+        "aggregateWriteRu": round(agg.request_charge, 2),
+        "aggregateReadRu": round(m.request_charge, 2),
+        "aggregateReadMs": round(m.total_ms, 1),
+        "readRuRatio": round(m.request_charge / max(mono_read_ru, 0.01), 1),
+        "writeRuRatio": round(agg.request_charge / max(write_ru, 0.01), 1),
+    }
+    _findings.setdefault("monolithicVsAggregateRu", []).append(record)
+    print(f"
+  RU COMPARISON {profile} ({source_bytes:,} B):")
+    print(f"    monolithic point read : {mono_read_ru:>9.1f} RU  {mono_read_ms:>7.1f} ms")
+    print(f"    aggregate full read   : {m.request_charge:>9.1f} RU  {m.total_ms:>7.1f} ms "
+          f"({record['readRuRatio']}x the RU)")
+    print(f"    monolithic write      : {write_ru:>9.1f} RU")
+    print(f"    aggregate write       : {agg.request_charge:>9.1f} RU "
+          f"({record['writeRuRatio']}x the RU)")
 
 
 def test_c_conclusion_is_recorded() -> None:
