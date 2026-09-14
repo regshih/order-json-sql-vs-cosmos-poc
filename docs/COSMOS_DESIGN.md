@@ -191,6 +191,24 @@ items (500-order run). Per-operation read RU is in
 [BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) and priced in
 [COST_ANALYSIS.md](COST_ANALYSIS.md).
 
+### Scaling up raises the floor permanently
+
+Worth knowing before provisioning for a burst. After the container was scaled to
+40,000 RU/s (which triggered physical partition splits), it **could not be
+returned to its original 4,000 RU/s ceiling**:
+
+```
+The offer should have valid throughput values between 6000 and 100000 ...
+Requested throughput 4000 is less than required minimum throughput 6000.
+Minimum limit 6000 is because of Highest RUs provisioned 60000.
+```
+
+The minimum autoscale maximum is a function of the highest throughput ever
+provisioned, because the partition count it created does not shrink. Autoscale
+bills a floor of 10% of the maximum, so **a temporary scale-up permanently raises
+the idle bill** - here from 400 to 600 RU/s. Small in absolute terms, but it is a
+one-way door and it belongs in any capacity plan.
+
 ---
 
 ## 5. The lookup tax
@@ -230,7 +248,7 @@ evaluating a production design.
 | Setting | Value | Why |
 | --- | --- | --- |
 | Consistency | **Session** | The documented default; correct for a read-your-writes operational API. Strong would raise read RU and constrain multi-region without buying anything here. |
-| Throughput | **Autoscale, 4000 RU/s max** | Autoscale costs 1.5× provisioned per RU but absorbs the burstiness of a mixed read workload without manual resizing. [COST_ANALYSIS.md](COST_ANALYSIS.md) prices both. |
+| Throughput | **Autoscale.** 4,000 RU/s max initially; raised to 40,000 to reach parity on payload-heavy reads | Autoscale costs 1.5x provisioned per RU but absorbs burstiness without manual resizing. The required ceiling is a *measured* quantity - see [DECISION_MATRIX.md](DECISION_MATRIX.md) section 3. [COST_ANALYSIS.md](COST_ANALYSIS.md) prices both modes. |
 | Regions | Single (westus3) | Multi-region is a separate decision; adding it changes RU cost and consistency trade-offs. |
 | Auth | **Entra data-plane RBAC** (Cosmos DB Built-in Data Contributor) | The application never sees an account key. |
 | Backup | Continuous 7-day PITR | POC-appropriate. |
