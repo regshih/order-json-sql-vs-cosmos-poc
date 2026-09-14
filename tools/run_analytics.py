@@ -92,6 +92,46 @@ def split_batches(sql_text: str) -> list[str]:
     return parts
 
 
+def populate_dim_date(conn: pyodbc.Connection, start: str = "2024-01-01",
+                      days: int = 1461) -> dict[str, Any]:
+    """Fill DimDate from the client.
+
+    Fabric Warehouse has no supported set-based row generator (`sys.all_objects`
+    is rejected in distributed processing mode), so the calendar is built here
+    and inserted in batches.
+    """
+    from datetime import date, timedelta
+
+    d0 = date.fromisoformat(start)
+    rows = []
+    for i in range(days):
+        d = d0 + timedelta(days=i)
+        rows.append((
+            d.year * 10000 + d.month * 100 + d.day, d, d.year,
+            (d.month - 1) // 3 + 1, d.month, d.strftime("%B"), d.day,
+            d.isoweekday() % 7 + 1, f"{d.year}-{d.month:02d}",
+            1 if d.isoweekday() >= 6 else 0,
+        ))
+    cur = conn.cursor()
+    cur.execute("DELETE FROM dbo.DimDate")
+    t0 = time.perf_counter()
+    batch = 200
+    for i in range(0, len(rows), batch):
+        chunk = rows[i:i + batch]
+        values = ",".join(
+            "(" + ",".join([
+                str(r[0]), f"'{r[1].isoformat()}'", str(r[2]), str(r[3]), str(r[4]),
+                f"'{r[5]}'", str(r[6]), str(r[7]), f"'{r[8]}'", str(r[9]),
+            ]) + ")" for r in chunk
+        )
+        cur.execute(f"INSERT INTO dbo.DimDate VALUES {values}")
+    ms = (time.perf_counter() - t0) * 1000
+    n = cur.execute("SELECT COUNT(*) FROM dbo.DimDate").fetchval()
+    print(f"  [--] DimDate populated client-side: {n:,} rows in {ms:,.0f} ms")
+    return {"statement": "populate DimDate (client-side)", "ms": round(ms, 1),
+            "rows": n, "ok": n == days}
+
+
 def build_model(conn: pyodbc.Connection, path: Path) -> list[dict[str, Any]]:
     results = []
     cur = conn.cursor()
@@ -259,6 +299,7 @@ def main() -> None:
         print("\nbuilding analytics model ...")
         conn = fabric_conn(endpoint, database)
         report["build"] = build_model(conn, Path("fabric/warehouse/analytics_model.sql"))
+        report["build"].append(populate_dim_date(conn))
         conn.close()
 
     if args.query:

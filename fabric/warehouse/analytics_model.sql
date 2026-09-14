@@ -143,20 +143,11 @@ CREATE TABLE dbo.FactOrderCharge (
    LOADS
    --------------------------------------------------------------------- */
 
--- DimDate: generated, not sourced.
-WITH n AS (
-    SELECT TOP (1461) ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1 AS i
-    FROM sys.all_objects a CROSS JOIN sys.all_objects b
-),
-d AS (SELECT DATEADD(day, i, CAST('2024-01-01' AS date)) AS dt FROM n)
-INSERT INTO dbo.DimDate
-SELECT
-    YEAR(dt) * 10000 + MONTH(dt) * 100 + DAY(dt),
-    dt, YEAR(dt), DATEPART(quarter, dt), MONTH(dt), DATENAME(month, dt),
-    DAY(dt), DATEPART(weekday, dt),
-    CONCAT(YEAR(dt), '-', RIGHT(CONCAT('0', MONTH(dt)), 2)),
-    CASE WHEN DATEPART(weekday, dt) IN (1, 7) THEN 1 ELSE 0 END
-FROM d;
+-- DimDate is populated by tools/run_analytics.py, not here.
+-- Fabric Warehouse rejects `sys.all_objects` with "The query references an
+-- object that is not supported in distributed processing mode" and offers no
+-- recursive-CTE row generator, so the calendar is generated client-side and
+-- inserted as explicit rows. Verified by a failing statement, not assumed.
 
 INSERT INTO dbo.DimOrderStatus (StatusKey, StatusName, IsTerminal, LifecycleStep)
 VALUES ('Open', 'Open', 0, 1),
