@@ -92,9 +92,12 @@ class ConnectionPool:
     def _new(self) -> pyodbc.Connection:
         attrs = {SQL_COPT_SS_ACCESS_TOKEN: _tokens.get()} if self.use_token else None
         conn = pyodbc.connect(self.conn_str, attrs_before=attrs, autocommit=True)
-        # Large LOB reads: let pyodbc stream rather than buffering in 1 KB steps.
         conn.setdecoding(pyodbc.SQL_WCHAR, encoding="utf-16le")
-        conn.maxwrite = 1024 * 1024 * 8
+        # NOTE: do NOT raise conn.maxwrite here. Doing so makes pyodbc bind long
+        # nvarchar(max) parameters directly instead of using data-at-execution,
+        # and the driver then rejects them with
+        #   HY104 "Invalid precision value (0)".
+        # The default lets pyodbc stream long values correctly.
         return conn
 
     def acquire(self, timeout: float = 30.0) -> pyodbc.Connection:
@@ -591,6 +594,10 @@ class SqlOrderRepository(OrderRepository):
         t0 = time.perf_counter()
         b = Block(block_type, block_sub_type, sequence, payload)
         with self._cursor() as cur:
+            # JsonPayload is nvarchar(max). Declaring it explicitly as an
+            # unbounded wide string stops the driver inferring a precision it
+            # cannot represent for values over 4000 characters.
+            cur.setinputsizes([(pyodbc.SQL_WVARCHAR, 0, 0)])
             cur.execute(
                 """
                 UPDATE ord.OrderJsonBlocks
