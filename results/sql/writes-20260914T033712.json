@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "runUtc": "2026-09-14T03:37:12.356269+00:00",
+    "backend": "sql",
+    "durationSecPerRun": 30.0,
+    "shapes": [
+      "header",
+      "title",
+      "cdf",
+      "version"
+    ],
+    "rates": [
+      1.0,
+      5.0,
+      10.0
+    ],
+    "seed": 11,
+    "orderPoolSize": 200
+  },
+  "runs": [
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.01,
+      "achievedWritesPerSec": 1.03,
+      "latencyMs": {
+        "p50": 6.65,
+        "p95": 16.57,
+        "p99": 47.15,
+        "max": 58.89,
+        "mean": 9.2
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 31,
+        "mean": 1.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 151,
+      "failed": 0,
+      "elapsedSec": 30.01,
+      "achievedWritesPerSec": 5.03,
+      "latencyMs": {
+        "p50": 6.43,
+        "p95": 8.05,
+        "p99": 9.0,
+        "max": 9.69,
+        "mean": 6.61
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 151,
+        "mean": 1.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 301,
+      "succeeded": 301,
+      "failed": 0,
+      "elapsedSec": 30.01,
+      "achievedWritesPerSec": 10.03,
+      "latencyMs": {
+        "p50": 6.4,
+        "p95": 8.75,
+        "p99": 10.58,
+        "max": 11.65,
+        "mean": 6.64
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 301,
+        "mean": 1.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 0,
+      "failed": 31,
+      "elapsedSec": 30.1,
+      "achievedWritesPerSec": 1.03,
+      "errorKinds": {
+        "Error": 31
+      },
+      "shape": "title",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 0,
+      "failed": 151,
+      "elapsedSec": 30.09,
+      "achievedWritesPerSec": 5.02,
+      "errorKinds": {
+        "Error": 151
+      },
+      "shape": "title",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 301,
+      "succeeded": 0,
+      "failed": 301,
+      "elapsedSec": 30.02,
+      "achievedWritesPerSec": 10.03,
+      "errorKinds": {
+        "Error": 301
+      },
+      "shape": "title",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 0,
+      "failed": 31,
+      "elapsedSec": 30.11,
+      "achievedWritesPerSec": 1.03,
+      "errorKinds": {
+        "Error": 31
+      },
+      "shape": "cdf",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 0,
+      "failed": 151,
+      "elapsedSec": 30.03,
+      "achievedWritesPerSec": 5.03,
+      "errorKinds": {
+        "Error": 151
+      },
+      "shape": "cdf",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 301,
+      "succeeded": 0,
+      "failed": 301,
+      "elapsedSec": 30.04,
+      "achievedWritesPerSec": 10.02,
+      "errorKinds": {
+        "Error": 301
+      },
+      "shape": "cdf",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.51,
+      "achievedWritesPerSec": 1.02,
+      "latencyMs": {
+        "p50": 497.59,
+        "p95": 994.98,
+        "p99": 1595.37,
+        "max": 1816.65,
+        "mean": 548.25
+      },
+      "bytesWritten": 30614272,
+      "rowsOrItemsAffected": {
+        "total": 961,
+        "mean": 31.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "version",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 61,
+      "succeeded": 60,
+      "failed": 1,
+      "elapsedSec": 30.36,
+      "achievedWritesPerSec": 2.01,
+      "latencyMs": {
+        "p50": 488.66,
+        "p95": 1032.78,
+        "p99": 1211.87,
+        "max": 1260.82,
+        "mean": 490.31
+      },
+      "bytesWritten": 59224663,
+      "rowsOrItemsAffected": {
+        "total": 1860,
+        "mean": 31.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {
+        "IntegrityError": 1
+      },
+      "shape": "version",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 63,
+      "succeeded": 61,
+      "failed": 2,
+      "elapsedSec": 30.03,
+      "achievedWritesPerSec": 2.1,
+      "latencyMs": {
+        "p50": 494.72,
+        "p95": 736.13,
+        "p99": 1088.13,
+        "max": 1273.58,
+        "mean": 470.47
+      },
+      "bytesWritten": 60214517,
+      "rowsOrItemsAffected": {
+        "total": 1891,
+        "mean": 31.0
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {
+        "IntegrityError": 2
+      },
+      "shape": "version",
+      "targetWritesPerSec": 10.0
+    }
+  ]
+}

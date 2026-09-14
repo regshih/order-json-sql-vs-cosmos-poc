@@ -1,0 +1,118 @@
+{
+  "generatedUtc": "2026-09-14T04:37:45.713550+00:00",
+  "cosmosHardMaxBytes": 2097152,
+  "monolithic": [
+    {
+      "profile": "p1_9m",
+      "itemBytes": 2104375,
+      "itemMiB": 2.007,
+      "overHardMax": true,
+      "errorType": "CosmosHttpResponseError",
+      "statusCode": 413,
+      "subStatus": null,
+      "message": "(RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 803d76d8-f49c-4848-bfe7-6c287066adc2, Request URI: /apps/da8c0ec5-a693-4def-a959-e8001c6c92b9/services/699f1796-67c9-41f8-9c1a-d5dbb4a3c92b/partitions/23c6de3a-2a4e-4648-b903-c90dbf70389e/replicas/134337479099225719p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: RequestEntityTooLarge\nMessa",
+      "outcome": "rejected"
+    },
+    {
+      "profile": "p3m",
+      "itemBytes": 3197725,
+      "itemMiB": 3.05,
+      "overHardMax": true,
+      "errorType": "CosmosHttpResponseError",
+      "statusCode": 413,
+      "subStatus": null,
+      "message": "(RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 4c793b15-a361-4377-bac4-b2955888d8ee, Request URI: /apps/da8c0ec5-a693-4def-a959-e8001c6c92b9/services/699f1796-67c9-41f8-9c1a-d5dbb4a3c92b/partitions/23c6de3a-2a4e-4648-b903-c90dbf70389e/replicas/134337479099225719p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: RequestEntityTooLarge\nMessa",
+      "outcome": "rejected"
+    },
+    {
+      "profile": "p5m",
+      "itemBytes": 5089815,
+      "itemMiB": 4.854,
+      "overHardMax": true,
+      "errorType": "CosmosHttpResponseError",
+      "statusCode": 413,
+      "subStatus": null,
+      "message": "(RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: d5ea7cce-9811-4290-8577-9e9723314fd9, Request URI: /apps/da8c0ec5-a693-4def-a959-e8001c6c92b9/services/699f1796-67c9-41f8-9c1a-d5dbb4a3c92b/partitions/23c6de3a-2a4e-4648-b903-c90dbf70389e/replicas/134337479099225719p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: RequestEntityTooLarge\nMessa",
+      "outcome": "rejected"
+    }
+  ],
+  "aggregate": [
+    {
+      "profile": "p1_9m",
+      "sourceBytes": 2104502,
+      "sourceMiB": 2.007,
+      "logicalBlocks": 38,
+      "itemsWritten": 39,
+      "blocksChunked": 0,
+      "maxItemBytes": 243766,
+      "maxItemMiB": 0.232,
+      "maxItemPctOfLimit": 11.6,
+      "writeRu": 890.29,
+      "writeMs": 500.1,
+      "readRu": 1177.19,
+      "readMs": 220.2,
+      "roundTripLossless": true,
+      "outcome": "succeeded"
+    },
+    {
+      "profile": "p3m",
+      "sourceBytes": 3197852,
+      "sourceMiB": 3.05,
+      "logicalBlocks": 38,
+      "itemsWritten": 39,
+      "blocksChunked": 0,
+      "maxItemBytes": 410676,
+      "maxItemMiB": 0.392,
+      "maxItemPctOfLimit": 19.6,
+      "writeRu": 1209.14,
+      "writeMs": 584.6,
+      "readRu": 1195.4,
+      "readMs": 214.8,
+      "roundTripLossless": true,
+      "outcome": "succeeded"
+    },
+    {
+      "profile": "p5m",
+      "sourceBytes": 5089942,
+      "sourceMiB": 4.854,
+      "logicalBlocks": 38,
+      "itemsWritten": 39,
+      "blocksChunked": 0,
+      "maxItemBytes": 743922,
+      "maxItemMiB": 0.709,
+      "maxItemPctOfLimit": 35.5,
+      "writeRu": 1889.61,
+      "writeMs": 586.1,
+      "readRu": 1228.52,
+      "readMs": 266.9,
+      "roundTripLossless": true,
+      "outcome": "succeeded"
+    }
+  ],
+  "monolithicVsAggregateRu": [
+    {
+      "profile": "p1m",
+      "sourceBytes": 986280,
+      "monolithicItemBytes": 986150,
+      "monolithicWriteRu": 627.67,
+      "monolithicPointReadRu": 145.9,
+      "monolithicPointReadMs": 20.1,
+      "aggregateItems": 32,
+      "aggregateWriteRu": 506.83,
+      "aggregateReadRu": 1187.5,
+      "aggregateReadMs": 183.4,
+      "readRuRatio": 8.1,
+      "writeRuRatio": 0.8
+    }
+  ],
+  "conclusion": {
+    "monolithicRejected": 3,
+    "monolithicAccepted": 0,
+    "monolithicRejectionThresholdBytes": 2097152,
+    "aggregateAllSucceeded": true,
+    "largestAggregateItemBytes": 743922,
+    "largestAggregateItemPctOfLimit": 35.5,
+    "anyChunkingRequired": false,
+    "statement": "The monolithic single-item model fails above the documented item-size limit. The semantic aggregate model stores the same orders with the largest item at 35.5% of the limit and no array chunking required. The item-size limit is therefore a constraint on the DOCUMENT MODEL, not a disqualifier for Cosmos DB."
+  }
+}

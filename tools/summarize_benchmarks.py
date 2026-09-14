@@ -129,12 +129,20 @@ def load_write_runs(results: Path) -> list[dict[str, Any]]:
 
 
 def load_ingestion(results: Path) -> list[dict[str, Any]]:
+    """Read ingestion run summaries.
+
+    Full run files embed a per-order array (~220 KB each), so only the summary
+    object is retained in the repository. Both layouts are accepted.
+    """
     d = results / "ingestion"
     out = []
     if not d.exists():
         return out
-    for f in sorted(d.glob("ingest-*.json")):
-        s = json.loads(f.read_text())["summary"]
+    files = sorted((d / "summaries").glob("*.summary.json")) if (d / "summaries").exists() else []
+    files += sorted(d.glob("ingest-*.json"))
+    for f in files:
+        doc = json.loads(f.read_text())
+        s = doc.get("summary", doc)
         out.append({"file": f.name, **{k: s.get(k) for k in (
             "backend", "ordersAttempted", "ordersSucceeded", "ordersFailed", "elapsedSec",
             "ordersPerSec", "blocksWritten", "itemsWritten", "bytesWritten", "sourceBytes",
@@ -346,14 +354,34 @@ def build_md(reads: list[dict[str, Any]], writes: list[dict[str, Any]],
     if writes:
         a("## Write benchmark")
         a("")
-        a("| Backend | Shape | Target /s | Achieved /s | p50 ms | p95 ms | p99 ms | RU mean | RU p95 | Rows/items | Failed |")
-        a("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
-        for r in sorted(writes, key=lambda x: (x["shape"] or "", x["backend"], x["targetWritesPerSec"] or 0)):
-            a(f"| {r['backend']} | {r['shape']} | {fmt(r['targetWritesPerSec'],0)} | "
+        # More than one run per backend may be present. Identify each by its
+        # source file so pre- and post-fix runs are never confused: the first
+        # SQL run captured a real defect (all block updates failing on an
+        # nvarchar(max) binding error) and is retained as evidence.
+        run_ids = sorted({r["file"] for r in writes})
+        if len(run_ids) > len({r["backend"] for r in writes}):
+            a("Multiple runs per backend are present. `run` identifies the source file.")
+            a("")
+        a("| Backend | Run | Shape | Target /s | Achieved /s | p50 ms | p95 ms | p99 ms | RU mean | RU p95 | Rows/items | Failed |")
+        a("| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+        for r in sorted(writes, key=lambda x: (x["backend"], x["file"], x["shape"] or "",
+                                               x["targetWritesPerSec"] or 0)):
+            run = r["file"].split("writes-")[-1].replace(".json", "")
+            a(f"| {r['backend']} | `{run}` | {r['shape']} | {fmt(r['targetWritesPerSec'],0)} | "
               f"{fmt(r['achievedWritesPerSec'],2)} | {fmt(r['p50Ms'])} | {fmt(r['p95Ms'])} | "
               f"{fmt(r['p99Ms'])} | {fmt(r['ruMean'],2)} | {fmt(r['ruP95'],2)} | "
               f"{fmt(r['rowsOrItems'],1)} | {fmt(r['failed'],0)} |")
         a("")
+        failed_runs = {r["file"] for r in writes if (r["failed"] or 0) > 0}
+        if failed_runs:
+            a("Runs containing failures: "
+              + ", ".join(f"`{f.replace(chr(92), '/')}`" for f in sorted(failed_runs)) + ".")
+            a("`results/sql/writes-20260914T033712.json` is the pre-fix run in which")
+            a("**every** `title` and `cdf` block update failed with")
+            a("`HY104 Invalid precision value (0)` - a raised `conn.maxwrite` forced direct")
+            a("binding of long `nvarchar(max)` parameters. It is kept deliberately: the")
+            a("post-fix run is the comparable one.")
+            a("")
 
     # ---------------- ingestion ----------------
     if ingestion:

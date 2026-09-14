@@ -1,6 +1,6 @@
 # Benchmark Summary
 
-Generated 2026-09-14T13:20:08.349023+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
+Generated 2026-09-14T13:58:44.291219+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
 machine-readable run files in `results/`. **No figure in this document was
 typed by hand.**
 
@@ -179,6 +179,77 @@ pay for decomposing the order, and it is directly comparable between them.
 Per-operation RU appears in [COST_ANALYSIS.md](../docs/COST_ANALYSIS.md), which
 prices these measured values against live Azure retail rates.
 
+## Write benchmark
+
+Multiple runs per backend are present. `run` identifies the source file.
+
+| Backend | Run | Shape | Target /s | Achieved /s | p50 ms | p95 ms | p99 ms | RU mean | RU p95 | Rows/items | Failed |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cosmos | `20260914T052002` | cdf | 1 | 1.03 | 64.3 | 66.6 | 78.2 | 20.43 | 22.34 | 1.0 | 0 |
+| cosmos | `20260914T052002` | cdf | 5 | 5.02 | 64.7 | 103.9 | 106.6 | 20.08 | 22.34 | 1.0 | 0 |
+| cosmos | `20260914T052002` | cdf | 10 | 9.99 | 62.2 | 102.0 | 120.8 | 19.94 | 19.87 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 1 | 1.03 | 47.4 | 53.3 | 54.6 | 20.41 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 5 | 5.02 | 47.4 | 51.3 | 56.7 | 20.00 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | header | 10 | 10.02 | 47.1 | 50.4 | 53.5 | 19.97 | 20.68 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 1 | 1.03 | 67.2 | 69.9 | 75.1 | 78.20 | 132.48 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 5 | 5.02 | 66.7 | 74.2 | 88.9 | 64.63 | 132.48 | 1.0 | 0 |
+| cosmos | `20260914T052002` | title | 10 | 10.01 | 64.7 | 70.8 | 84.4 | 59.62 | 82.39 | 1.0 | 0 |
+| cosmos | `20260914T052002` | version | 1 | 1.02 | 345.1 | 424.8 | 454.6 | 535.09 | 775.63 | 32.0 | 0 |
+| cosmos | `20260914T052002` | version | 5 | 2.62 | 376.6 | 458.4 | 477.5 | 654.26 | 776.17 | 32.0 | 0 |
+| cosmos | `20260914T052002` | version | 10 | 2.61 | 379.8 | 456.1 | 478.2 | 769.40 | 776.86 | 32.0 | 0 |
+| sql | `20260914T033712` | cdf | 1 | 1.03 | — | — | — | — | — | — | 31 |
+| sql | `20260914T033712` | cdf | 5 | 5.03 | — | — | — | — | — | — | 151 |
+| sql | `20260914T033712` | cdf | 10 | 10.02 | — | — | — | — | — | — | 301 |
+| sql | `20260914T033712` | header | 1 | 1.03 | 6.7 | 16.6 | 47.1 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | header | 5 | 5.03 | 6.4 | 8.1 | 9.0 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | header | 10 | 10.03 | 6.4 | 8.8 | 10.6 | — | — | 1.0 | 0 |
+| sql | `20260914T033712` | title | 1 | 1.03 | — | — | — | — | — | — | 31 |
+| sql | `20260914T033712` | title | 5 | 5.02 | — | — | — | — | — | — | 151 |
+| sql | `20260914T033712` | title | 10 | 10.03 | — | — | — | — | — | — | 301 |
+| sql | `20260914T033712` | version | 1 | 1.02 | 497.6 | 995.0 | 1,595.4 | — | — | 31.0 | 0 |
+| sql | `20260914T033712` | version | 5 | 2.01 | 488.7 | 1,032.8 | 1,211.9 | — | — | 31.0 | 1 |
+| sql | `20260914T033712` | version | 10 | 2.10 | 494.7 | 736.1 | 1,088.1 | — | — | 31.0 | 2 |
+| sql | `20260914T052741` | cdf | 1 | 1.03 | 31.7 | 41.5 | 54.7 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | cdf | 5 | 5.03 | 32.2 | 41.9 | 46.9 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | cdf | 10 | 10.02 | 31.1 | 43.0 | 46.1 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 1 | 1.03 | 6.8 | 11.1 | 11.4 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 5 | 5.03 | 6.1 | 8.1 | 10.3 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | header | 10 | 10.03 | 6.1 | 9.9 | 13.8 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 1 | 1.03 | 43.3 | 122.5 | 188.5 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 5 | 5.03 | 39.6 | 71.7 | 87.2 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | title | 10 | 10.02 | 34.0 | 61.5 | 80.2 | — | — | 1.0 | 0 |
+| sql | `20260914T052741` | version | 1 | 1.02 | 165.1 | 693.0 | 985.6 | — | — | 31.0 | 1 |
+| sql | `20260914T052741` | version | 5 | 2.15 | 492.2 | 708.6 | 1,239.8 | — | — | 31.0 | 1 |
+| sql | `20260914T052741` | version | 10 | 2.15 | 496.2 | 751.3 | 869.0 | — | — | 31.0 | 2 |
+
+Runs containing failures: `sql/writes-20260914T033712.json`, `sql/writes-20260914T052741.json`.
+`results/sql/writes-20260914T033712.json` is the pre-fix run in which
+**every** `title` and `cdf` block update failed with
+`HY104 Invalid precision value (0)` - a raised `conn.maxwrite` forced direct
+binding of long `nvarchar(max)` parameters. It is kept deliberately: the
+post-fix run is the comparable one.
+
+## Bulk ingestion
+
+| Backend | Orders | Failed | Elapsed s | Orders/s | Blocks | Items | Bytes | Chunked | Max item B | Total RU | RU/order |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| cosmos | 500 | 0 | 100.4 | 4.98 | 17,026 | 17,526 | 701,327,349 | 0 | 759,857 | 333,448 | 666.9 |
+| cosmos | 500 | 0 | 140.5 | 3.56 | 17,026 | 17,526 | 701,318,634 | 0 | 759,857 | 512,120 | 1,024.2 |
+| cosmos | 5 | 0 | 1.4 | 3.50 | 155 | 160 | 3,990,487 | 0 | 126,093 | 2,333 | 466.5 |
+| sql | 499 | 1 | 190.0 | 2.63 | 16,988 | 16,988 | 699,762,366 | 0 | 759,857 | 0 | 0 |
+| sql | 500 | 0 | 333.3 | 1.50 | 17,026 | 17,026 | 701,318,634 | 0 | 759,857 | 0 | 0 |
+| sql | 5 | 0 | 2.8 | 1.76 | 155 | 155 | 3,990,487 | 0 | 126,093 | 0 | 0 |
+
+## Cosmos negative test — monolithic vs aggregate
+
+| Profile | Monolithic item bytes | Outcome | HTTP | Aggregate items | Largest item bytes | % of limit | Chunked |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| p1_9m | 2,104,375 | rejected | 413 | 39 | 243,766 | 11.6% | 0 |
+| p3m | 3,197,725 | rejected | 413 | 39 | 410,676 | 19.6% | 0 |
+| p5m | 5,089,815 | rejected | 413 | 39 | 743,922 | 35.5% | 0 |
+
+> The monolithic single-item model fails above the documented item-size limit. The semantic aggregate model stores the same orders with the largest item at 35.5% of the limit and no array chunking required. The item-size limit is therefore a constraint on the DOCUMENT MODEL, not a disqualifier for Cosmos DB.
+
 ## Source files
 
 - `results/sql\run-001-mix-10rps.json` — sql mix @ 10 RPS
@@ -214,4 +285,7 @@ prices these measured values against live Azure retail rates.
 - `results/fabric\run-007-full-10rps.json` — fabric full @ 10 RPS
 - `results/fabric\run-008-full-25rps.json` — fabric full @ 25 RPS
 - `results/fabric\run-009-full-50rps.json` — fabric full @ 50 RPS
+- `results/cosmos\writes-20260914T052002.json` — write benchmark
+- `results/sql\writes-20260914T033712.json` — write benchmark
+- `results/sql\writes-20260914T052741.json` — write benchmark
 

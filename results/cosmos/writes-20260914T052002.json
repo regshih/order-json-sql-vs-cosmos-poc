@@ -1,0 +1,418 @@
+{
+  "meta": {
+    "runUtc": "2026-09-14T05:20:02.613123+00:00",
+    "backend": "cosmos",
+    "durationSecPerRun": 30.0,
+    "shapes": [
+      "header",
+      "title",
+      "cdf",
+      "version"
+    ],
+    "rates": [
+      1.0,
+      5.0,
+      10.0
+    ],
+    "seed": 11,
+    "orderPoolSize": 200
+  },
+  "runs": [
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.05,
+      "achievedWritesPerSec": 1.03,
+      "latencyMs": {
+        "p50": 47.38,
+        "p95": 53.34,
+        "p99": 54.59,
+        "max": 54.81,
+        "mean": 48.33
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 31,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 20.68,
+        "p95": 20.68,
+        "p99": 20.68,
+        "mean": 20.406,
+        "max": 20.68,
+        "total": 632.58,
+        "ruPerSecond": 21.05
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 151,
+      "failed": 0,
+      "elapsedSec": 30.05,
+      "achievedWritesPerSec": 5.02,
+      "latencyMs": {
+        "p50": 47.35,
+        "p95": 51.29,
+        "p99": 56.69,
+        "max": 67.03,
+        "mean": 47.78
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 151,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 20.68,
+        "p95": 20.68,
+        "p99": 20.68,
+        "mean": 20.004,
+        "max": 20.68,
+        "total": 3020.59,
+        "ruPerSecond": 100.51
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 301,
+      "succeeded": 301,
+      "failed": 0,
+      "elapsedSec": 30.05,
+      "achievedWritesPerSec": 10.02,
+      "latencyMs": {
+        "p50": 47.06,
+        "p95": 50.4,
+        "p99": 53.53,
+        "max": 123.94,
+        "mean": 47.51
+      },
+      "bytesWritten": 0,
+      "rowsOrItemsAffected": {
+        "total": 301,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 20.68,
+        "p95": 20.68,
+        "p99": 20.68,
+        "mean": 19.97,
+        "max": 20.68,
+        "total": 6010.82,
+        "ruPerSecond": 200.03
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "header",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.07,
+      "achievedWritesPerSec": 1.03,
+      "latencyMs": {
+        "p50": 67.18,
+        "p95": 69.89,
+        "p99": 75.11,
+        "max": 77.31,
+        "mean": 67.51
+      },
+      "bytesWritten": 2326353,
+      "rowsOrItemsAffected": {
+        "total": 31,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 56.87,
+        "p95": 132.48,
+        "p99": 132.48,
+        "mean": 78.2,
+        "max": 132.48,
+        "total": 2424.21,
+        "ruPerSecond": 80.62
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "title",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 151,
+      "failed": 0,
+      "elapsedSec": 30.07,
+      "achievedWritesPerSec": 5.02,
+      "latencyMs": {
+        "p50": 66.71,
+        "p95": 74.18,
+        "p99": 88.88,
+        "max": 104.33,
+        "mean": 67.85
+      },
+      "bytesWritten": 11299551,
+      "rowsOrItemsAffected": {
+        "total": 151,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 56.87,
+        "p95": 132.48,
+        "p99": 132.48,
+        "mean": 64.628,
+        "max": 132.48,
+        "total": 9758.79,
+        "ruPerSecond": 324.54
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "title",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 301,
+      "succeeded": 301,
+      "failed": 0,
+      "elapsedSec": 30.06,
+      "achievedWritesPerSec": 10.01,
+      "latencyMs": {
+        "p50": 64.68,
+        "p95": 70.83,
+        "p99": 84.44,
+        "max": 117.21,
+        "mean": 65.71
+      },
+      "bytesWritten": 22519873,
+      "rowsOrItemsAffected": {
+        "total": 301,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 56.87,
+        "p95": 82.39,
+        "p99": 132.48,
+        "mean": 59.617,
+        "max": 132.48,
+        "total": 17944.61,
+        "ruPerSecond": 596.86
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "title",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.06,
+      "achievedWritesPerSec": 1.03,
+      "latencyMs": {
+        "p50": 64.3,
+        "p95": 66.64,
+        "p99": 78.22,
+        "max": 83.12,
+        "mean": 64.92
+      },
+      "bytesWritten": 387675,
+      "rowsOrItemsAffected": {
+        "total": 31,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 19.87,
+        "p95": 22.34,
+        "p99": 22.34,
+        "mean": 20.428,
+        "max": 22.34,
+        "total": 633.26,
+        "ruPerSecond": 21.06
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "cdf",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 151,
+      "succeeded": 151,
+      "failed": 0,
+      "elapsedSec": 30.07,
+      "achievedWritesPerSec": 5.02,
+      "latencyMs": {
+        "p50": 64.7,
+        "p95": 103.86,
+        "p99": 106.6,
+        "max": 106.72,
+        "mean": 67.93
+      },
+      "bytesWritten": 1883791,
+      "rowsOrItemsAffected": {
+        "total": 151,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 19.87,
+        "p95": 22.34,
+        "p99": 22.34,
+        "mean": 20.08,
+        "max": 22.34,
+        "total": 3032.09,
+        "ruPerSecond": 100.85
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "cdf",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 300,
+      "succeeded": 300,
+      "failed": 0,
+      "elapsedSec": 30.02,
+      "achievedWritesPerSec": 9.99,
+      "latencyMs": {
+        "p50": 62.18,
+        "p95": 101.96,
+        "p99": 120.79,
+        "max": 389.24,
+        "mean": 68.6
+      },
+      "bytesWritten": 3749370,
+      "rowsOrItemsAffected": {
+        "total": 300,
+        "mean": 1.0
+      },
+      "requestChargeRu": {
+        "p50": 19.87,
+        "p95": 19.87,
+        "p99": 22.34,
+        "mean": 19.936,
+        "max": 22.34,
+        "total": 5980.76,
+        "ruPerSecond": 199.25
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "cdf",
+      "targetWritesPerSec": 10.0
+    },
+    {
+      "attempts": 31,
+      "succeeded": 31,
+      "failed": 0,
+      "elapsedSec": 30.37,
+      "achievedWritesPerSec": 1.02,
+      "latencyMs": {
+        "p50": 345.08,
+        "p95": 424.8,
+        "p99": 454.58,
+        "max": 464.69,
+        "mean": 361.62
+      },
+      "bytesWritten": 30614272,
+      "rowsOrItemsAffected": {
+        "total": 992,
+        "mean": 32.0
+      },
+      "requestChargeRu": {
+        "p50": 507.12,
+        "p95": 775.63,
+        "p99": 776.75,
+        "mean": 535.087,
+        "max": 777.15,
+        "total": 16587.69,
+        "ruPerSecond": 546.2
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "version",
+      "targetWritesPerSec": 1.0
+    },
+    {
+      "attempts": 79,
+      "succeeded": 79,
+      "failed": 0,
+      "elapsedSec": 30.11,
+      "achievedWritesPerSec": 2.62,
+      "latencyMs": {
+        "p50": 376.63,
+        "p95": 458.43,
+        "p99": 477.48,
+        "max": 502.16,
+        "mean": 380.17
+      },
+      "bytesWritten": 77986593,
+      "rowsOrItemsAffected": {
+        "total": 2528,
+        "mean": 32.0
+      },
+      "requestChargeRu": {
+        "p50": 764.38,
+        "p95": 776.17,
+        "p99": 776.92,
+        "mean": 654.264,
+        "max": 777.15,
+        "total": 51686.88,
+        "ruPerSecond": 1716.34
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "version",
+      "targetWritesPerSec": 5.0
+    },
+    {
+      "attempts": 79,
+      "succeeded": 79,
+      "failed": 0,
+      "elapsedSec": 30.28,
+      "achievedWritesPerSec": 2.61,
+      "latencyMs": {
+        "p50": 379.78,
+        "p95": 456.09,
+        "p99": 478.24,
+        "max": 495.36,
+        "mean": 382.25
+      },
+      "bytesWritten": 77986593,
+      "rowsOrItemsAffected": {
+        "total": 2528,
+        "mean": 32.0
+      },
+      "requestChargeRu": {
+        "p50": 770.11,
+        "p95": 776.86,
+        "p99": 777.18,
+        "mean": 769.405,
+        "max": 777.25,
+        "total": 60782.99,
+        "ruPerSecond": 2007.48
+      },
+      "retries": 0,
+      "throttled429": 0,
+      "errorKinds": {},
+      "shape": "version",
+      "targetWritesPerSec": 10.0
+    }
+  ]
+}
