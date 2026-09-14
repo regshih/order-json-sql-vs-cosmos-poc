@@ -67,13 +67,13 @@
     },
     "cosmos": {
       "name": "mir_cosmos_orders",
-      "id": "97eea202-afe5-415e-a9b1-a34e9a5e914b",
+      "id": "77b3942f-78e4-4593-9c77-3618c7d46457",
       "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
-      "landingZoneDfsPath": "97eea202-afe5-415e-a9b1-a34e9a5e914b/Files/LandingZone",
-      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/97eea202-afe5-415e-a9b1-a34e9a5e914b/Tables",
+      "landingZoneDfsPath": "77b3942f-78e4-4593-9c77-3618c7d46457/Files/LandingZone",
+      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/77b3942f-78e4-4593-9c77-3618c7d46457/Tables",
       "sqlEndpoint": {
         "connectionString": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
-        "id": "84789798-8121-473f-856a-894c147b4b42",
+        "id": "0f31a00e-1b1e-4501-b793-243c1cdd3aaf",
         "provisioningStatus": "Success"
       }
     }
