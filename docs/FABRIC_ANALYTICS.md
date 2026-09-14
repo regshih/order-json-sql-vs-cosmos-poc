@@ -235,6 +235,69 @@ reconciliation claim is only meaningful against a freshly re-ingested baseline.
 See [BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) for the state of the
 clean run.
 
+## 7a. Open Mirroring's landing zone is append-only - and violating that halts the table
+
+This cost real time and is the most operationally important Fabric lesson in the
+POC, so it is written up rather than quietly fixed.
+
+**The contract.** Landing-zone files must be named with monotonically increasing
+20-digit sequence numbers, and Fabric will not re-process a sequence it has
+already consumed.
+
+**The trap.** The replicator *deletes* files once it has merged them, leaving only
+`_metadata.json` and an empty `_FilesReadyToDelete/`. So the obvious
+implementation of "next sequence" -
+
+```python
+next_seq = highest_parquet_file_on_disk + 1   # WRONG
+```
+
+- resets to `1` as soon as the replicator has caught up, and the next upload
+**overwrites a sequence Fabric has already processed**.
+
+**The consequence is worse than a lost update: replication for that table stops.**
+Symptoms, in the order they were observed:
+
+1. An incremental push reports success (`PUSH_OK`, rows written, no error).
+2. The change never becomes visible in Fabric - `NOT VISIBLE within 480s`.
+3. Files accumulate in the landing zone instead of being consumed. Five
+   `.parquet` files were sitting there by the time it was diagnosed; a healthy
+   zone holds at most the file currently being merged.
+4. There is no error surface. `getTablesMirroringStatus` returns
+   `404 EntityNotFound` for a `GenericMirror` database, so nothing reports the
+   halt.
+
+**It is not self-healing.** Fixing the sequence logic stops recurrence but does not
+restart the table. Recovery is:
+
+```
+stopMirroring -> delete every landing-zone file -> startMirroring
+              -> clear the local sequence + extraction watermark
+              -> full re-seed push
+```
+
+which is what [`fabric/repair_open_mirror.py`](../fabric/repair_open_mirror.py)
+does. After the repair the table repopulated to **19,944 rows** on the first poll.
+
+**The fix in the extractor** is to persist the highest sequence used alongside the
+extraction watermarks, and take `max(on_disk, persisted) + 1` - see
+[`push_to_onelake.py`](../ingestion/fabric/push_to_onelake.py). Two additional
+guards worth having in any production version: never write with `overwrite=True`
+to a landing zone, and alert on landing-zone file count, which is the only
+externally visible signal that replication has stopped.
+
+### A related constraint: the Fabric control plane rejects managed identities
+
+`stopMirroring` and `startMirroring` returned **401 Unauthorized** when called with
+the VM's managed identity, even though that identity is a workspace **Contributor**
+and its OneLake *data-plane* writes succeed. The repair had to be driven from a
+user context.
+
+Practical consequence for automation: **OneLake data operations can run under a
+managed identity, but Fabric mirroring control operations currently need a user
+identity.** That matches the `MirroredDatabase`-API limitation recorded in
+[SOURCES.md](SOURCES.md) and should shape how a production pipeline is scheduled.
+
 ## 8. Data freshness
 
 Measured by [`tools/run_analytics.py --freshness`](../tools/run_analytics.py),
