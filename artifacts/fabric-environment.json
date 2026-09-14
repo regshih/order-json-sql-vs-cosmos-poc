@@ -67,23 +67,14 @@
     },
     "cosmos": {
       "name": "mir_cosmos_orders",
-      "id": "f7e7e51b-1b92-49ff-8eba-82d0573e728c",
+      "id": "97eea202-afe5-415e-a9b1-a34e9a5e914b",
       "workspaceId": "a79fe519-8b20-442c-a8b5-8d8539733cb3",
-      "startMirroringHttp": 400,
-      "started": false,
-      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/f7e7e51b-1b92-49ff-8eba-82d0573e728c/Tables",
-      "landingZoneUrl": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
-      "landingZoneDfsPath": "f7e7e51b-1b92-49ff-8eba-82d0573e728c/Files/LandingZone",
+      "landingZoneDfsPath": "97eea202-afe5-415e-a9b1-a34e9a5e914b/Files/LandingZone",
+      "oneLakeTablesPath": "https://onelake.dfs.fabric.microsoft.com/a79fe519-8b20-442c-a8b5-8d8539733cb3/97eea202-afe5-415e-a9b1-a34e9a5e914b/Tables",
       "sqlEndpoint": {
         "connectionString": "al7e47m6bd3etgwbs2gos4bkbe-dhsz7jzarmwejkfvrwcts4z4wm.datawarehouse.fabric.microsoft.com",
-        "id": "ad21b0b3-b27b-4f9c-bba5-02d8def14220",
+        "id": "84789798-8121-473f-856a-894c147b4b42",
         "provisioningStatus": "Success"
-      },
-      "mirroringStatus": {
-        "requestId": "ac5654e1-b5d4-4db5-b62b-4222fe2efa00",
-        "errorCode": "EntityNotFound",
-        "message": "The requested resource could not be found",
-        "isRetriable": false
       }
     }
   }
