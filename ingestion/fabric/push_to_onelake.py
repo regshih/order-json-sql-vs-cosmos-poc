@@ -77,6 +77,13 @@ COSMOS_KEYS = ["id"]
 #
 # Declaring the schema makes every batch byte-compatible regardless of which rows
 # it happens to contain.
+#
+# The nullable numeric columns are float64, NOT int64. That is deliberate and was
+# learned the hard way: pandas represents a nullable integer column as float64,
+# so the Delta table created by the first (full) push has `double` columns.
+# Pinning them to int64 afterwards produces a *different* schema conflict and the
+# replicator rejects the file just as silently. The pinned types must match what
+# the initial snapshot produced.
 COSMOS_SCHEMA = pa.schema([
     ("id", pa.string()),
     ("docType", pa.string()),
@@ -85,15 +92,15 @@ COSMOS_SCHEMA = pa.schema([
     ("orderVersion", pa.int64()),
     ("blockType", pa.string()),
     ("blockSubType", pa.string()),
-    ("sequence", pa.int64()),
-    ("chunkIndex", pa.int64()),
-    ("chunkCount", pa.int64()),
-    ("payloadBytes", pa.int64()),
+    ("sequence", pa.float64()),
+    ("chunkIndex", pa.float64()),
+    ("chunkCount", pa.float64()),
+    ("payloadBytes", pa.float64()),
     ("searchJson", pa.string()),
     ("summaryJson", pa.string()),
     ("modifiedUtc", pa.string()),
     ("sourceTs", pa.int64()),
-    ("__rowMarker__", pa.int32()),
+    ("__rowMarker__", pa.int64()),
     ("_extractedUtc", pa.timestamp("us")),
 ])
 

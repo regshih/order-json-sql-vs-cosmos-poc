@@ -351,7 +351,45 @@ def test_cosmos_parquet_schema_is_stable_for_a_header_only_batch() -> None:
     null_typed = [f.name for f in table.schema if str(f.type) == "null"]
     assert not null_typed, f"columns inferred as null type: {null_typed}"
     assert str(table.schema.field("blockType").type) == "string"
-    assert str(table.schema.field("sequence").type) == "int64"
+    # double, NOT int64: pandas represents a nullable integer column as float64,
+    # so the Delta table created by the first full push has double columns.
+    # Pinning int64 afterwards is a *different* schema conflict, rejected just as
+    # silently. See COSMOS_SCHEMA.
+    assert str(table.schema.field("sequence").type) == "double"
+
+
+def test_pinned_cosmos_schema_matches_what_a_full_batch_infers() -> None:
+    """The pinned schema must equal the schema the initial snapshot produces,
+    or the first incremental conflicts with the Delta table it is appending to."""
+    import datetime
+
+    import pandas as pd
+    import pyarrow as pa
+
+    from ingestion.fabric.push_to_onelake import COSMOS_SCHEMA
+
+    def row(header: bool) -> dict:
+        return {
+            "id": "x", "docType": "orderHeader" if header else "orderBlock",
+            "customerId": "C", "orderId": "o", "orderVersion": 1,
+            "blockType": None if header else "TITLE",
+            "blockSubType": None if header else "COMMITMENTS",
+            "sequence": None if header else 0,
+            "chunkIndex": None if header else 0,
+            "chunkCount": None if header else 1,
+            "payloadBytes": None if header else 9,
+            "searchJson": "{}", "summaryJson": "{}", "modifiedUtc": "z", "sourceTs": 1,
+            "__rowMarker__": 4, "_extractedUtc": datetime.datetime(2026, 1, 1),
+        }
+
+    inferred = pa.Table.from_pandas(
+        pd.DataFrame([row(True), row(False)]), preserve_index=False
+    ).schema
+    for field in inferred:
+        pinned = COSMOS_SCHEMA.field(field.name)
+        assert str(pinned.type) == str(field.type), (
+            f"{field.name}: pinned {pinned.type} != full-batch inferred {field.type}"
+        )
 
 
 def test_cosmos_schema_matches_the_rows_the_extractor_builds() -> None:
