@@ -70,25 +70,54 @@ the benchmark compares *storage engines*, not two different data models.
 
 ## Headline findings
 
-> Numbers below are **MEASURED** on the deployed environment. See
-> [results/BENCHMARK_SUMMARY.md](results/BENCHMARK_SUMMARY.md) for the full set
-> and [docs/BENCHMARK_METHOD.md](docs/BENCHMARK_METHOD.md) for how.
+> Every number below is **MEASURED** on the deployed environment. Full set:
+> [results/BENCHMARK_SUMMARY.md](results/BENCHMARK_SUMMARY.md). Method and
+> limitations: [docs/BENCHMARK_METHOD.md](docs/BENCHMARK_METHOD.md).
 
-- **A 5 MB order decomposes to a largest block of 760 KB** — 36% of the Cosmos
-  2 MB item limit. Array-element chunking never engaged on real data. The
-  item-size limit constrains the *document model*, not the viability of Cosmos.
-- **The same 760 KB figure clears the 1 MB LOB ceiling that Fabric mirroring
-  imposes** on `nvarchar(max)`. Business-boundary splitting satisfied two
-  unrelated platform constraints at once, by accident of being the right shape.
-- **Both backends sustain the stated 50 RPS**, including the full multi-megabyte
-  workload, with zero errors.
+**Both architectures meet the stated 50 reads/sec on every workload shape, with
+zero errors** - including whole multi-megabyte orders. They differ in cost shape,
+not in capability.
+
+| At 50 RPS | Azure SQL | Cosmos DB |
+| --- | --- | --- |
+| Realistic mix, p50 / p95 | **9.0 / 38.7 ms** | 39.5 / 88.8 ms |
+| Full 0.5-5 MB order, p50 / p95 | **37.5 / 110.7 ms** | 110.4 / 194.3 ms |
+| Throughput, full-order workload | 67.4 MB/s | 69.6 MB/s |
+| Capacity required | **2 vCore** GP serverless | **40,000 RU/s** autoscale |
+| Errors / throttling across the sweep | 0 / 0 | 0 / 0 |
+
+- **A 5 MB order decomposes to a largest block of 760 KB** - 36% of the Cosmos
+  2 MB item limit. Array chunking never engaged on real data.
+- **A 2.007 MiB monolithic item is rejected with HTTP 413**, while the same order
+  stored as semantic documents succeeds. The item limit constrains the *document
+  model*, not the viability of Cosmos.
+- **Decomposition costs ~8x RU**: a monolithic point read is 145.9 RU / 20.1 ms;
+  the same order as 32 items is 1,187.5 RU / 183.4 ms. That is the real price of
+  the 2 MB limit.
+- **A whole-order read costs 269x the RU of a summary** (1,152 vs 4.28). Serving
+  business blocks instead of whole orders is worth ~3.4x on Cosmos RU and ~3.4x
+  on SQL latency.
+- **Cosmos needed ~10x the provisioned capacity** to reach parity. At a 4,000
+  RU/s ceiling the same workload collapsed to 23 RPS with a 34-second p50; the
+  measured per-operation RU predicts that collapse to within ~10%.
 - **A single-level `/customerId` partition key would exceed the 20 GiB logical
   partition limit by ~11x** within the two-year horizon. The hierarchical
-  `/customerId` + `/orderId` key holds each logical partition at **0.0061%** of
-  the limit, permanently.
+  `/customerId` + `/orderId` key holds each partition at **0.0061%** of the
+  limit, permanently - which fixes the customer's stated current problem.
+- **Both paths reach Fabric losslessly.** The SQL path's `nvarchar(max)` blocks
+  arrived byte-intact (max 759,857 chars, **0 rows >= 1 MiB, 0 invalid JSON, 0
+  length mismatches**), so the same business-boundary split that satisfies the
+  Cosmos item limit also clears Fabric's 1 MB LOB truncation ceiling. Measured
+  freshness: **107 s** end-to-end.
 - **The contract tests caught two real defects** that only appear when two
   implementations are compared: GUID casing and floating-point money
-  aggregation.
+  aggregation. A third - RU under-reporting by ~42x - was caught by measuring the
+  same thing two ways.
+
+**Current recommendation: Azure SQL with the hybrid model**, at ~4.5-16x lower
+cost for this read-heavy multi-megabyte workload - with the conditions under
+which that flips stated explicitly in
+[docs/DECISION_MATRIX.md](docs/DECISION_MATRIX.md) section 8.
 
 ## Repository layout
 
