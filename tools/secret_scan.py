@@ -72,10 +72,14 @@ def check_env_not_tracked(files: list[pathlib.Path]) -> list[str]:
     ]
 
 
+# This file necessarily contains the very patterns it looks for.
+SELF = pathlib.Path(__file__).name
+
+
 def check_credentials(files: list[pathlib.Path]) -> list[tuple[str, str, str]]:
     hits = []
     for f in files:
-        if f.suffix in CREDENTIAL_SKIP_SUFFIXES or f.name == ".env.example":
+        if f.suffix in CREDENTIAL_SKIP_SUFFIXES or f.name in (".env.example", SELF):
             continue
         text = read(f)
         if text is None:
@@ -111,8 +115,19 @@ def sample_value_categories(sample: pathlib.Path) -> dict[str, list[str]]:
             v for v in vals
             if re.fullmatch(r"[\d()\-+.\s]{9,20}", v) and sum(c.isdigit() for c in v) >= 9
         ],
+        # NOTE: there is deliberately NO "identifier-like token" category.
+        # Tried and removed: it flagged 'Conventional', 'TitleCompany',
+        # 'BuyerCashToClose' - schema field names and standard enum values, which
+        # this POC *must* reproduce to model the structure at all. A leak check
+        # that cannot tell schema vocabulary from instance data produces noise
+        # and trains people to ignore it. Only INSTANCE values are sensitive.
+        # Money must be distinctive to be evidence of a leak. A short value like
+        # "132.00" collides with ordinary numbers in generated artifacts (it was
+        # a measured Cosmos RU figure), so require at least 5 significant digits.
         "money amounts": [
-            v for v in vals if re.fullmatch(r"-?[\d,]+\.\d{2}", v) and len(v) >= 6
+            v for v in vals
+            if re.fullmatch(r"-?[\d,]+\.\d{2}", v)
+            and sum(c.isdigit() for c in v) >= 7
         ],
         "long free text": [
             v for v in vals if len(v) > 60 and " " in v and not v.startswith("{\\rtf")
