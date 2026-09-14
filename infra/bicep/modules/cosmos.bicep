@@ -78,6 +78,12 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
         // is pass-through: indexing it would inflate write RU and storage for
         // queries we never issue.
         includedPaths: [
+          // Routing keys. These MUST be indexed explicitly: being partition-key
+          // paths does not make them usable as filter predicates once '/*' is
+          // excluded. Omitting /orderId cost a full scan on every read - see
+          // docs/COSMOS_DESIGN.md 'Indexing policy'.
+          { path: '/customerId/?' }
+          { path: '/orderId/?' }
           { path: '/orderVersion/?' }
           { path: '/blockType/?' }
           { path: '/blockSubType/?' }
