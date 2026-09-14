@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-13T19:19:22.649070+00:00",
+  "generatedUtc": "2026-09-14T13:24:28.715902+00:00",
   "pricingSnapshot": {
     "retrievedUtc": "2026-09-13T19:18:55.005049+00:00",
     "region": "westus3",
@@ -171,8 +171,59 @@
     ]
   },
   "measuredRu": {
-    "source": [],
-    "byOperation": {}
+    "source": [
+      "run-012-mix-10rps.json",
+      "run-013-mix-25rps.json",
+      "run-014-mix-50rps.json",
+      "run-015-mix-100rps.json",
+      "run-016-mix-200rps.json",
+      "run-017-summary-50rps.json",
+      "run-018-title-50rps.json",
+      "run-019-cdf-50rps.json",
+      "run-020-search-50rps.json",
+      "run-021-full-10rps.json",
+      "run-022-full-25rps.json",
+      "run-023-full-50rps.json"
+    ],
+    "byOperation": {
+      "cdf": {
+        "samples": 4506,
+        "p50": 125.614,
+        "p95": 163.423,
+        "mean": 132.002
+      },
+      "checklist": {
+        "samples": 1763,
+        "p50": 22.191,
+        "p95": 22.943,
+        "mean": 21.957
+      },
+      "full": {
+        "samples": 3678,
+        "p50": 535.81,
+        "p95": 562.319,
+        "mean": 477.301
+      },
+      "summary": {
+        "samples": 12811,
+        "p50": 7.76,
+        "p95": 7.76,
+        "mean": 7.274
+      },
+      "title": {
+        "samples": 7511,
+        "p50": 122.186,
+        "p95": 157.571,
+        "mean": 125.751
+      },
+      "search": {
+        "samples": 628,
+        "p50": 4.52,
+        "p95": 5.3,
+        "mean": 4.381
+      }
+    },
+    "caveat": "sampled from one of several uvicorn workers; run cosmos/indexing/measure_index_impact.py for authoritative RU"
   },
   "measuredWriteRu": {},
   "workloadMix": {
@@ -184,25 +235,188 @@
   },
   "cosmosThroughput": [
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 10,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 746.5,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 1100,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 64.24,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     },
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 10,
+      "mode": "autoscale",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 746.5,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 1100,
+      "unitPricePer100RuPerHour": 0.012,
+      "monthlyThroughputUsd": 96.36,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     },
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 3732.4,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 5600,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 327.04,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     },
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 50,
+      "mode": "autoscale",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 3732.4,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 5600,
+      "unitPricePer100RuPerHour": 0.012,
+      "monthlyThroughputUsd": 490.56,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     },
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 100,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 7464.8,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 11200,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 654.08,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     },
     {
-      "error": "no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first"
+      "rps": 100,
+      "mode": "autoscale",
+      "measuredRuPerRequest": 74.648,
+      "ruPerSecondRequired": 7464.8,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 11200,
+      "unitPricePer100RuPerHour": 0.012,
+      "monthlyThroughputUsd": 981.12,
+      "perOperationRu": {
+        "summary": 7.274,
+        "title": 125.751,
+        "cdf": 132.002,
+        "checklist": 21.957,
+        "full": 477.301
+      }
     }
   ],
-  "cosmosPerOperationAt50Rps": {},
+  "cosmosPerOperationAt50Rps": {
+    "summary": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 7.274,
+      "ruPerSecondRequired": 363.7,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 500,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 29.2,
+      "perOperationRu": {
+        "summary": 7.274
+      }
+    },
+    "title": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 125.751,
+      "ruPerSecondRequired": 6287.6,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 9400,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 548.96,
+      "perOperationRu": {
+        "title": 125.751
+      }
+    },
+    "cdf": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 132.002,
+      "ruPerSecondRequired": 6600.1,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 9900,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 578.16,
+      "perOperationRu": {
+        "cdf": 132.002
+      }
+    },
+    "checklist": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 21.957,
+      "ruPerSecondRequired": 1097.9,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 1600,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 93.44,
+      "perOperationRu": {
+        "checklist": 21.957
+      }
+    },
+    "full": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 477.301,
+      "ruPerSecondRequired": 23865.0,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 35800,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 2090.72,
+      "perOperationRu": {
+        "full": 477.301
+      }
+    },
+    "search": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 4.381,
+      "ruPerSecondRequired": 219.1,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 400,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 23.36,
+      "perOperationRu": {
+        "search": 4.381
+      }
+    }
+  },
   "cosmosStorage": {
     "pricePerGbMonth": 0.25,
     "hotGb": 441.5,

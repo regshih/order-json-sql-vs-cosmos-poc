@@ -475,7 +475,8 @@ def main() -> None:
     print(f"-> {jp}")
 
     Path(args.md_out).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.md_out).write_text(build_md(out), encoding="utf-8")
+    with open(args.md_out, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(build_md(out))
     print(f"-> {args.md_out}")
 
     for r in cosmos_rows:
@@ -548,7 +549,7 @@ def build_md(d: dict[str, Any]) -> str:
           f"version as {w['itemsPerOrder']} items (`{w['source']}`).")
         a("")
 
-    a("## Cosmos DB — throughput cost by read rate")
+    a("## Cosmos DB - throughput cost by read rate")
     a("")
     a(f"Workload mix: {json.dumps(d['workloadMix'])} (matches the benchmark's `mix` shape).")
     a("")
@@ -589,7 +590,7 @@ def build_md(d: dict[str, Any]) -> str:
           f"**${cs['monthlyUsd']:,.2f}/month**.")
         a("")
 
-    a("## Azure SQL Database — deployment options")
+    a("## Azure SQL Database - deployment options")
     a("")
     a("| Tier | vCores | $/vCore/hr | Compute $/mo | Storage GB | Storage $/mo | Total $/mo |")
     a("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")

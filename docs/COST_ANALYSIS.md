@@ -1,6 +1,6 @@
 # Cost Analysis
 
-Generated 2026-09-13T19:19:22.649070+00:00 by [tools/cost_model.py](../tools/cost_model.py).
+Generated 2026-09-14T13:24:28.715902+00:00 by [tools/cost_model.py](../tools/cost_model.py).
 
 ## Pricing basis
 
@@ -34,22 +34,54 @@ Generated 2026-09-13T19:19:22.649070+00:00 by [tools/cost_model.py](../tools/cos
 
 ## Measured Cosmos RU (not estimated)
 
-> **No measured RU available.** Run the Cosmos benchmark
-> (`loadtests/operational/run_load.py --backend cosmos`) before relying on
-> any Cosmos cost figure. This document deliberately shows no estimate.
+Source: `run-012-mix-10rps.json, run-013-mix-25rps.json, run-014-mix-50rps.json, run-015-mix-100rps.json, run-016-mix-200rps.json, run-017-summary-50rps.json, run-018-title-50rps.json, run-019-cdf-50rps.json, run-020-search-50rps.json, run-021-full-10rps.json, run-022-full-25rps.json, run-023-full-50rps.json`
 
-## Cosmos DB — throughput cost by read rate
+> **Caveat:** sampled from one of several uvicorn workers; run cosmos/indexing/measure_index_impact.py for authoritative RU.
+
+| Operation | RU mean | RU p50 | RU p95 | Requests measured |
+| --- | ---: | ---: | ---: | ---: |
+| `cdf` | 132.002 | 125.614 | 163.423 | 4,506 |
+| `checklist` | 21.957 | 22.191 | 22.943 | 1,763 |
+| `full` | 477.301 | 535.81 | 562.319 | 3,678 |
+| `search` | 4.381 | 4.52 | 5.3 | 628 |
+| `summary` | 7.274 | 7.76 | 7.76 | 12,811 |
+| `title` | 125.751 | 122.186 | 157.571 | 7,511 |
+
+## Cosmos DB - throughput cost by read rate
 
 Workload mix: {"summary": 0.5, "title": 0.2, "cdf": 0.15, "checklist": 0.1, "full": 0.05} (matches the benchmark's `mix` shape).
 
 | RPS | Mode | Measured RU/request | RU/s required | Provisioned RU/s | $/month |
 | ---: | --- | ---: | ---: | ---: | ---: |
+| 10 | provisioned | 74.648 | 746.5 | 1,100 | $64.24 |
+| 10 | autoscale | 74.648 | 746.5 | 1,100 | $96.36 |
+| 50 | provisioned | 74.648 | 3,732.4 | 5,600 | $327.04 |
+| 50 | autoscale | 74.648 | 3,732.4 | 5,600 | $490.56 |
+| 100 | provisioned | 74.648 | 7,464.8 | 11,200 | $654.08 |
+| 100 | autoscale | 74.648 | 7,464.8 | 11,200 | $981.12 |
 
-> no measured RU for ['summary', 'title', 'cdf', 'checklist', 'full']; run the Cosmos benchmark first
+Provisioning includes a 1.5x headroom factor over
+the steady-state mean, because Cosmos bills provisioned throughput rather than
+consumption — sizing to the mean throttles on burst.
+
+### Cost if the entire 50 RPS workload were a single operation
+
+| Operation | Measured RU/request | RU/s at 50 RPS | Provisioned RU/s | $/month |
+| --- | ---: | ---: | ---: | ---: |
+| `summary` | 7.274 | 363.7 | 500 | $29.20 |
+| `title` | 125.751 | 6,287.6 | 9,400 | $548.96 |
+| `cdf` | 132.002 | 6,600.1 | 9,900 | $578.16 |
+| `checklist` | 21.957 | 1,097.9 | 1,600 | $93.44 |
+| `full` | 477.301 | 23,865.0 | 35,800 | $2,090.72 |
+| `search` | 4.381 | 219.1 | 400 | $23.36 |
+
+This is the single most decision-relevant table in the cost analysis: it prices
+the difference between an API that serves whole orders and one that serves
+business blocks.
 
 **Cosmos storage:** 442 GB at $0.25/GB/month = **$110.38/month**.
 
-## Azure SQL Database — deployment options
+## Azure SQL Database - deployment options
 
 | Tier | vCores | $/vCore/hr | Compute $/mo | Storage GB | Storage $/mo | Total $/mo |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
