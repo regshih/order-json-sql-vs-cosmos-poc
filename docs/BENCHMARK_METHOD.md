@@ -3,9 +3,9 @@
 How every number in [BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) was
 produced, and what it does and does not mean.
 
-Harness: [`loadtests/operational/run_load.py`](../loadtests/operational/run_load.py) ·
-Writes: [`loadtests/operational/run_write_bench.py`](../loadtests/operational/run_write_bench.py) ·
-Sweep: [`scripts/run_benchmarks.sh`](../scripts/run_benchmarks.sh) ·
+Harness: [`loadtests/operational/run_load.py`](../loadtests/operational/run_load.py) Â·
+Writes: [`loadtests/operational/run_write_bench.py`](../loadtests/operational/run_write_bench.py) Â·
+Sweep: [`scripts/run_benchmarks.sh`](../scripts/run_benchmarks.sh) Â·
 Report generator: [`tools/summarize_benchmarks.py`](../tools/summarize_benchmarks.py)
 
 ---
@@ -13,11 +13,11 @@ Report generator: [`tools/summarize_benchmarks.py`](../tools/summarize_benchmark
 ## 1. Topology
 
 ```
-vm-orderjsonpoc-load  (D4s_v5, 4 vCPU)   ──HTTP──▶  vm-orderjsonpoc-api  (D8s_v5, 8 vCPU)
+vm-orderjsonpoc-load  (D4s_v5, 4 vCPU)   â”€â”€HTTPâ”€â”€â–¶  vm-orderjsonpoc-api  (D8s_v5, 8 vCPU)
         load generator                                 FastAPI, 8 uvicorn workers
-                                                              │
+                                                              â”‚
                                               private endpoints (10.60.2.0/24)
-                                                              ▼
+                                                              â–¼
                                             Azure SQL  /  Cosmos DB  /  ADLS Gen2
 ```
 
@@ -30,9 +30,9 @@ RPS. Co-locating the generator would send that over loopback at memory speed
 the API's. Two VMs means the payload crosses a real NIC and the two CPU budgets
 are independent.
 
-**Why in Azure rather than from a workstation.** 50 RPS × a mean 1.3 MB response
+**Why in Azure rather than from a workstation.** 50 RPS Ã— a mean 1.3 MB response
 is ~65 MB/s sustained, and the p99 order is ~5 MB. That is not measurable over a
-consumer internet link — the link would be the result. Tenant policy forced
+consumer internet link â€” the link would be the result. Tenant policy forced
 private-only endpoints, which pushed the benchmark into the VNet; that made the
 numbers better founded, not worse.
 
@@ -42,7 +42,7 @@ The generator issues requests on a **fixed schedule** (constant arrival rate),
 not from a pool of looping workers.
 
 This matters more than it sounds. A closed-model generator (N workers, each
-looping "send → wait → send") silently *reduces offered load* when the system
+looping "send â†’ wait â†’ send") silently *reduces offered load* when the system
 slows down: if the server takes twice as long, the generator sends half as many
 requests, and the measured latency looks flat while the system is actually
 failing. That is **coordinated omission**, and it is the standard way a load test
@@ -50,7 +50,7 @@ produces reassuring nonsense.
 
 Two consequences of the open model here:
 
-1. Requests are dispatched at `start + n × (1/rps)` regardless of whether earlier
+1. Requests are dispatched at `start + n Ã— (1/rps)` regardless of whether earlier
    ones have completed.
 2. Latency is recorded **scheduled-to-complete**, not dispatched-to-complete, so
    queueing delay appears in the number. `queueMs` is reported separately, and a
@@ -64,15 +64,15 @@ such rather than silently degrading into a closed model.
 
 | Phase | Duration | Counted? |
 | --- | --- | --- |
-| Warmup | 15 s at the target rate | **No** — fills connection pools, warms uvicorn workers, wakes a serverless SQL database, and lets Cosmos establish its routing table |
-| Metrics reset | — | server-side counters cleared after warmup |
+| Warmup | 15 s at the target rate | **No** â€” fills connection pools, warms uvicorn workers, wakes a serverless SQL database, and lets Cosmos establish its routing table |
+| Metrics reset | â€” | server-side counters cleared after warmup |
 | Steady state | 60 s at the target rate | **Yes** |
 
 `--repeats` runs the steady state multiple times and reports the mean of each
 percentile; the sweep uses a single repeat per point for time reasons, and
 the full point-by-point data is in the per-run JSON.
 
-## 4. Throughput points (§15)
+## 4. Throughput points (Â§15)
 
 `10, 25, 50, 100, 200` RPS. **50 RPS is the customer's stated rate** and is
 flagged in the summary table. 100 and 200 exist to show headroom or find the
@@ -82,18 +82,18 @@ No latency SLA is asserted anywhere. The brief explicitly says not to invent
 one, so the reports state what happened and leave the acceptability judgement to
 the customer.
 
-## 5. Workload shapes (§16)
+## 5. Workload shapes (Â§16)
 
 | Shape | Mix | What it isolates |
 | --- | --- | --- |
 | `summary` | 100% `/summary` | the cheapest read; index/point-read latency with no payload |
 | `title` | 100% `/title` | a single business block, ~300 KB |
 | `cdf` | 100% `/cdf` | a single business block, ~240 KB |
-| `full` | 100% `/{id}` | **the payload-size stress test**, 0.5–5 MB per response |
-| `search` | 100% `/orders?…` | relational search vs Cosmos query |
+| `full` | 100% `/{id}` | **the payload-size stress test**, 0.5â€“5 MB per response |
+| `search` | 100% `/orders?â€¦` | relational search vs Cosmos query |
 | `mix` | 50/20/15/10/5 summary/title/cdf/checklist/full | the realistic default |
 
-The mix weights are configurable in `WORKLOADS`; the default matches §16 of the
+The mix weights are configurable in `WORKLOADS`; the default matches Â§16 of the
 brief.
 
 ## 6. What is measured
@@ -105,19 +105,41 @@ and the payload-size bucket the target order falls into.
 
 ### Server side (per request, from the API's own telemetry)
 
+> **Sampling caveat, found by cross-checking.** The API runs with 8 uvicorn
+> workers and the metrics collector is **in-process**, so each worker holds its
+> own ring. `GET /_bench/metrics` returns whichever worker answered, and
+> `POST /_bench/metrics/reset` clears a possibly *different* one. The symptom is
+> unmistakable once looked for: a `summary`-only run reported `cdf`, `title` and
+> `full` operations left over from the preceding run.
+>
+> Consequently:
+> - **Client-side latency, throughput and error rate are authoritative** - they
+>   are measured by the load generator, which is a single process.
+> - **Server-side `db` / `reconstruct` / `serialize` / RU are indicative only.**
+> - **Authoritative per-operation RU** is measured single-process and in
+>   isolation by
+>   [`cosmos/indexing/measure_index_impact.py`](../cosmos/indexing/measure_index_impact.py);
+>   that is what [COST_ANALYSIS.md](COST_ANALYSIS.md) and
+>   [DECISION_MATRIX.md](DECISION_MATRIX.md) use.
+>
+> The fix for a future run is to set `API_WORKERS=1` when the server-side split
+> is the object of study, and accept lower throughput, or to move the collector
+> to shared memory. The endpoint now reports `samplingWarning` with the worker
+> PID so the limitation cannot be missed.
+
 | Metric | Meaning |
 | --- | --- |
 | `db_ms` | time inside the database driver |
 | `reconstruct_ms` | turning stored blocks/items back into one document |
 | `serialize_ms` | encoding the response with orjson |
 | `response_bytes` | encoded size |
-| `request_charge` | **Cosmos RU, read from the SDK response header** — never estimated |
+| `request_charge` | **Cosmos RU, read from the SDK response header** â€” never estimated |
 | `throttled_429`, `retries` | Cosmos throttling |
 | `sql_queries`, `sql_pool_checkout_ms` | SQL query count and pool contention |
 
 ### Resource utilisation
 
-- **SQL**: `sys.dm_db_resource_stats` — CPU %, data IO %, log write %, worker %,
+- **SQL**: `sys.dm_db_resource_stats` â€” CPU %, data IO %, log write %, worker %,
   session %, memory %, and the active connection count. Read from the service's
   own DMV rather than inferred from the client.
 - **Application**: process and system CPU %, RSS, thread count via `psutil`.
@@ -127,14 +149,14 @@ and the payload-size bucket the target order falls into.
 ## 7. Latency vs payload size
 
 Full-order runs bucket results by the target order's actual payload size
-(`<0.75MB`, `0.75–1.25MB`, `1.25–2MB`, `2–4MB`, `>4MB`) and report percentiles per
+(`<0.75MB`, `0.75â€“1.25MB`, `1.25â€“2MB`, `2â€“4MB`, `>4MB`) and report percentiles per
 bucket. This is what answers "what happens to network/serialization performance
 for multi-megabyte responses" with data rather than intuition, because the
 dataset deliberately contains a realistic spread rather than uniform documents.
 
 ## 8. The dataset
 
-- **500 orders**, seed 42, 8 synthetic customers — **byte-identical in both
+- **500 orders**, seed 42, 8 synthetic customers â€” **byte-identical in both
   backends**, because both are loaded from the same deterministic generator and
   decomposed by the same splitter.
 - Measured distribution: min 508 KB, median 990 KB, mean 1.32 MB, p90 2.11 MB,
@@ -146,10 +168,10 @@ dataset deliberately contains a realistic spread rather than uniform documents.
 Load targets are drawn from `/_bench/orders`, so the generator hits **real stored
 orders** with a realistic size spread, not a synthetic uniform id space.
 
-## 9. Write benchmark (§17)
+## 9. Write benchmark (Â§17)
 
 Run separately from reads, directly against the repositories rather than through
-HTTP — the question is what the storage engine costs per write, not what FastAPI
+HTTP â€” the question is what the storage engine costs per write, not what FastAPI
 adds.
 
 | Shape | What changes |
@@ -177,7 +199,7 @@ generated orders so they are the right shape and size, not stubs.
 Stated plainly, because they bound what the numbers can support:
 
 1. **Single region, single replica.** No multi-region read routing, no read
-   scale-out (General Purpose does not offer it — see [SOURCES.md](SOURCES.md)).
+   scale-out (General Purpose does not offer it â€” see [SOURCES.md](SOURCES.md)).
 2. **60-second steady state, one repeat per point.** Long enough for stable
    percentiles at these rates, too short to expose slow-burn effects such as
    index fragmentation, statistics drift, or serverless auto-pause behaviour.
@@ -189,16 +211,18 @@ Stated plainly, because they bound what the numbers can support:
    viable throughput.
 5. **The Cosmos lookup tax is included.** Every Cosmos read pays a
    cross-partition lookup because the API contract has no tenant in the route
-   (see [COSMOS_DESIGN.md](COSMOS_DESIGN.md) §5). This is a faithful measurement
+   (see [COSMOS_DESIGN.md](COSMOS_DESIGN.md) Â§5). This is a faithful measurement
    of *the specified contract*, and it understates what Cosmos could do with a
    tenant-scoped route.
 6. **No client-side caching, no CDN, no conditional requests.** Every request is
    a full round trip to the database.
-7. **The synthetic corpus is denser than the real sample.** The real order is
+7. **Server-side telemetry is a one-worker sample** (see the caveat in section 6).
+   Client-side figures - which are the headline results - are unaffected.
+8. **The synthetic corpus is denser than the real sample.** The real order is
    32.8% empty strings; the generator produces ~15%. The sizes and array
    cardinalities match, so the bytes moved are right, but each generated byte
    carries slightly more real content than a customer byte would. This makes the
-   benchmark **conservative** � a real corpus of the same size would contain more
-   cheap-to-serialise empty values � and it is left uncorrected because
+   benchmark **conservative** — a real corpus of the same size would contain more
+   cheap-to-serialise empty values — and it is left uncorrected because
    re-tuning it would invalidate the calibrated size profiles and require
    re-running every measurement.
