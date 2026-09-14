@@ -227,8 +227,13 @@ def measure_freshness(backend: str, endpoint: str, database: str,
         query = f"SELECT COUNT(*) FROM {table} WHERE OrderId = ? AND Project = ?"
         params = (oid, marker)
     else:
+        # A plain substring test, not JSON_VALUE. Fabric Warehouse does not
+        # guarantee predicate evaluation order, so an ISJSON() guard in the same
+        # WHERE clause does not stop JSON_VALUE being applied to a non-JSON row,
+        # and the whole query fails with "JSON text is not properly formatted".
         query = (f"SELECT COUNT(*) FROM {table} "
-                 f"WHERE orderId = ? AND JSON_VALUE(searchJson, '$.project') = ?")
+                 f"WHERE orderId = ? AND docType = 'orderHeader' "
+                 f"AND CHARINDEX(?, ISNULL(searchJson, '')) > 0")
         params = (oid, marker)
 
     conn = fabric_conn(endpoint, database)
