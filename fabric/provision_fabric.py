@@ -33,17 +33,23 @@ STATE_FILE = Path("artifacts/fabric-environment.json")
 
 
 def get_token(scope: str = FABRIC_SCOPE) -> str:
-    """Acquire a Fabric token for the signed-in user.
+    """Acquire a Fabric token.
 
-    Prefers azure-identity (works on Linux and Windows alike); falls back to the
-    Azure CLI binary, whose name differs by platform.
+    Tries, in order:
+      1. DefaultAzureCredential - covers a VM's managed identity, which is how
+         this runs inside the POC VNet (those VMs have no Azure CLI installed,
+         and their identities are workspace Contributors).
+      2. AzureCliCredential - the operator workstation.
+      3. The `az` binary directly, whose name differs by platform.
     """
-    try:
-        from azure.identity import AzureCliCredential
+    for factory in ("DefaultAzureCredential", "AzureCliCredential"):
+        try:
+            import azure.identity as ident
 
-        return AzureCliCredential().get_token(f"{scope}/.default").token
-    except Exception:
-        pass
+            cred = getattr(ident, factory)()
+            return cred.get_token(f"{scope}/.default").token
+        except Exception:
+            continue
     for exe in ("az", "az.cmd", "az.bat"):
         try:
             out = subprocess.run(
