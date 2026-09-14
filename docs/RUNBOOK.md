@@ -206,13 +206,21 @@ region, meter name and SKU. No price is hard-coded.
 ## 11. Secret scan before sharing
 
 ```bash
-git ls-files | grep -iE "MASKED|data/source"     # must return nothing
-git grep -nE "(password|pwd|AccountKey|SharedAccessSignature)\s*=" -- ':!*.md' ':!.env.example'
-git grep -nE "[A-Za-z0-9+/]{60,}={0,2}" -- ':!*.json' ':!*.md'   # long base64 blobs
-git check-ignore -v data/source/*                # must report the ignore rule
+python tools/secret_scan.py     # gates on both credentials AND sample-value leaks
+python tools/check_docs.py      # every relative link resolves; Mermaid parses
 ```
 
-CI-friendly alternatives: `gitleaks detect`, `trufflehog filesystem .`.
+`secret_scan.py` does two things. The first is the usual credential pattern
+scan. The second matters more: it extracts distinctive values from the **real
+customer sample** — GUIDs, emails, phone numbers, money amounts, long free text —
+and proves none of them appear in any tracked file. That verifies the "only
+synthetic data is committed" claim against the source data instead of trusting
+`.gitignore`.
+
+Last run: **0 of 1,194 GUIDs, 0 emails, 0 phone numbers, 0 money amounts and
+0 long free-text values** from the sample found in 116 readable tracked files.
+
+CI-friendly additions: `gitleaks detect`, `trufflehog filesystem .`.
 
 ## 12. Clean up (destroy)
 
@@ -290,6 +298,37 @@ az network private-endpoint-connection approve \
   --description "Approved for Fabric mirroring"
 ```
 
+### Retrieving results off the VMs
+
+Benchmark output is written on the VM, and the VMs were observed being
+deallocated mid-session by something outside this POC
+([CURRENT_STATE_CONTEXT.md](CURRENT_STATE_CONTEXT.md) section 3.3). **Pull results
+into the repository as soon as a run finishes**, not at the end of a session.
+
+```bash
+python scripts/fetch_vm_results.py vm-orderjsonpoc-load
+python scripts/fetch_vm_results.py vm-orderjsonpoc-api --remote results
+python scripts/fetch_vm_results.py vm-orderjsonpoc-load --remote results/fabric
+```
+
+The fetcher works without SSH: it tars the directory on the VM and returns it as
+base64 chunks through `az vm run-command`. Two constraints are baked in because
+both were hit:
+
+- **Chunks must stay under ~4,000 characters.** `az vm run-command` truncates
+  stdout at 4,096 chars and returns the **tail** when it truncates, so an
+  oversized chunk corrupts the stream silently rather than failing. The fetcher
+  verifies each chunk's length and aborts if it is short.
+- **Transient resets and VM deallocation are retried.** A 150 KB payload takes
+  ~40 calls; an occasional failure is expected.
+
+If a VM has been deallocated, the disks are intact — just restart and re-fetch:
+
+```bash
+az vm start -g <rg> -n vm-orderjsonpoc-api
+az vm start -g <rg> -n vm-orderjsonpoc-load
+```
+
 ### Common failures
 
 | Symptom | Cause | Fix |
@@ -300,3 +339,8 @@ az network private-endpoint-connection approve \
 | Cosmos `Forbidden` on data plane | missing data-plane RBAC (ARM RBAC is not enough) | `az cosmosdb sql role assignment create --role-definition-id 00000000-0000-0000-0000-000000000002` |
 | `Violation of PRIMARY KEY` during ingestion | duplicate GUIDs within one source order | already handled — `_unique_id` in `relational_extract.py` falls back to a surrogate |
 | Fabric capacity not visible to the API | propagation delay or the caller is not a capacity admin | wait a minute, then `python fabric/provision_fabric.py --show` |
+| `HY104 Invalid precision value (0)` writing a JSON block | a raised `conn.maxwrite` forces direct binding of long `nvarchar(max)` parameters | already fixed — do not set `conn.maxwrite`; let pyodbc use data-at-execution |
+| Incremental push reports success but nothing appears in Fabric | the replicator deletes consumed files, so a listing-derived sequence resets to 1 and Fabric ignores it | already fixed — the highest sequence is persisted in `artifacts/fabric-push-watermarks.json` |
+| `az vm run-command` returns `Conflict` | only one run-command may execute per VM at a time | wait for the current one; the helper scripts retry |
+| VM shows `VM deallocated` mid-run | external cost governance (cause not identified) | `az vm start`, then re-fetch results; disks are intact |
+| Server-side metrics show operations from a previous run | each uvicorn worker has its own in-process metrics ring | set `API_WORKERS=1` when the server-side split is the object of study |
