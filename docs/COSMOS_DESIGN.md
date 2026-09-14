@@ -202,6 +202,50 @@ items (500-order run). Per-operation read RU is in
 [BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) and priced in
 [COST_ANALYSIS.md](COST_ANALYSIS.md).
 
+### RU is not a function of bytes alone - it fell ~75% after a partition split
+
+This was the most surprising measurement in the POC, and it matters more than
+anything else in this document for cost forecasting.
+
+The same operations were measured twice with the same tool, before and after the
+container was scaled up (which caused Cosmos to split it across more physical
+partitions). Latency barely moved. **The charge fell by about three quarters.**
+
+| Operation | Before split | After split | Change | Latency before -> after |
+| --- | ---: | ---: | ---: | --- |
+| Full order (single-partition query, ~32 items) | 1,148.70 RU | **291.28 RU** | **-74.6%** | 271.5 -> 267.2 ms |
+| TITLE block | 336.17 RU | **80.93 RU** | -75.9% | 100.8 -> 93.7 ms |
+| CDF block | 348.88 RU | **93.48 RU** | -73.2% | 67.4 -> 101.7 ms |
+| PARTIES block | 210.58 RU | **57.90 RU** | -72.5% | 48.5 -> 36.9 ms |
+| NOTES block | 59.94 RU | **17.92 RU** | -70.1% | 16.0 -> 24.6 ms |
+| Tenant-scoped search | 8.00 RU | **3.45 RU** | -56.9% | 7.0 -> 27.4 ms |
+| **Point read with full PK** | 1.04 RU | **1.04 RU** | **0.0%** | 4.0 -> 4.5 ms |
+| **Write one order** | 763.72 RU | **763.72 RU** | **0.0%** | 320.8 -> 402.9 ms |
+
+The pattern is consistent and informative:
+
+- **Point reads and writes did not change at all.** They are charged on the
+  document, and the document did not change.
+- **Every *query* got ~3-4x cheaper.** Queries are charged for the work of
+  scanning within a physical partition, and after the split each physical
+  partition holds a fraction of the data.
+- **Latency did not improve**, so the underlying work is similar - what changed is
+  what Cosmos charges for it.
+
+**Consequences for anyone sizing this workload:**
+
+1. **RU measured on a small single-partition container badly overstates steady-state
+   cost.** A POC that measures early and extrapolates will over-provision by ~4x.
+2. **RU is not predictable from payload size alone.** It depends on physical
+   partition layout, which depends on data volume and on the highest throughput
+   ever provisioned - neither of which is visible in a cost calculator.
+3. **Point reads are the one stable unit.** If cost predictability matters, design
+   for point reads (which means putting the tenant in the route so a summary is a
+   pure point read - see section 5).
+
+Both measurements are retained in
+[`results/cosmos/index-impact.json`](../results/cosmos/index-impact.json).
+
 ### Scaling up raises the floor permanently
 
 Worth knowing before provisioning for a burst. After the container was scaled to
