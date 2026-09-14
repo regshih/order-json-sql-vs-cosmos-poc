@@ -253,13 +253,22 @@ def build_md(reads: list[dict[str, Any]], writes: list[dict[str, Any]],
     if size_rows:
         a("## Latency vs payload size (full-order reads)")
         a("")
-        a("| Backend | RPS | Payload bucket | n | p50 ms | p95 ms | p99 ms | Mean bytes |")
-        a("| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |")
+        a("Only the `full` workload is shown: the `mix` workload also returns whole")
+        a("orders (5% of its requests) but with too few samples per bucket to be")
+        a("meaningful, and mixing the two made identical-looking duplicate rows.")
+        a("")
+        a("| Backend | Workload | RPS | Payload bucket | n | p50 ms | p95 ms | p99 ms | Mean bytes |")
+        a("| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |")
         order = {"<0.75MB": 0, "0.75-1.25MB": 1, "1.25-2MB": 2, "2-4MB": 3, ">4MB": 4}
-        for r in sorted(size_rows, key=lambda x: (x["backend"], x["targetRps"] or 0,
-                                                  order.get(x["bucket"], 9))):
-            a(f"| {r['backend']} | {fmt(r['targetRps'],0)} | {r['bucket']} | {fmt(r['count'],0)} | "
-              f"{fmt(r['p50Ms'])} | {fmt(r['p95Ms'])} | {fmt(r['p99Ms'])} | {fmt(r['meanBytes'],0)} |")
+        shown = [r for r in size_rows if r["workload"] == "full"]
+        for r in sorted(shown, key=lambda x: (x["backend"], x["targetRps"] or 0,
+                                              order.get(x["bucket"], 9))):
+            a(f"| {r['backend']} | {r['workload']} | {fmt(r['targetRps'],0)} | {r['bucket']} | "
+              f"{fmt(r['count'],0)} | {fmt(r['p50Ms'])} | {fmt(r['p95Ms'])} | {fmt(r['p99Ms'])} | "
+              f"{fmt(r['meanBytes'],0)} |")
+        a("")
+        a("The full set, including the `mix` contributions, is in")
+        a("[`summary-by-size.csv`](summary-by-size.csv).")
         a("")
 
     # ---------------- where the time goes ----------------
