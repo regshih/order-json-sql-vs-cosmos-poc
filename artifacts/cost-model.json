@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-14T13:24:28.715902+00:00",
+  "generatedUtc": "2026-09-14T13:45:52.668830+00:00",
   "pricingSnapshot": {
     "retrievedUtc": "2026-09-13T19:18:55.005049+00:00",
     "region": "westus3",
@@ -172,58 +172,51 @@
   },
   "measuredRu": {
     "source": [
-      "run-012-mix-10rps.json",
-      "run-013-mix-25rps.json",
-      "run-014-mix-50rps.json",
-      "run-015-mix-100rps.json",
-      "run-016-mix-200rps.json",
-      "run-017-summary-50rps.json",
-      "run-018-title-50rps.json",
-      "run-019-cdf-50rps.json",
-      "run-020-search-50rps.json",
-      "run-021-full-10rps.json",
-      "run-022-full-25rps.json",
-      "run-023-full-50rps.json"
+      "cosmos\\effective-ru-under-load.json"
     ],
+    "label": "under-load (capacity-ceiling derivation)",
+    "measuredUtc": "2026-09-14T13:41:55.590751+00:00",
+    "method": "A container with a known autoscale ceiling is driven at 50 RPS. Where the workload is RU-bound the achieved rate is capped, so effectiveRuPerRequest = ceilingRuPerSecond / achievedRps. Where it is not capped the result is an upper bound only.",
     "byOperation": {
-      "cdf": {
-        "samples": 4506,
-        "p50": 125.614,
-        "p95": 163.423,
-        "mean": 132.002
-      },
-      "checklist": {
-        "samples": 1763,
-        "p50": 22.191,
-        "p95": 22.943,
-        "mean": 21.957
-      },
-      "full": {
-        "samples": 3678,
-        "p50": 535.81,
-        "p95": 562.319,
-        "mean": 477.301
-      },
       "summary": {
-        "samples": 12811,
-        "p50": 7.76,
-        "p95": 7.76,
-        "mean": 7.274
+        "mean": 5.81,
+        "p50": 5.81,
+        "p95": 5.81,
+        "samples": 0,
+        "basis": "isolated post-split (not RU-bound under load)"
       },
       "title": {
-        "samples": 7511,
-        "p50": 122.186,
-        "p95": 157.571,
-        "mean": 125.751
+        "mean": 175.6,
+        "p50": 175.6,
+        "p95": 175.6,
+        "samples": 0,
+        "basis": "capacity-ceiling derivation"
       },
-      "search": {
-        "samples": 628,
-        "p50": 4.52,
-        "p95": 5.3,
-        "mean": 4.381
+      "cdf": {
+        "mean": 198.5,
+        "p50": 198.5,
+        "p95": 198.5,
+        "samples": 0,
+        "basis": "capacity-ceiling derivation"
+      },
+      "mix": {
+        "mean": 51.61,
+        "p50": 51.61,
+        "p95": 51.61,
+        "samples": 0,
+        "basis": "isolated post-split (not RU-bound under load)"
+      },
+      "full": {
+        "mean": 515.0,
+        "p50": 515.0,
+        "p95": 515.0,
+        "samples": 0,
+        "basis": "capacity-ceiling derivation"
+      },
+      "_derivedMix": {
+        "mean": 96.7
       }
-    },
-    "caveat": "sampled from one of several uvicorn workers; run cosmos/indexing/measure_index_impact.py for authoritative RU"
+    }
   },
   "measuredWriteRu": {},
   "workloadMix": {
@@ -237,184 +230,162 @@
     {
       "rps": 10,
       "mode": "provisioned",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 746.5,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 967.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 1100,
+      "provisionedRuPerSec": 1500,
       "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 64.24,
+      "monthlyThroughputUsd": 87.6,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     },
     {
       "rps": 10,
       "mode": "autoscale",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 746.5,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 967.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 1100,
+      "provisionedRuPerSec": 1500,
       "unitPricePer100RuPerHour": 0.012,
-      "monthlyThroughputUsd": 96.36,
+      "monthlyThroughputUsd": 131.4,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     },
     {
       "rps": 50,
       "mode": "provisioned",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 3732.4,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 4835.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 5600,
+      "provisionedRuPerSec": 7300,
       "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 327.04,
+      "monthlyThroughputUsd": 426.32,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     },
     {
       "rps": 50,
       "mode": "autoscale",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 3732.4,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 4835.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 5600,
+      "provisionedRuPerSec": 7300,
       "unitPricePer100RuPerHour": 0.012,
-      "monthlyThroughputUsd": 490.56,
+      "monthlyThroughputUsd": 639.48,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     },
     {
       "rps": 100,
       "mode": "provisioned",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 7464.8,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 9670.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 11200,
+      "provisionedRuPerSec": 14500,
       "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 654.08,
+      "monthlyThroughputUsd": 846.8,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     },
     {
       "rps": 100,
       "mode": "autoscale",
-      "measuredRuPerRequest": 74.648,
-      "ruPerSecondRequired": 7464.8,
+      "measuredRuPerRequest": 96.7,
+      "ruPerSecondRequired": 9670.0,
       "headroomFactor": 1.5,
-      "provisionedRuPerSec": 11200,
+      "provisionedRuPerSec": 14500,
       "unitPricePer100RuPerHour": 0.012,
-      "monthlyThroughputUsd": 981.12,
+      "monthlyThroughputUsd": 1270.2,
       "perOperationRu": {
-        "summary": 7.274,
-        "title": 125.751,
-        "cdf": 132.002,
-        "checklist": 21.957,
-        "full": 477.301
-      }
+        "summary": 5.81,
+        "title": 175.6,
+        "cdf": 198.5,
+        "full": 515.0
+      },
+      "ruBasis": "capacity-ceiling derivation of the whole mix"
     }
   ],
   "cosmosPerOperationAt50Rps": {
     "summary": {
       "rps": 50,
       "mode": "provisioned",
-      "measuredRuPerRequest": 7.274,
-      "ruPerSecondRequired": 363.7,
-      "headroomFactor": 1.5,
-      "provisionedRuPerSec": 500,
-      "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 29.2,
-      "perOperationRu": {
-        "summary": 7.274
-      }
-    },
-    "title": {
-      "rps": 50,
-      "mode": "provisioned",
-      "measuredRuPerRequest": 125.751,
-      "ruPerSecondRequired": 6287.6,
-      "headroomFactor": 1.5,
-      "provisionedRuPerSec": 9400,
-      "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 548.96,
-      "perOperationRu": {
-        "title": 125.751
-      }
-    },
-    "cdf": {
-      "rps": 50,
-      "mode": "provisioned",
-      "measuredRuPerRequest": 132.002,
-      "ruPerSecondRequired": 6600.1,
-      "headroomFactor": 1.5,
-      "provisionedRuPerSec": 9900,
-      "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 578.16,
-      "perOperationRu": {
-        "cdf": 132.002
-      }
-    },
-    "checklist": {
-      "rps": 50,
-      "mode": "provisioned",
-      "measuredRuPerRequest": 21.957,
-      "ruPerSecondRequired": 1097.9,
-      "headroomFactor": 1.5,
-      "provisionedRuPerSec": 1600,
-      "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 93.44,
-      "perOperationRu": {
-        "checklist": 21.957
-      }
-    },
-    "full": {
-      "rps": 50,
-      "mode": "provisioned",
-      "measuredRuPerRequest": 477.301,
-      "ruPerSecondRequired": 23865.0,
-      "headroomFactor": 1.5,
-      "provisionedRuPerSec": 35800,
-      "unitPricePer100RuPerHour": 0.008,
-      "monthlyThroughputUsd": 2090.72,
-      "perOperationRu": {
-        "full": 477.301
-      }
-    },
-    "search": {
-      "rps": 50,
-      "mode": "provisioned",
-      "measuredRuPerRequest": 4.381,
-      "ruPerSecondRequired": 219.1,
+      "measuredRuPerRequest": 5.81,
+      "ruPerSecondRequired": 290.5,
       "headroomFactor": 1.5,
       "provisionedRuPerSec": 400,
       "unitPricePer100RuPerHour": 0.008,
       "monthlyThroughputUsd": 23.36,
       "perOperationRu": {
-        "search": 4.381
-      }
+        "summary": 5.81
+      },
+      "ruBasis": "weighted per-operation measurements"
+    },
+    "title": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 175.6,
+      "ruPerSecondRequired": 8780.0,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 13200,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 770.88,
+      "perOperationRu": {
+        "title": 175.6
+      },
+      "ruBasis": "weighted per-operation measurements"
+    },
+    "cdf": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 198.5,
+      "ruPerSecondRequired": 9925.0,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 14900,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 870.16,
+      "perOperationRu": {
+        "cdf": 198.5
+      },
+      "ruBasis": "weighted per-operation measurements"
+    },
+    "full": {
+      "rps": 50,
+      "mode": "provisioned",
+      "measuredRuPerRequest": 515.0,
+      "ruPerSecondRequired": 25750.0,
+      "headroomFactor": 1.5,
+      "provisionedRuPerSec": 38600,
+      "unitPricePer100RuPerHour": 0.008,
+      "monthlyThroughputUsd": 2254.24,
+      "perOperationRu": {
+        "full": 515.0
+      },
+      "ruBasis": "weighted per-operation measurements"
     }
   },
   "cosmosStorage": {

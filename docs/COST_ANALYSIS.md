@@ -1,6 +1,6 @@
 # Cost Analysis
 
-Generated 2026-09-14T13:24:28.715902+00:00 by [tools/cost_model.py](../tools/cost_model.py).
+Generated 2026-09-14T13:45:52.668830+00:00 by [tools/cost_model.py](../tools/cost_model.py).
 
 ## Pricing basis
 
@@ -34,18 +34,18 @@ Generated 2026-09-14T13:24:28.715902+00:00 by [tools/cost_model.py](../tools/cos
 
 ## Measured Cosmos RU (not estimated)
 
-Source: `run-012-mix-10rps.json, run-013-mix-25rps.json, run-014-mix-50rps.json, run-015-mix-100rps.json, run-016-mix-200rps.json, run-017-summary-50rps.json, run-018-title-50rps.json, run-019-cdf-50rps.json, run-020-search-50rps.json, run-021-full-10rps.json, run-022-full-25rps.json, run-023-full-50rps.json`
+Source: `cosmos/effective-ru-under-load.json`
 
-> **Caveat:** sampled from one of several uvicorn workers; run cosmos/indexing/measure_index_impact.py for authoritative RU.
+Method: A container with a known autoscale ceiling is driven at 50 RPS. Where the workload is RU-bound the achieved rate is capped, so effectiveRuPerRequest = ceilingRuPerSecond / achievedRps. Where it is not capped the result is an upper bound only.
 
-| Operation | RU mean | RU p50 | RU p95 | Requests measured |
-| --- | ---: | ---: | ---: | ---: |
-| `cdf` | 132.002 | 125.614 | 163.423 | 4,506 |
-| `checklist` | 21.957 | 22.191 | 22.943 | 1,763 |
-| `full` | 477.301 | 535.81 | 562.319 | 3,678 |
-| `search` | 4.381 | 4.52 | 5.3 | 628 |
-| `summary` | 7.274 | 7.76 | 7.76 | 12,811 |
-| `title` | 125.751 | 122.186 | 157.571 | 7,511 |
+| Operation | RU/request | Basis |
+| --- | ---: | --- |
+| **derived mix (used for costing)** | 96.70 | capacity-ceiling derivation of the whole mix |
+| `cdf` | 198.50 | capacity-ceiling derivation |
+| `full` | 515.00 | capacity-ceiling derivation |
+| `mix` | 51.61 | isolated post-split (not RU-bound under load) |
+| `summary` | 5.81 | isolated post-split (not RU-bound under load) |
+| `title` | 175.60 | capacity-ceiling derivation |
 
 ## Cosmos DB - throughput cost by read rate
 
@@ -53,12 +53,12 @@ Workload mix: {"summary": 0.5, "title": 0.2, "cdf": 0.15, "checklist": 0.1, "ful
 
 | RPS | Mode | Measured RU/request | RU/s required | Provisioned RU/s | $/month |
 | ---: | --- | ---: | ---: | ---: | ---: |
-| 10 | provisioned | 74.648 | 746.5 | 1,100 | $64.24 |
-| 10 | autoscale | 74.648 | 746.5 | 1,100 | $96.36 |
-| 50 | provisioned | 74.648 | 3,732.4 | 5,600 | $327.04 |
-| 50 | autoscale | 74.648 | 3,732.4 | 5,600 | $490.56 |
-| 100 | provisioned | 74.648 | 7,464.8 | 11,200 | $654.08 |
-| 100 | autoscale | 74.648 | 7,464.8 | 11,200 | $981.12 |
+| 10 | provisioned | 96.7 | 967.0 | 1,500 | $87.60 |
+| 10 | autoscale | 96.7 | 967.0 | 1,500 | $131.40 |
+| 50 | provisioned | 96.7 | 4,835.0 | 7,300 | $426.32 |
+| 50 | autoscale | 96.7 | 4,835.0 | 7,300 | $639.48 |
+| 100 | provisioned | 96.7 | 9,670.0 | 14,500 | $846.80 |
+| 100 | autoscale | 96.7 | 9,670.0 | 14,500 | $1,270.20 |
 
 Provisioning includes a 1.5x headroom factor over
 the steady-state mean, because Cosmos bills provisioned throughput rather than
@@ -68,12 +68,10 @@ consumption — sizing to the mean throttles on burst.
 
 | Operation | Measured RU/request | RU/s at 50 RPS | Provisioned RU/s | $/month |
 | --- | ---: | ---: | ---: | ---: |
-| `summary` | 7.274 | 363.7 | 500 | $29.20 |
-| `title` | 125.751 | 6,287.6 | 9,400 | $548.96 |
-| `cdf` | 132.002 | 6,600.1 | 9,900 | $578.16 |
-| `checklist` | 21.957 | 1,097.9 | 1,600 | $93.44 |
-| `full` | 477.301 | 23,865.0 | 35,800 | $2,090.72 |
-| `search` | 4.381 | 219.1 | 400 | $23.36 |
+| `summary` | 5.81 | 290.5 | 400 | $23.36 |
+| `title` | 175.6 | 8,780.0 | 13,200 | $770.88 |
+| `cdf` | 198.5 | 9,925.0 | 14,900 | $870.16 |
+| `full` | 515.0 | 25,750.0 | 38,600 | $2,254.24 |
 
 This is the single most decision-relevant table in the cost analysis: it prices
 the difference between an API that serves whole orders and one that serves

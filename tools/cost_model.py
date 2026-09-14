@@ -209,8 +209,53 @@ BLOCK_TO_ENDPOINT = {"TITLE": "title", "CDF": "cdf", "CHECKLIST": "checklist",
                      "NOTES": "notes", "PARTIES": "parties"}
 
 
+def load_under_load_ru(results_dir: Path) -> dict[str, Any]:
+    """BEST RU source: effective RU derived from a measured capacity ceiling.
+
+    Isolated single-request RU is not a safe basis for sizing - measurement
+    showed it wrong in both directions (4x too high on a single-partition
+    container, then ~2x too low without concurrency). The figure that answers
+    "how much throughput must I buy" is derived from what the workload actually
+    achieved against a known ceiling:
+
+        effectiveRuPerRequest = ceilingRuPerSecond / achievedRps
+
+    Produced by driving the sweep at a known ceiling; see
+    results/cosmos/effective-ru-under-load.json and
+    docs/DECISION_MATRIX.md section 3.1.
+    """
+    p = results_dir / "cosmos" / "effective-ru-under-load.json"
+    if not p.exists():
+        return {}
+    d = json.loads(p.read_text())
+    ops = d.get("operations", {})
+    by_op: dict[str, Any] = {}
+    for name, v in ops.items():
+        ru = v.get("effectiveRuPerRequest") or v.get("upperBoundRuPerRequest")
+        if ru is None:
+            continue
+        # For operations that were not RU-bound, the isolated post-split figure
+        # is the better estimate than a loose upper bound.
+        if not v.get("capped") and v.get("isolatedPostSplitRu"):
+            ru = v["isolatedPostSplitRu"]
+        by_op[name] = {"mean": ru, "p50": ru, "p95": ru,
+                       "samples": 0,
+                       "basis": "capacity-ceiling derivation" if v.get("capped")
+                                else "isolated post-split (not RU-bound under load)"}
+    mix = d.get("derivedMix", {})
+    if mix.get("effectiveRuPerRequest"):
+        by_op["_derivedMix"] = {"mean": mix["effectiveRuPerRequest"]}
+    return {
+        "source": [str(p.relative_to(results_dir))],
+        "label": "under-load (capacity-ceiling derivation)",
+        "measuredUtc": d.get("generatedUtc"),
+        "method": d.get("method"),
+        "byOperation": by_op,
+    }
+
+
 def load_authoritative_ru(results_dir: Path) -> dict[str, Any]:
-    """Preferred RU source: the single-process, isolated measurement.
+    """Fallback RU source: the single-process, isolated measurement.
 
     The benchmark API runs 8 uvicorn workers, each with its own in-process
     metrics ring, so its reported RU is a one-worker sample that can carry
@@ -318,11 +363,15 @@ def cosmos_cost(snapshot: dict[str, Any], ru: dict[str, Any], rps: float,
     throttle on any burst.
     """
     by_op = ru.get("byOperation", {})
-    missing = [op for op in mix if op not in by_op]
-    if missing:
-        return {"error": f"no measured RU for {missing}; run the Cosmos benchmark first"}
-
-    ru_per_request = sum(mix[op] * by_op[op]["mean"] for op in mix)
+    # If the mix was derived directly from a capacity measurement, use it: it is
+    # a measurement, not a re-weighting of per-operation figures.
+    if len(mix) > 1 and "_derivedMix" in by_op:
+        ru_per_request = by_op["_derivedMix"]["mean"]
+    else:
+        missing = [op for op in mix if op not in by_op]
+        if missing:
+            return {"error": f"no measured RU for {missing}; run the Cosmos benchmark first"}
+        ru_per_request = sum(mix[op] * by_op[op]["mean"] for op in mix)
     ru_per_sec = ru_per_request * rps
     provisioned = max(400, int(round(ru_per_sec * headroom / 100.0)) * 100)
 
@@ -341,7 +390,10 @@ def cosmos_cost(snapshot: dict[str, Any], ru: dict[str, Any], rps: float,
         "provisionedRuPerSec": provisioned,
         "unitPricePer100RuPerHour": unit,
         "monthlyThroughputUsd": round(monthly, 2),
-        "perOperationRu": {op: by_op[op]["mean"] for op in mix},
+        "perOperationRu": {op: by_op[op]["mean"] for op in mix if op in by_op},
+        "ruBasis": ("capacity-ceiling derivation of the whole mix"
+                    if (len(mix) > 1 and "_derivedMix" in by_op)
+                    else "weighted per-operation measurements"),
     }
 
 
@@ -391,10 +443,14 @@ def main() -> None:
           f"(retrieved {snapshot['retrievedUtc'][:10]}, region {snapshot['armRegionName']})")
 
     results = Path(args.results)
-    ru = load_authoritative_ru(results)
+    ru = load_under_load_ru(results)
     if ru:
-        print(f"RU source: {ru['source'][0]} (single-process, authoritative)")
+        print(f"RU source: {ru['source'][0]} (under-load capacity derivation - best)")
     else:
+        ru = load_authoritative_ru(results)
+    if ru and "effective-ru" not in (ru.get("source") or [""])[0]:
+        print(f"RU source: {(ru.get('source') or ['?'])[0]} (isolated single-process)")
+    if not ru:
         ru = load_measured_ru(results)
         if ru.get("byOperation"):
             print("RU source: benchmark API telemetry (INDICATIVE - one-worker sample)")
@@ -530,18 +586,22 @@ def build_md(d: dict[str, Any]) -> str:
         a("> any Cosmos cost figure. This document deliberately shows no estimate.")
         a("")
     else:
-        a(f"Source: `{', '.join(ru['source'])}`")
+        a(f"Source: `{', '.join(x.replace(chr(92), '/') for x in ru['source'])}`")
         if ru.get("method"):
             a("")
-            a(f"Method: {ru['method']}.")
+            a(f"Method: {ru['method'].rstrip('.')}.")
         if ru.get("caveat"):
             a("")
             a(f"> **Caveat:** {ru['caveat']}.")
         a("")
-        a("| Operation | RU mean | RU p50 | RU p95 | Requests measured |")
-        a("| --- | ---: | ---: | ---: | ---: |")
+        a("| Operation | RU/request | Basis |")
+        a("| --- | ---: | --- |")
         for op, m in sorted(ru["byOperation"].items()):
-            a(f"| `{op}` | {m['mean']} | {m['p50']} | {m['p95']} | {m['samples']:,} |")
+            if op == "_derivedMix":
+                label, basis = "**derived mix (used for costing)**",                     "capacity-ceiling derivation of the whole mix"
+            else:
+                label, basis = f"`{op}`", m.get("basis", "measured")
+            a(f"| {label} | {m['mean']:,.2f} | {basis} |")
         a("")
     if d["measuredWriteRu"]:
         w = d["measuredWriteRu"]
