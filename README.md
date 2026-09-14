@@ -97,9 +97,19 @@ not in capability.
 - **A whole-order read costs 269x the RU of a summary** (1,152 vs 4.28). Serving
   business blocks instead of whole orders is worth ~3.4x on Cosmos RU and ~3.4x
   on SQL latency.
-- **Cosmos needed ~10x the provisioned capacity** to reach parity. At a 4,000
-  RU/s ceiling the same workload collapsed to 23 RPS with a 34-second p50; the
-  measured per-operation RU predicts that collapse to within ~10%.
+- **Cosmos cost depends almost entirely on what the API serves.** At the same
+  50 RPS: **$23/month** for a summary-only API, **$426** for the realistic mix,
+  **$2,254** for a whole-order API. Azure SQL is **$222 regardless**. That
+  asymmetry is the real decision axis.
+- **RU measured three ways spanned a 4x range.** Splitting the container across
+  more physical partitions cut query RU by **~75% with no latency change**, and
+  concurrency then raises effective RU **1.7-2.1x** above an isolated
+  single-request measurement. Point reads and writes were unaffected by either.
+  **Isolated RU is not a safe basis for sizing** - it was wrong in both
+  directions here.
+- **Under-provisioned Cosmos fails hard, not gracefully.** At a 4,000 RU/s
+  ceiling the mix collapsed to 23 RPS with a 34-second p50 and 100k+ 429s per
+  15 minutes.
 - **A single-level `/customerId` partition key would exceed the 20 GiB logical
   partition limit by ~11x** within the two-year horizon. The hierarchical
   `/customerId` + `/orderId` key holds each partition at **0.0061%** of the
@@ -114,9 +124,15 @@ not in capability.
   aggregation. A third - RU under-reporting by ~42x - was caught by measuring the
   same thing two ways.
 
-**Current recommendation: Azure SQL with the hybrid model**, at ~4.5-16x lower
-cost for this read-heavy multi-megabyte workload - with the conditions under
-which that flips stated explicitly in
+- **Direct Fabric/Delta serving is not viable** for this API: **26x slower** than
+  SQL on summary reads (218 ms vs 8.2 ms), **31-48% error rates** at 50 RPS,
+  **107 s stale**, and read-only. Measured, not assumed - see
+  [docs/FABRIC_DIRECT_SERVING_CONTROL.md](docs/FABRIC_DIRECT_SERVING_CONTROL.md).
+
+**Current recommendation: Azure SQL with the hybrid model** - on latency (2-4x
+lower), query flexibility, and cost *stability*, at ~1.9x the cost of Cosmos on
+the realistic mix. The conditions that flip it are specific and two are cheap;
+they are stated explicitly in
 [docs/DECISION_MATRIX.md](docs/DECISION_MATRIX.md) section 8.
 
 ## Repository layout
