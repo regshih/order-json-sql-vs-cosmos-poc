@@ -105,6 +105,50 @@ class CosmosOrderRepository(OrderRepository):
         m.request_charge += ru
         m.cosmos_requests += 1
 
+    def _query(
+        self,
+        m: RequestMetrics | None,
+        query: str,
+        parameters: list[dict[str, Any]] | None = None,
+        *,
+        partition_key: Any = None,
+        cross_partition: bool = False,
+        max_item_count: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Run a query and accumulate the request charge across ALL pages.
+
+        This matters a great deal. ``client_connection.last_response_headers``
+        holds only the MOST RECENT page's charge, so reading it once after
+        draining a multi-page query under-reports RU by the number of pages -
+        which for a full-order read (~1 MB over many pages) is a factor of ~40.
+        Cosmos RU is the headline cost metric for this path, so it is measured
+        page by page rather than sampled at the end.
+        """
+        kwargs: dict[str, Any] = {}
+        if partition_key is not None:
+            kwargs["partition_key"] = partition_key
+        elif cross_partition:
+            kwargs["enable_cross_partition_query"] = True
+        if max_item_count is not None:
+            kwargs["max_item_count"] = max_item_count
+
+        paged = self.container.query_items(query=query, parameters=parameters or [], **kwargs)
+        items: list[dict[str, Any]] = []
+        ru = 0.0
+        pages = 0
+        for page in paged.by_page():
+            items.extend(page)
+            pages += 1
+            ru += float(
+                self.container.client_connection.last_response_headers.get(
+                    "x-ms-request-charge", 0.0
+                )
+            )
+        if m is not None:
+            m.request_charge += ru
+            m.cosmos_requests += pages
+        return items
+
     def _track(self, m: RequestMetrics | None, exc: Exception) -> None:
         if m is not None and isinstance(exc, exceptions.CosmosHttpResponseError):
             if exc.status_code == 429:
@@ -138,13 +182,11 @@ class CosmosOrderRepository(OrderRepository):
             "WHERE c.orderId = @oid AND c.docType = @dt"
         )
         with m.db():  # type: ignore[attr-defined]
-            it = self.container.query_items(
-                query=q,
-                parameters=[{"name": "@oid", "value": order_id}, {"name": "@dt", "value": DOC_TYPE_HEADER}],
-                enable_cross_partition_query=True,
+            rows = self._query(
+                m, q,
+                [{"name": "@oid", "value": order_id}, {"name": "@dt", "value": DOC_TYPE_HEADER}],
+                cross_partition=True,
             )
-            rows = list(it)
-            self._charge(m, self.container.client_connection.last_response_headers)
         return rows[0] if rows else None
 
     def _read_header(self, order_id: str, m: RequestMetrics, customer_id: str | None = None) -> dict[str, Any] | None:
@@ -213,12 +255,7 @@ class CosmosOrderRepository(OrderRepository):
 
         with m.db():  # type: ignore[attr-defined]
             # Single-partition query: the full HPK is in the predicate.
-            items = list(
-                self.container.query_items(
-                    query=q, parameters=params, partition_key=[customer_id, order_id]
-                )
-            )
-            self._charge(m, self.container.client_connection.last_response_headers)
+            items = self._query(m, q, params, partition_key=[customer_id, order_id])
         if not items:
             return None
         m.items_read += len(items)
@@ -244,23 +281,21 @@ class CosmosOrderRepository(OrderRepository):
         customer_id, version = stub["customerId"], stub["orderVersion"]
 
         with m.db():  # type: ignore[attr-defined]
-            items = list(
-                self.container.query_items(
-                    query=(
-                        "SELECT c.docType, c.blockType, c.blockSubType, c.sequence, "
-                        "c.chunkIndex, c.chunkCount, c.chunkOfPath, c.data, c.extract FROM c "
-                        "WHERE c.customerId = @cid AND c.orderId = @oid AND c.orderVersion = @v"
-                    ),
-                    parameters=[
-                        {"name": "@cid", "value": customer_id},
-                        {"name": "@oid", "value": order_id},
-                        {"name": "@v", "value": version},
-                    ],
-                    partition_key=[customer_id, order_id],
-                    max_item_count=200,
-                )
+            items = self._query(
+                m,
+                "SELECT c.docType, c.blockType, c.blockSubType, c.sequence, "
+                "c.chunkIndex, c.chunkCount, c.chunkOfPath, c.data, c.extract FROM c "
+                "WHERE c.customerId = @cid AND c.orderId = @oid AND c.orderVersion = @v",
+                [
+                    {"name": "@cid", "value": customer_id},
+                    {"name": "@oid", "value": order_id},
+                    {"name": "@v", "value": version},
+                ],
+                partition_key=[customer_id, order_id],
+                # One page for a whole order: fewer round trips and, because RU
+                # is charged per page with a per-page overhead, fewer RU too.
+                max_item_count=1000,
             )
-            self._charge(m, self.container.client_connection.last_response_headers)
         if not items:
             return None
         m.items_read += len(items)
@@ -302,17 +337,14 @@ class CosmosOrderRepository(OrderRepository):
             "c.search, c.payloadBytes FROM c WHERE " + " AND ".join(where)
         )
 
-        kwargs: dict[str, Any] = {}
-        if c.customer_id:
-            # Scoping to one customer keeps this inside a single first-level
-            # partition prefix instead of fanning out across every tenant.
-            kwargs["partition_key"] = [c.customer_id]
-        else:
-            kwargs["enable_cross_partition_query"] = True
-
         with m.db():  # type: ignore[attr-defined]
-            rows = list(self.container.query_items(query=q, parameters=params, **kwargs))
-            self._charge(m, self.container.client_connection.last_response_headers)
+            rows = self._query(
+                m, q, params,
+                # Scoping to one customer keeps this inside a single first-level
+                # partition prefix instead of fanning out across every tenant.
+                partition_key=[c.customer_id] if c.customer_id else None,
+                cross_partition=not c.customer_id,
+            )
 
         return [
             {

@@ -1,0 +1,505 @@
+{
+  "meta": {
+    "runUtc": "2026-09-13T19:41:00.094076+00:00",
+    "backend": "sql",
+    "workload": "summary",
+    "workloadWeights": {
+      "summary": 1.0
+    },
+    "targetRps": 50.0,
+    "durationSec": 60.0,
+    "warmupSec": 15.0,
+    "repeats": 1,
+    "maxInflight": 256,
+    "baseUrl": "http://10.60.1.4:8000",
+    "orderPoolSize": 506,
+    "sizeFilter": null,
+    "loadClient": {
+      "host": "vm-orderjsonpoc-load",
+      "python": "3.12.3"
+    },
+    "note": "sweep 20260913T193944Z"
+  },
+  "runs": [
+    {
+      "targetRps": 50.0,
+      "durationSec": 60.02,
+      "requestsIssued": 3000,
+      "requestsOk": 3000,
+      "requestsFailed": 0,
+      "errorRatePct": 0.0,
+      "achievedRps": 49.98,
+      "achievedOkRps": 49.98,
+      "totalResponseBytes": 2260191,
+      "throughputMBps": 0.04,
+      "overall": {
+        "count": 3000,
+        "latencyMs": {
+          "p50": 8.22,
+          "p90": 9.43,
+          "p95": 9.84,
+          "p99": 11.37,
+          "max": 17.76,
+          "mean": 8.29
+        },
+        "queueMs": {
+          "p50": 0.95,
+          "p95": 2.09,
+          "max": 2.78
+        },
+        "responseBytes": {
+          "p50": 753,
+          "p95": 763,
+          "mean": 753,
+          "max": 770
+        },
+        "throughputMBps": 0.04
+      },
+      "byOperation": {
+        "summary": {
+          "count": 3000,
+          "latencyMs": {
+            "p50": 8.22,
+            "p90": 9.43,
+            "p95": 9.84,
+            "p99": 11.37,
+            "max": 17.76,
+            "mean": 8.29
+          },
+          "queueMs": {
+            "p50": 0.95,
+            "p95": 2.09,
+            "max": 2.78
+          },
+          "responseBytes": {
+            "p50": 753,
+            "p95": 763,
+            "mean": 753,
+            "max": 770
+          },
+          "throughputMBps": 0.04
+        }
+      },
+      "byPayloadSize": {},
+      "errorKinds": {}
+    }
+  ],
+  "aggregate": {
+    "targetRps": 50.0,
+    "durationSec": 60.02,
+    "requestsIssued": 3000,
+    "requestsOk": 3000,
+    "requestsFailed": 0,
+    "errorRatePct": 0.0,
+    "achievedRps": 49.98,
+    "achievedOkRps": 49.98,
+    "totalResponseBytes": 2260191,
+    "throughputMBps": 0.04,
+    "overall": {
+      "count": 3000,
+      "latencyMs": {
+        "p50": 8.22,
+        "p90": 9.43,
+        "p95": 9.84,
+        "p99": 11.37,
+        "max": 17.76,
+        "mean": 8.29
+      },
+      "queueMs": {
+        "p50": 0.95,
+        "p95": 2.09,
+        "max": 2.78
+      },
+      "responseBytes": {
+        "p50": 753,
+        "p95": 763,
+        "mean": 753,
+        "max": 770
+      },
+      "throughputMBps": 0.04
+    },
+    "byOperation": {
+      "summary": {
+        "count": 3000,
+        "latencyMs": {
+          "p50": 8.22,
+          "p90": 9.43,
+          "p95": 9.84,
+          "p99": 11.37,
+          "max": 17.76,
+          "mean": 8.29
+        },
+        "queueMs": {
+          "p50": 0.95,
+          "p95": 2.09,
+          "max": 2.78
+        },
+        "responseBytes": {
+          "p50": 753,
+          "p95": 763,
+          "mean": 753,
+          "max": 770
+        },
+        "throughputMBps": 0.04
+      }
+    },
+    "byPayloadSize": {},
+    "errorKinds": {}
+  },
+  "serverMetrics": {
+    "backend": "sql",
+    "requests": 3000,
+    "overall": {
+      "requests": 3000,
+      "errors": 0,
+      "total_ms": {
+        "p50": 4.544,
+        "p95": 5.545,
+        "p99": 7.476,
+        "mean": 4.646,
+        "max": 13.444
+      },
+      "db_ms": {
+        "p50": 2.577,
+        "p95": 3.235,
+        "mean": 2.652
+      },
+      "reconstruct_ms": {
+        "p50": 2.006,
+        "p95": 2.475,
+        "mean": 2.063
+      },
+      "serialize_ms": {
+        "p50": 0.008,
+        "p95": 0.01,
+        "mean": 0.008
+      },
+      "response_bytes": {
+        "p50": 753,
+        "p95": 763,
+        "mean": 753,
+        "max": 770
+      }
+    },
+    "byOperation": {
+      "summary": {
+        "requests": 3000,
+        "errors": 0,
+        "total_ms": {
+          "p50": 4.544,
+          "p95": 5.545,
+          "p99": 7.476,
+          "mean": 4.646,
+          "max": 13.444
+        },
+        "db_ms": {
+          "p50": 2.577,
+          "p95": 3.235,
+          "mean": 2.652
+        },
+        "reconstruct_ms": {
+          "p50": 2.006,
+          "p95": 2.475,
+          "mean": 2.063
+        },
+        "serialize_ms": {
+          "p50": 0.008,
+          "p95": 0.01,
+          "mean": 0.008
+        },
+        "response_bytes": {
+          "p50": 753,
+          "p95": 763,
+          "mean": 753,
+          "max": 770
+        }
+      }
+    },
+    "process": {
+      "cpuPercent": 0.0,
+      "rssMb": 105.1,
+      "numThreads": 4,
+      "systemCpuPercent": 0.0,
+      "systemMemPercent": 5.4
+    },
+    "sqlResourceStats": {
+      "samples": [
+        {
+          "endTime": "2026-09-13T19:40:58.287000",
+          "cpuPct": "2.90",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.33"
+        },
+        {
+          "endTime": "2026-09-13T19:40:43.253000",
+          "cpuPct": "2.81",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.33"
+        },
+        {
+          "endTime": "2026-09-13T19:40:28.223000",
+          "cpuPct": "2.92",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.33"
+        },
+        {
+          "endTime": "2026-09-13T19:40:13.200000",
+          "cpuPct": "2.81",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.33"
+        },
+        {
+          "endTime": "2026-09-13T19:39:58.177000",
+          "cpuPct": "4.59",
+          "dataIoPct": "0.52",
+          "logWritePct": "0.00",
+          "workerPct": "2.66",
+          "sessionPct": "0.08",
+          "memoryPct": "36.03"
+        },
+        {
+          "endTime": "2026-09-13T19:39:43.160000",
+          "cpuPct": "23.78",
+          "dataIoPct": "4.69",
+          "logWritePct": "0.00",
+          "workerPct": "2.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.98"
+        },
+        {
+          "endTime": "2026-09-13T19:39:28.143000",
+          "cpuPct": "24.57",
+          "dataIoPct": "6.36",
+          "logWritePct": "0.00",
+          "workerPct": "2.66",
+          "sessionPct": "0.08",
+          "memoryPct": "35.44"
+        },
+        {
+          "endTime": "2026-09-13T19:39:13.127000",
+          "cpuPct": "24.08",
+          "dataIoPct": "1.81",
+          "logWritePct": "0.00",
+          "workerPct": "2.66",
+          "sessionPct": "0.08",
+          "memoryPct": "34.72"
+        },
+        {
+          "endTime": "2026-09-13T19:38:58.127000",
+          "cpuPct": "24.48",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "2.00",
+          "sessionPct": "0.07",
+          "memoryPct": "34.90"
+        },
+        {
+          "endTime": "2026-09-13T19:38:43.123000",
+          "cpuPct": "23.69",
+          "dataIoPct": "0.27",
+          "logWritePct": "0.00",
+          "workerPct": "2.66",
+          "sessionPct": "0.07",
+          "memoryPct": "34.90"
+        },
+        {
+          "endTime": "2026-09-13T19:38:28.120000",
+          "cpuPct": "14.19",
+          "dataIoPct": "9.20",
+          "logWritePct": "0.00",
+          "workerPct": "2.00",
+          "sessionPct": "0.07",
+          "memoryPct": "34.87"
+        },
+        {
+          "endTime": "2026-09-13T19:38:13.103000",
+          "cpuPct": "14.23",
+          "dataIoPct": "27.52",
+          "logWritePct": "0.00",
+          "workerPct": "7.33",
+          "sessionPct": "0.07",
+          "memoryPct": "33.82"
+        },
+        {
+          "endTime": "2026-09-13T19:37:58.103000",
+          "cpuPct": "12.07",
+          "dataIoPct": "0.22",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.04",
+          "memoryPct": "33.80"
+        },
+        {
+          "endTime": "2026-09-13T19:37:43.087000",
+          "cpuPct": "12.10",
+          "dataIoPct": "0.00",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.04",
+          "memoryPct": "33.78"
+        },
+        {
+          "endTime": "2026-09-13T19:37:28.083000",
+          "cpuPct": "11.68",
+          "dataIoPct": "0.35",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.04",
+          "memoryPct": "33.78"
+        },
+        {
+          "endTime": "2026-09-13T19:37:13.073000",
+          "cpuPct": "7.41",
+          "dataIoPct": "13.22",
+          "logWritePct": "0.00",
+          "workerPct": "4.00",
+          "sessionPct": "0.03",
+          "memoryPct": "33.74"
+        },
+        {
+          "endTime": "2026-09-13T19:36:58.067000",
+          "cpuPct": "7.61",
+          "dataIoPct": "12.76",
+          "logWritePct": "0.00",
+          "workerPct": "2.00",
+          "sessionPct": "0.02",
+          "memoryPct": "33.12"
+        },
+        {
+          "endTime": "2026-09-13T19:36:43.043000",
+          "cpuPct": "6.54",
+          "dataIoPct": "0.19",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.02",
+          "memoryPct": "31.45"
+        },
+        {
+          "endTime": "2026-09-13T19:36:28.020000",
+          "cpuPct": "6.24",
+          "dataIoPct": "0.02",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.02",
+          "memoryPct": "31.43"
+        },
+        {
+          "endTime": "2026-09-13T19:36:12.993000",
+          "cpuPct": "6.07",
+          "dataIoPct": "0.09",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.02",
+          "memoryPct": "31.43"
+        },
+        {
+          "endTime": "2026-09-13T19:35:57.983000",
+          "cpuPct": "3.95",
+          "dataIoPct": "6.32",
+          "logWritePct": "0.00",
+          "workerPct": "2.00",
+          "sessionPct": "0.02",
+          "memoryPct": "32.50"
+        },
+        {
+          "endTime": "2026-09-13T19:35:42.957000",
+          "cpuPct": "4.14",
+          "dataIoPct": "6.71",
+          "logWritePct": "0.00",
+          "workerPct": "2.00",
+          "sessionPct": "0.02",
+          "memoryPct": "31.64"
+        },
+        {
+          "endTime": "2026-09-13T19:35:27.930000",
+          "cpuPct": "3.28",
+          "dataIoPct": "2.39",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.02",
+          "memoryPct": "30.78"
+        },
+        {
+          "endTime": "2026-09-13T19:35:12.913000",
+          "cpuPct": "3.38",
+          "dataIoPct": "0.01",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.02",
+          "memoryPct": "30.48"
+        },
+        {
+          "endTime": "2026-09-13T19:34:57.887000",
+          "cpuPct": "3.28",
+          "dataIoPct": "0.26",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.02",
+          "memoryPct": "30.74"
+        },
+        {
+          "endTime": "2026-09-13T19:34:42.870000",
+          "cpuPct": "1.34",
+          "dataIoPct": "1.96",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.01",
+          "memoryPct": "30.71"
+        },
+        {
+          "endTime": "2026-09-13T19:34:27.850000",
+          "cpuPct": "1.65",
+          "dataIoPct": "2.82",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.01",
+          "memoryPct": "30.48"
+        },
+        {
+          "endTime": "2026-09-13T19:34:12.817000",
+          "cpuPct": "1.86",
+          "dataIoPct": "5.27",
+          "logWritePct": "0.00",
+          "workerPct": "1.33",
+          "sessionPct": "0.01",
+          "memoryPct": "30.12"
+        },
+        {
+          "endTime": "2026-09-13T19:33:57.790000",
+          "cpuPct": "1.38",
+          "dataIoPct": "0.04",
+          "logWritePct": "0.00",
+          "workerPct": "0.66",
+          "sessionPct": "0.01",
+          "memoryPct": "31.85"
+        },
+        {
+          "endTime": "2026-09-13T19:33:42.763000",
+          "cpuPct": "3.07",
+          "dataIoPct": "5.80",
+          "logWritePct": "0.21",
+          "workerPct": "2.00",
+          "sessionPct": "0.01",
+          "memoryPct": "31.85"
+        }
+      ],
+      "activeConnections": 30,
+      "maxCpuPct": "24.57",
+      "maxDataIoPct": "27.52",
+      "avgCpuPct": "8.74",
+      "poolCheckoutWaits": 0
+    }
+  }
+}

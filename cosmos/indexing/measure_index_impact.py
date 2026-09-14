@@ -76,19 +76,28 @@ def measure(label: str, samples: int) -> dict[str, Any]:
     # -- 1. the cross-partition lookup, in isolation --------------------
     # This is the query every read pays before it can do a point read, because
     # the API contract carries no tenant in the route.
+    def paged_ru(query: str, params: list, **kw) -> tuple[float, int]:
+        """Accumulate the request charge across every page - reading the
+        connection's last_response_headers once is unreliable."""
+        paged = repo.container.query_items(query=query, parameters=params, **kw)
+        ru, n = 0.0, 0
+        for page in paged.by_page():
+            n += len(list(page))
+            ru += float(repo.container.client_connection.last_response_headers.get(
+                "x-ms-request-charge", 0))
+        return ru, n
+
     lookup_ru, lookup_ms = [], []
     for t in targets:
         t0 = time.perf_counter()
-        list(repo.container.query_items(
-            query=("SELECT TOP 1 c.customerId, c.orderVersion FROM c "
-                   "WHERE c.orderId = @oid AND c.docType = @dt"),
-            parameters=[{"name": "@oid", "value": t["orderId"]},
-                        {"name": "@dt", "value": DOC_TYPE_HEADER}],
-            enable_cross_partition_query=True,
-        ))
+        ru, _ = paged_ru(
+            "SELECT TOP 1 c.customerId, c.orderVersion FROM c "
+            "WHERE c.orderId = @oid AND c.docType = @dt",
+            [{"name": "@oid", "value": t["orderId"]},
+             {"name": "@dt", "value": DOC_TYPE_HEADER}],
+            enable_cross_partition_query=True)
         lookup_ms.append((time.perf_counter() - t0) * 1000)
-        lookup_ru.append(float(
-            repo.container.client_connection.last_response_headers.get("x-ms-request-charge", 0)))
+        lookup_ru.append(ru)
     out["operations"]["crossPartitionLookup"] = {"ru": stats(lookup_ru), "latencyMs": stats(lookup_ms)}
 
     # -- 2. point read with the full partition key (the ideal case) ------
@@ -112,39 +121,55 @@ def measure(label: str, samples: int) -> dict[str, Any]:
     fo_ru, fo_ms, fo_items = [], [], []
     for t in targets:
         t0 = time.perf_counter()
-        items = list(repo.container.query_items(
-            query=("SELECT c.docType, c.blockType, c.blockSubType, c.sequence, c.data "
-                   "FROM c WHERE c.customerId = @cid AND c.orderId = @oid AND c.orderVersion = @v"),
-            parameters=[{"name": "@cid", "value": t["customerId"]},
-                        {"name": "@oid", "value": t["orderId"]},
-                        {"name": "@v", "value": t["orderVersion"]}],
-            partition_key=[t["customerId"], t["orderId"]],
-        ))
+        ru, n = paged_ru(
+            "SELECT c.docType, c.blockType, c.blockSubType, c.sequence, c.data "
+            "FROM c WHERE c.customerId = @cid AND c.orderId = @oid AND c.orderVersion = @v",
+            [{"name": "@cid", "value": t["customerId"]},
+             {"name": "@oid", "value": t["orderId"]},
+             {"name": "@v", "value": t["orderVersion"]}],
+            partition_key=[t["customerId"], t["orderId"]])
         fo_ms.append((time.perf_counter() - t0) * 1000)
-        fo_items.append(len(items))
-        fo_ru.append(float(
-            repo.container.client_connection.last_response_headers.get("x-ms-request-charge", 0)))
+        fo_items.append(n)
+        fo_ru.append(ru)
     out["operations"]["singlePartitionFullOrder"] = {
         "ru": stats(fo_ru), "latencyMs": stats(fo_ms),
         "itemsPerOrder": round(statistics.fmean(fo_items), 1) if fo_items else 0,
     }
+
+    # -- 3b. per-block reads, which is what the block endpoints actually do ---
+    block_stats: dict[str, Any] = {}
+    for btype in ("TITLE", "CDF", "NOTES", "CHECKLIST", "PARTIES"):
+        b_ru, b_ms = [], []
+        for t in targets[:20]:
+            t0 = time.perf_counter()
+            ru, _ = paged_ru(
+                "SELECT c.blockType, c.blockSubType, c.sequence, c.data FROM c "
+                "WHERE c.customerId=@cid AND c.orderId=@oid AND c.orderVersion=@v "
+                "AND c.docType='orderBlock' AND c.blockType=@bt",
+                [{"name": "@cid", "value": t["customerId"]},
+                 {"name": "@oid", "value": t["orderId"]},
+                 {"name": "@v", "value": t["orderVersion"]},
+                 {"name": "@bt", "value": btype}],
+                partition_key=[t["customerId"], t["orderId"]])
+            b_ms.append((time.perf_counter() - t0) * 1000)
+            b_ru.append(ru)
+        block_stats[btype] = {"ru": stats(b_ru), "latencyMs": stats(b_ms)}
+    out["operations"]["blockReads"] = block_stats
 
     # -- 4. tenant-scoped search ----------------------------------------
     customers = sorted({t["customerId"] for t in targets})
     s_ru, s_ms = [], []
     for c in customers:
         t0 = time.perf_counter()
-        list(repo.container.query_items(
-            query=("SELECT TOP 50 c.orderId, c.search FROM c "
-                   "WHERE c.docType = @dt AND c.customerId = @cid AND c.search.status = @st"),
-            parameters=[{"name": "@dt", "value": DOC_TYPE_HEADER},
-                        {"name": "@cid", "value": c},
-                        {"name": "@st", "value": "Closed"}],
-            partition_key=[c],
-        ))
+        ru, _ = paged_ru(
+            "SELECT TOP 50 c.orderId, c.search FROM c "
+            "WHERE c.docType = @dt AND c.customerId = @cid AND c.search.status = @st",
+            [{"name": "@dt", "value": DOC_TYPE_HEADER},
+             {"name": "@cid", "value": c},
+             {"name": "@st", "value": "Closed"}],
+            partition_key=[c])
         s_ms.append((time.perf_counter() - t0) * 1000)
-        s_ru.append(float(
-            repo.container.client_connection.last_response_headers.get("x-ms-request-charge", 0)))
+        s_ru.append(ru)
     out["operations"]["tenantScopedSearch"] = {"ru": stats(s_ru), "latencyMs": stats(s_ms)}
 
     # -- 5. write cost (indexing shows up here) --------------------------
