@@ -1,0 +1,67 @@
+{
+  "generatedUtc": "2026-09-14T13:41:55.590751+00:00",
+  "purpose": "Effective RU per request UNDER CONCURRENT LOAD, derived from the measured capacity ceiling rather than from isolated single-request timing. This is the figure a cost model should use: it is what the workload actually consumes at the target rate.",
+  "method": "A container with a known autoscale ceiling is driven at 50 RPS. Where the workload is RU-bound the achieved rate is capped, so effectiveRuPerRequest = ceilingRuPerSecond / achievedRps. Where it is not capped the result is an upper bound only.",
+  "containerCeilingRuPerSecond": 6000,
+  "targetRps": 50,
+  "operations": {
+    "summary": {
+      "achievedRps": 49.96,
+      "capped": false,
+      "effectiveRuPerRequest": null,
+      "upperBoundRuPerRequest": 120.1,
+      "isolatedPreSplitRu": 4.28,
+      "isolatedPostSplitRu": 5.81,
+      "loadFactorVsIsolatedPostSplit": null
+    },
+    "title": {
+      "achievedRps": 34.16,
+      "capped": true,
+      "effectiveRuPerRequest": 175.6,
+      "upperBoundRuPerRequest": 175.6,
+      "isolatedPreSplitRu": 339.41,
+      "isolatedPostSplitRu": 85.7,
+      "loadFactorVsIsolatedPostSplit": 2.05
+    },
+    "cdf": {
+      "achievedRps": 30.23,
+      "capped": true,
+      "effectiveRuPerRequest": 198.5,
+      "upperBoundRuPerRequest": 198.5,
+      "isolatedPreSplitRu": 352.12,
+      "isolatedPostSplitRu": 98.25,
+      "loadFactorVsIsolatedPostSplit": 2.02
+    },
+    "mix": {
+      "achievedRps": 49.38,
+      "capped": false,
+      "effectiveRuPerRequest": null,
+      "upperBoundRuPerRequest": 121.5,
+      "isolatedPreSplitRu": 185.74,
+      "isolatedPostSplitRu": 51.61,
+      "loadFactorVsIsolatedPostSplit": null
+    },
+    "full": {
+      "achievedRps": 11.65,
+      "capped": true,
+      "effectiveRuPerRequest": 515.0,
+      "upperBoundRuPerRequest": 515.0,
+      "isolatedPreSplitRu": 1151.94,
+      "isolatedPostSplitRu": 296.05,
+      "loadFactorVsIsolatedPostSplit": 1.74
+    }
+  },
+  "derivedMix": {
+    "weights": {
+      "summary": 0.5,
+      "title": 0.2,
+      "cdf": 0.15,
+      "checklist": 0.1,
+      "full": 0.05
+    },
+    "effectiveRuPerRequest": 96.7,
+    "ruPerSecondAt50Rps": 4837,
+    "note": "checklist is not separately capacity-tested; its RU is scaled from the isolated measurement by the same load factor observed for title"
+  },
+  "conclusion": "Effective under-load RU is 1.7-2.1x the isolated post-split measurement and 0.2-0.4x the isolated pre-split measurement. Isolated single-request RU is not a safe basis for capacity or cost planning."
+}
