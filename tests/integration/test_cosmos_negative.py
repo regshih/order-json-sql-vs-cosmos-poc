@@ -236,8 +236,7 @@ def test_b2_monolithic_point_read_is_cheaper_in_ru(repo, profiles, profile: str)
         "writeRuRatio": round(agg.request_charge / max(write_ru, 0.01), 1),
     }
     _findings.setdefault("monolithicVsAggregateRu", []).append(record)
-    print(f"
-  RU COMPARISON {profile} ({source_bytes:,} B):")
+    print(f"\n  RU COMPARISON {profile} ({source_bytes:,} B):")
     print(f"    monolithic point read : {mono_read_ru:>9.1f} RU  {mono_read_ms:>7.1f} ms")
     print(f"    aggregate full read   : {m.request_charge:>9.1f} RU  {m.total_ms:>7.1f} ms "
           f"({record['readRuRatio']}x the RU)")
