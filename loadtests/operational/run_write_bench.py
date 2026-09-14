@@ -20,10 +20,13 @@ import argparse
 import json
 import random
 import statistics
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from generator.synthetic_order_generator import build_order, calibrated_profiles
 from ingestion.parser.block_splitter import parse_envelope, split_object_data
