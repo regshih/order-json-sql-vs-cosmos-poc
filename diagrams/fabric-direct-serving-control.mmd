@@ -1,0 +1,26 @@
+%% OPTIONAL CONTROL - NOT A RECOMMENDED DEFAULT SERVING PATH.
+flowchart TB
+    API{{"REST API<br/>STORAGE_BACKEND=fabric"}}
+    EP["Fabric SQL analytics endpoint<br/>T-SQL over mirrored Delta"]
+    DELTA[("OneLake Delta tables")]
+
+    API -->|"T-SQL per request"| EP
+    EP --> DELTA
+
+    NOTE["PURPOSE: answer 'why not have the API<br/>query Fabric/Delta directly?' with<br/>measurement instead of assertion."]
+    API -.-> NOTE
+
+    subgraph WHY["Why this is a CONTROL, not a candidate"]
+        direction TB
+        W1["Analytics engine: optimised for scan<br/>throughput, not point lookups"]
+        W2["Metadata sync lag between the<br/>operational write and a readable row"]
+        W3["Warehouse operations are classified<br/>'background' and are throttled under load"]
+        W4["No documented concurrency limit or<br/>latency SLO for operational serving"]
+        W5["Freshness is minutes - no<br/>read-your-writes guarantee"]
+        W6["Capacity is shared with every other<br/>analytics workload on the same F-SKU"]
+    end
+
+    EP -.-> WHY
+
+    VERDICT["Passing 50 RPS in a benchmark is<br/>NOT the same as being architecturally fit."]
+    WHY --> VERDICT

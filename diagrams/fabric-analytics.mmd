@@ -1,0 +1,56 @@
+%% Both operational paths reach the SAME Fabric analytics model.
+flowchart LR
+    subgraph OPS["Operational stores (private endpoints only)"]
+        SQL[("Azure SQL<br/>OrderDb")]
+        COS[("Cosmos DB<br/>orders")]
+    end
+
+    subgraph VNET["POC VNet - extractor"]
+        EX["push_to_onelake.py<br/>SQL: ModifiedDate / LastModified watermark<br/>Cosmos: _ts watermark<br/>emits Parquet + __rowMarker__"]
+    end
+
+    subgraph ONELAKE["Fabric / OneLake"]
+        LZ1["mir_sql_orders<br/>Files/LandingZone/Table/"]
+        LZ2["mir_cosmos_orders<br/>Files/LandingZone/CosmosOrderItems/"]
+        REP["Fabric managed replicator<br/>insert - update - delete"]
+        D1[("Delta: Orders - Properties - Parties<br/>OrderParties - Loans - OrderJsonBlocks")]
+        D2[("Delta: CosmosOrderItems")]
+    end
+
+    subgraph MODEL["Analytics model - Warehouse"]
+        FO["FactOrder"]
+        FL["FactLoan"]
+        FC["FactOrderCharge<br/>parsed from CDF JSON blocks"]
+        DC["DimCustomer"]
+        DP["DimProperty"]
+        DPA["DimParty"]
+        DD["DimDate"]
+        DS["DimOrderStatus"]
+    end
+
+    SQL -->|private endpoint| EX
+    COS -->|private endpoint| EX
+    EX -->|"outbound HTTPS to OneLake"| LZ1
+    EX -->|"outbound HTTPS to OneLake"| LZ2
+    LZ1 --> REP
+    LZ2 --> REP
+    REP --> D1
+    REP --> D2
+    D1 --> FO
+    D1 --> FL
+    D1 --> FC
+    D2 --> FO
+    D1 --> DC
+    D1 --> DP
+    D1 --> DPA
+    FO --> DD
+    FO --> DS
+    FO --> SM["Semantic model<br/>Direct Lake"]
+    FL --> SM
+    FC --> SM
+    DC --> SM
+    DP --> SM
+    DPA --> SM
+    DD --> SM
+    DS --> SM
+    SM --> PBI["Power BI reports"]

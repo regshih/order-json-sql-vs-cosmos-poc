@@ -1,0 +1,43 @@
+%% PATH B - Cosmos DB for NoSQL semantic aggregate model.
+flowchart TB
+    SRC["Source order JSON<br/>0.5-5 MB"]
+    ARC[("Raw archive<br/>ADLS Gen2")]
+    SPL["Aggregate splitter<br/>block_splitter then size_guard<br/>business domains first,<br/>array chunking only if needed"]
+
+    SRC --> ARC
+    SRC --> SPL
+
+    SPL --> H["orderHeader<br/>id = order:vN:HEADER<br/>search + summary<br/>INDEXED"]
+    SPL --> PB["PARTIES/BUYERS - SELLERS<br/>LENDERS - TITLE_COMPANIES - OTHERS"]
+    SPL --> PR["PROPERTIES/MAIN"]
+    SPL --> LO["LOANS/MAIN"]
+    SPL --> CD["CDF/ORIGINATION - SERVICES<br/>OTHER_COSTS - DUE_FROM_BUYER<br/>DUE_FROM_SELLER - TOTALS<br/>DISBURSEMENTS - RECEIPTS"]
+    SPL --> TI["TITLE/COMMITMENTS - POLICIES<br/>PRODUCTS - ENDORSEMENTS - CHARGES"]
+    SPL --> NT["NOTES/* - CHECKLIST/TASKS<br/>REQUESTED_TASKS/MAIN"]
+
+    COS[("Cosmos container 'orders'<br/>hierarchical PK<br/>/customerId then /orderId<br/>data/* EXCLUDED from indexing")]
+    H --> COS
+    PB --> COS
+    PR --> COS
+    LO --> COS
+    CD --> COS
+    TI --> COS
+    NT --> COS
+
+    API{{"REST API"}}
+    COS --> API
+    API --> S["summary -> point read"]
+    API --> BR["block -> single-partition query"]
+    API --> FO["full order -> single-partition query<br/>then reassemble"]
+
+    FAB["Fabric Open Mirroring"]
+    COS -.->|"change pull by _ts"| FAB
+    FAB --> LH["Lakehouse Delta<br/>nested payload as JSON string"]
+    LH --> WH["Warehouse star schema"]
+    WH --> PBI["Power BI"]
+
+    subgraph GUARD["Size guard escalation"]
+        direction TB
+        G1["1 - business-domain split"] --> G2["2 - array-element chunking<br/>whole elements only"]
+        G2 --> G3["3 - refuse<br/>never truncate, never split mid-object"]
+    end

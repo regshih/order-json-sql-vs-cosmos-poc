@@ -1,0 +1,48 @@
+%% PATH A - Azure SQL Database hybrid relational + JSON model.
+flowchart TB
+    SRC["Source order JSON"]
+    ARC[("Raw archive<br/>ADLS Gen2")]
+    XF["Light transformation<br/>relational_extract + block_splitter<br/>NO full normalisation"]
+
+    SRC --> ARC
+    SRC --> XF
+
+    XF --> C["Customers<br/>CustomerId - TenantKey"]
+    XF --> O["Orders<br/>Status - Project - OrderType<br/>PrimaryState - MaxLoanAmount<br/>dates - PayloadBytes"]
+    XF --> OV["OrderVersions<br/>SourceArchiveUri - PayloadHash"]
+    XF --> P["Properties<br/>Address - State - County - Acreage"]
+    XF --> PA["Parties<br/>ONE table, role lives in OrderParties"]
+    XF --> OP["OrderParties<br/>Role discriminator"]
+    XF --> L["Loans<br/>LoanAmount - LoanType - LoanNumber"]
+    XF --> B["OrderJsonBlocks<br/>~34 rows per order - nvarchar(max)<br/>CDF/* - TITLE/* - NOTES/* - CHECKLIST/*"]
+
+    IDX["Indexes tied to<br/>real API predicates"]
+    O -.->|"CustomerId+Status<br/>PrimaryState<br/>MaxLoanAmount<br/>ModifiedDate"| IDX
+    B -.->|"OrderId+Version+BlockType+SubType+Seq"| IDX
+
+    API{{"REST API<br/>relational rows + JSON blocks<br/>reconstruct response"}}
+    C --> API
+    O --> API
+    OV --> API
+    P --> API
+    PA --> API
+    OP --> API
+    L --> API
+    B --> API
+    API --> R["JSON responses<br/>summary - block - full order"]
+
+    FAB["Fabric Open Mirroring"]
+    B -.->|"largest block ~760 KB"| FAB
+    O --> FAB
+    P --> FAB
+    L --> FAB
+    OP --> FAB
+    FAB --> LH["Lakehouse Delta"]
+    LH --> WH["Warehouse star schema"]
+    WH --> PBI["Power BI"]
+
+    subgraph RULE["The design rule"]
+        direction LR
+        R1["searched - joined - filtered<br/>sorted - secured - reported"] --> R2["relational columns"]
+        R3["deep - sparse - variable<br/>pass-through"] --> R4["JSON blocks"]
+    end

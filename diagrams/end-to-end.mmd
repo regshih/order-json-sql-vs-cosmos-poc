@@ -1,0 +1,60 @@
+%% End-to-end POC architecture: one source, two operational paths, one analytics platform.
+flowchart TB
+    SRC["Source order JSON<br/>extract envelope<br/>~0.5-5 MB compact"]
+
+    subgraph ARCHIVE["Raw retention layer - shared"]
+        ADLS[("ADLS Gen2<br/>raw/customer/order/version/order.json.gz<br/>immutable - write-once - ~9% gzipped")]
+    end
+
+    PARSE["Parse + validate<br/>block_splitter.py<br/>lossless business-block decomposition"]
+
+    subgraph PATHA["PATH A - Azure SQL Database (hybrid)"]
+        REL["8 business tables<br/>Orders - Properties - Parties<br/>OrderParties - Loans - Customers<br/>OrderVersions"]
+        BLK["OrderJsonBlocks<br/>nvarchar(max) JSON per business block"]
+    end
+
+    subgraph PATHB["PATH B - Azure Cosmos DB for NoSQL (aggregate)"]
+        HDR["orderHeader item<br/>search + summary projection"]
+        ITEMS["orderBlock items<br/>one per business block<br/>HPK /customerId + /orderId"]
+    end
+
+    API{{"SAME REST API<br/>FastAPI - STORAGE_BACKEND=sql or cosmos<br/>~50 reads/sec"}}
+    CONS["Operational consumers<br/>JSON responses"]
+
+    subgraph FABRIC["Microsoft Fabric - analytics"]
+        OM["Open Mirroring landing zones<br/>Parquet pushed from inside the VNet"]
+        DELTA[("OneLake Delta tables")]
+        LH["Lakehouse lh_orders_poc"]
+        WH["Warehouse wh_orders_poc<br/>FactOrder - FactLoan - FactOrderCharge<br/>DimCustomer - DimProperty - DimParty - DimDate"]
+        SM["Semantic model"]
+        PBI["Power BI"]
+    end
+
+    SRC --> ADLS
+    SRC --> PARSE
+    PARSE --> REL
+    PARSE --> BLK
+    PARSE --> HDR
+    PARSE --> ITEMS
+    REL --> API
+    BLK --> API
+    HDR --> API
+    ITEMS --> API
+    API --> CONS
+    REL -.->|"watermark pull"| OM
+    BLK -.->|"watermark pull"| OM
+    HDR -.->|"change pull"| OM
+    ITEMS -.->|"change pull"| OM
+    OM --> DELTA
+    DELTA --> LH
+    LH --> WH
+    WH --> SM
+    SM --> PBI
+    ADLS -.->|"replay / reprocess"| PARSE
+
+    classDef pathA fill:#e8f0fe,stroke:#3b6ea5
+    classDef pathB fill:#fdf0e6,stroke:#b5651d
+    classDef fab fill:#eaf5ea,stroke:#4a7c4a
+    class REL,BLK pathA
+    class HDR,ITEMS pathB
+    class OM,DELTA,LH,WH,SM,PBI fab

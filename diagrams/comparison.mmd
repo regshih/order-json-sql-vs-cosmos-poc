@@ -1,0 +1,33 @@
+%% Decision view: what actually differs between the two operational paths.
+flowchart TB
+    Q["Large, deeply nested order JSON<br/>0.5-5 MB - read-heavy - ~50 RPS - 2-year retention"]
+
+    A["PATH A<br/>Azure SQL hybrid"]
+    B["PATH B<br/>Cosmos DB aggregate"]
+    Q --> A
+    Q --> B
+
+    A --> A1["Relational: searched fields<br/>JSON blocks: pass-through"]
+    A --> A2["Search = index seek<br/>arbitrary predicates, joins, aggregates"]
+    A --> A3["Full order = 1 query<br/>then reassemble N blocks"]
+    A --> A4["Cost = vCore + storage<br/>flat, independent of request shape"]
+    A --> A5["Fabric: mirror the<br/>relational projection"]
+
+    B --> B1["Header item: search projection<br/>Block items: pass-through"]
+    B --> B2["Search = query over<br/>indexed header items only"]
+    B --> B3["Full order = 1 single-partition<br/>query then reassemble N items"]
+    B --> B4["Cost = provisioned RU<br/>scales with request shape and size"]
+    B --> B5["Fabric: mirror the<br/>projected item rows"]
+
+    SAME["Both decompose the order.<br/>Neither stores it whole."]
+    SAME2["Both pay a reconstruction cost.<br/>Measure it, do not assume it."]
+    DIFF["The real divergence:<br/>cost shape, search expressiveness,<br/>and elastic scale ceiling"]
+
+    A1 --> SAME
+    B1 --> SAME
+    A3 --> SAME2
+    B3 --> SAME2
+    A2 --> DIFF
+    B2 --> DIFF
+    A4 --> DIFF
+    B4 --> DIFF
