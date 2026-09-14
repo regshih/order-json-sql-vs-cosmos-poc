@@ -219,18 +219,24 @@ def compare(runs: list[dict[str, Any]]) -> None:
     print(f"{'operation':<28} {'RU before':>11} {'RU after':>11} {'change':>10}   "
           f"{'ms before':>10} {'ms after':>10}")
     print("-" * 88)
-    for op in a["operations"]:
-        if op not in b["operations"]:
+    def rows(run):
+        for op, v in run["operations"].items():
+            if isinstance(v.get("ru"), dict):
+                yield op, v["ru"].get("mean", 0), v["latencyMs"].get("mean", 0)
+            elif isinstance(v.get("ru"), (int, float)):
+                yield op, v.get("ru", 0), v.get("durationMs", 0)
+            else:
+                for sub, sv in v.items():
+                    if isinstance(sv, dict) and isinstance(sv.get("ru"), dict) and sv["ru"]:
+                        yield f"{op}/{sub}", sv["ru"].get("mean", 0), sv["latencyMs"].get("mean", 0)
+
+    rb_map = {k: (ru, ms) for k, ru, ms in rows(b)}
+    for op, ra, ma in rows(a):
+        if op not in rb_map:
             continue
-        oa, ob = a["operations"][op], b["operations"][op]
-        if isinstance(oa.get("ru"), dict):
-            ra, rb = oa["ru"].get("mean", 0), ob["ru"].get("mean", 0)
-            ma, mb = oa["latencyMs"].get("mean", 0), ob["latencyMs"].get("mean", 0)
-        else:
-            ra, rb = oa.get("ru", 0), ob.get("ru", 0)
-            ma, mb = oa.get("durationMs", 0), ob.get("durationMs", 0)
-        change = f"{(rb - ra) / ra * 100:+.1f}%" if ra else "n/a"
-        print(f"{op:<28} {ra:>11.2f} {rb:>11.2f} {change:>10}   {ma:>10.1f} {mb:>10.1f}")
+        rbv, mb = rb_map[op]
+        change = f"{(rbv - ra) / ra * 100:+.1f}%" if ra else "n/a"
+        print(f"{op:<28} {ra:>11.2f} {rbv:>11.2f} {change:>10}   {ma:>10.1f} {mb:>10.1f}")
 
 
 def main() -> None:
@@ -250,9 +256,15 @@ def main() -> None:
             if isinstance(v.get("ru"), dict):
                 print(f"  {op:<28} RU mean={v['ru']['mean']:>8.2f} p95={v['ru']['p95']:>8.2f}  "
                       f"ms mean={v['latencyMs']['mean']:>7.1f}")
-            else:
+            elif isinstance(v.get("ru"), (int, float)):
                 print(f"  {op:<28} RU={v['ru']:>8.2f} items={v.get('items')} "
                       f"ms={v.get('durationMs')}")
+            else:
+                # Nested group, e.g. blockReads -> {TITLE: {...}, CDF: {...}}
+                for sub, sv in v.items():
+                    if isinstance(sv, dict) and isinstance(sv.get("ru"), dict) and sv["ru"]:
+                        print(f"  {op + '/' + sub:<28} RU mean={sv['ru']['mean']:>8.2f} "
+                              f"p95={sv['ru']['p95']:>8.2f}  ms mean={sv['latencyMs']['mean']:>7.1f}")
         print(f"-> {RESULTS}")
     if args.compare or (args.label and len(runs) >= 2):
         compare(runs)
