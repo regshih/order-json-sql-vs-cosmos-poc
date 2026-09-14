@@ -235,10 +235,16 @@ reconciliation claim is only meaningful against a freshly re-ingested baseline.
 See [BENCHMARK_SUMMARY.md](../results/BENCHMARK_SUMMARY.md) for the state of the
 clean run.
 
-## 7a. Open Mirroring's landing zone is append-only - and violating that halts the table
+## 7a. Two ways an Open Mirroring push silently does nothing
 
-This cost real time and is the most operationally important Fabric lesson in the
-POC, so it is written up rather than quietly fixed.
+Both of these cost real time, and both share a signature that makes them
+expensive to diagnose: **the push reports success, no error appears anywhere, and
+the data never arrives.** They are written up rather than quietly fixed.
+
+The second one - a Parquet schema drift - turned out to be the actual cause of
+the Cosmos incremental failure. The first was real but secondary.
+
+### Cause 1: re-using a consumed sequence number
 
 **The contract.** Landing-zone files must be named with monotonically increasing
 20-digit sequence numbers, and Fabric will not re-process a sequence it has
@@ -290,11 +296,52 @@ Three practical notes from performing the recreation:
    seed will sit unconsumed. Re-issue it after the item settles; it then returns
    200.
 3. **A recreated mirror is a new item with a new id**, so three-part
-   cross-database references from the Warehouse (`mir_cosmos_orders.dbo.…`) fail
+   cross-database references from the Warehouse (`mir_cosmos_orders.dbo.*`) fail
    with `Invalid object name` until the catalog catches up. Poll the mirrored
    database **directly** rather than through the Warehouse - otherwise a healthy
    pipeline looks broken. This produced a false "NOT VISIBLE" verdict before it
    was spotted.
+
+### Cause 2: Parquet schema drift between batches - the real culprit
+
+`pyarrow` infers column types from the rows in the batch. An **incremental** push
+usually contains only *header* items, and a header item has `None` in all six
+block columns. So:
+
+| Column | Full batch (headers + blocks) | Header-only incremental |
+| --- | --- | --- |
+| `blockType` | `string` | **`null`** |
+| `blockSubType` | `string` | **`null`** |
+| `sequence` | `double` | **`null`** |
+| `chunkIndex` | `double` | **`null`** |
+| `chunkCount` | `double` | **`null`** |
+| `payloadBytes` | `double` | **`null`** |
+
+A `null`-typed column is not schema-compatible with the `string`/`int64` column
+already in the Delta table, so **Fabric's replicator refuses the file** - and says
+nothing. Exactly the same external symptom as cause 1: `PUSH_OK`, a file that is
+never consumed, and `NOT VISIBLE`.
+
+This is why the full re-seed always worked (it contains block items, so the types
+infer correctly) while every incremental was dropped. It also means the earlier
+"corrupted mirror" diagnosis was over-stated: recreating the item was not what was
+needed - pinning the schema was.
+
+**The fix** is to declare the Parquet schema explicitly rather than letting it be
+inferred, in [`push_to_onelake.py`](../ingestion/fabric/push_to_onelake.py):
+
+```python
+COSMOS_SCHEMA = pa.schema([... ("blockType", pa.string()), ("sequence", pa.int64()), ...])
+tbl = pa.Table.from_pandas(df, schema=COSMOS_SCHEMA, preserve_index=False)
+```
+
+Guarded by a regression test that asserts no column infers as `null` type for a
+header-only batch.
+
+**Generalise this.** Any Open Mirroring or Delta-append pipeline that builds
+Parquet from a dynamically-typed source must pin its schema. Type inference over a
+partial batch is a correctness bug waiting for the first small incremental, and
+the failure is silent.
 
 **The fix in the extractor** is to persist the highest sequence used alongside the
 extraction watermarks, and take `max(on_disk, persisted) + 1` - see
