@@ -358,9 +358,15 @@ def test_cosmos_parquet_schema_is_stable_for_a_header_only_batch() -> None:
     assert str(table.schema.field("sequence").type) == "double"
 
 
-def test_pinned_cosmos_schema_matches_what_a_full_batch_infers() -> None:
-    """The pinned schema must equal the schema the initial snapshot produces,
-    or the first incremental conflicts with the Delta table it is appending to."""
+def test_pinned_cosmos_schema_is_identical_for_full_and_partial_batches() -> None:
+    """The property that matters: a full snapshot and a header-only incremental,
+    written through the pinned schema, must produce byte-identical column types.
+    The Delta table is created from the first push, so if the two ever differ the
+    replicator silently rejects the incremental.
+
+    Note this deliberately does NOT compare against raw pyarrow inference - the
+    whole point of pinning is to override inference, which is unstable across
+    batches."""
     import datetime
 
     import pandas as pd
@@ -382,14 +388,23 @@ def test_pinned_cosmos_schema_matches_what_a_full_batch_infers() -> None:
             "__rowMarker__": 4, "_extractedUtc": datetime.datetime(2026, 1, 1),
         }
 
-    inferred = pa.Table.from_pandas(
-        pd.DataFrame([row(True), row(False)]), preserve_index=False
+    full = pa.Table.from_pandas(
+        pd.DataFrame([row(True), row(False)]), schema=COSMOS_SCHEMA, preserve_index=False
     ).schema
-    for field in inferred:
-        pinned = COSMOS_SCHEMA.field(field.name)
-        assert str(pinned.type) == str(field.type), (
-            f"{field.name}: pinned {pinned.type} != full-batch inferred {field.type}"
-        )
+    partial = pa.Table.from_pandas(
+        pd.DataFrame([row(True)]), schema=COSMOS_SCHEMA, preserve_index=False
+    ).schema
+    assert full == partial, "full and header-only batches produced different schemas"
+    assert not [f.name for f in full if str(f.type) == "null"]
+    # And the extractor's own _mark() must agree with the pinned schema.
+    from ingestion.fabric.push_to_onelake import _mark
+
+    marked = _mark(pd.DataFrame([{k: v for k, v in row(True).items()
+                                  if k not in ("__rowMarker__", "_extractedUtc")}]))
+    marked_schema = pa.Table.from_pandas(
+        marked, schema=COSMOS_SCHEMA, preserve_index=False
+    ).schema
+    assert marked_schema == full
 
 
 def test_cosmos_schema_matches_the_rows_the_extractor_builds() -> None:

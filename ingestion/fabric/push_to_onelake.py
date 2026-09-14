@@ -211,7 +211,13 @@ def _mark(df: pd.DataFrame, marker: int = 4) -> pd.DataFrame:
     """
     df = df.copy()
     df["__rowMarker__"] = marker
-    df["_extractedUtc"] = datetime.now(timezone.utc).replace(tzinfo=None)
+    # Microsecond precision, explicitly. pandas defaults to datetime64[ns], which
+    # pyarrow then infers as timestamp[ns]; Delta works in microseconds, so pinning
+    # us here keeps the initial snapshot and every incremental identical.
+    df["_extractedUtc"] = pd.Series(
+        [datetime.now(timezone.utc).replace(tzinfo=None)] * len(df),
+        dtype="datetime64[us]",
+    ).values
     return df
 
 
