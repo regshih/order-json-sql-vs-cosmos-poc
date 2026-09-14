@@ -55,9 +55,11 @@ the same order version is therefore idempotent — an upsert, not a duplicate.
 
 `GET /orders/{id}/summary` is 50% of the realistic workload mix. Storing the
 response body on the header makes that endpoint a **point read plus a dictionary
-lookup**, with zero reconstruction. The measured reconstruction time for a
-Cosmos summary is **0.0 ms**, versus ~1.9 ms for SQL which assembles it from a
-join and two sub-selects.
+lookup**, with no reconstruction at all - SQL assembles the same body from a join
+and three sub-selects. (The exact reconstruction milliseconds come from
+telemetry that is a one-worker sample; see
+[BENCHMARK_METHOD.md](BENCHMARK_METHOD.md) section 6. The structural difference is
+the point, not the number.)
 
 ### Why the header carries a `search` projection
 
@@ -171,14 +173,23 @@ the escalation with an artificially tight budget and assert losslessness at
 ## 4. Indexing policy
 
 ```
-includedPaths: /orderVersion, /blockType, /blockSubType, /sequence,
-               /docType, /search/*, /isCurrent, /modifiedUtc
+includedPaths: /customerId, /orderId, /orderVersion, /blockType, /blockSubType,
+               /sequence, /docType, /search/*, /isCurrent, /modifiedUtc
 excludedPaths: /data/*, /*
 compositeIndexes: (search.status ASC, search.maxLoanAmount DESC)
                   (search.state ASC, search.status ASC)
 ```
 
 The rule: **index what routes and filters; exclude what is only ever returned.**
+
+`/customerId` and `/orderId` are listed explicitly. They are the partition-key
+paths, and measurement showed they were **already effectively indexed** without
+being declared — the cross-partition lookup on `orderId` cost only **3.24 RU**
+across 17,928 items, which is index-seek behaviour, not a scan. They are declared
+anyway so the policy states its own intent rather than relying on that; the
+before/after measurement in
+[`results/cosmos/index-impact.json`](../results/cosmos/index-impact.json) shows
+the change made no material difference, which is the honest result.
 
 `data/*` is the entire business payload — deeply nested, highly variable, and
 never a query predicate. Indexing it would inflate write RU and index storage
