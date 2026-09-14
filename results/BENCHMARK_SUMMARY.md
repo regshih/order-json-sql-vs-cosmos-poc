@@ -1,6 +1,6 @@
 # Benchmark Summary
 
-Generated 2026-09-14T05:33:59.235309+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
+Generated 2026-09-14T13:20:08.349023+00:00 by [tools/summarize_benchmarks.py](../tools/summarize_benchmarks.py) from the
 machine-readable run files in `results/`. **No figure in this document was
 typed by hand.**
 
@@ -41,12 +41,15 @@ Mix: 50% summary, 20% title, 15% CDF, 10% checklist, 5% full order.
 | cdf | cosmos | 49.9 | 68.0 | 107.8 | 167.3 | 471,526 | 22.45 | 99.61 | 0.00 |
 | cdf | sql | 50.0 | 11.3 | 26.9 | 42.2 | 455,884 | 21.73 | — | 0.00 |
 | full | cosmos | 49.9 | 110.4 | 194.3 | 251.3 | 1,464,274 | 69.62 | 236.17 | 0.00 |
+| full | fabric | 50.0 | 144.3 | 224.8 | 292.8 | 1,364,122 | 33.98 | — | 47.73 |
 | full | sql | 50.0 | 37.5 | 110.7 | 169.3 | 1,413,635 | 67.36 | — | 0.00 |
 | search | cosmos | 50.0 | 30.1 | 76.7 | 116.0 | 8,574 | 0.41 | 166.05 | 0.00 |
 | search | sql | 50.0 | 6.9 | 8.7 | 9.9 | 8,878 | 0.42 | — | 0.00 |
 | summary | cosmos | 50.0 | 33.9 | 37.1 | 40.1 | 753 | 0.04 | 47.71 | 0.00 |
+| summary | fabric | 48.2 | 2,965.7 | 3,364.0 | 3,583.9 | 753 | 0.02 | — | 31.29 |
 | summary | sql | 50.0 | 8.2 | 9.8 | 11.4 | 753 | 0.04 | — | 0.00 |
 | title | cosmos | 50.0 | 56.4 | 77.5 | 105.5 | 440,943 | 21.00 | 56.05 | 0.00 |
+| title | fabric | 49.9 | 70.5 | 125.5 | 200.2 | 406,522 | 19.33 | — | 0.13 |
 | title | sql | 50.0 | 10.9 | 19.2 | 27.2 | 428,796 | 20.44 | — | 0.00 |
 
 ## Workload C — full multi-megabyte orders
@@ -59,6 +62,9 @@ This is the payload-size stress test. At 50 RPS a mean ~1.3 MB response is
 | cosmos | 10 | 9.2 | 99.4 | 3,259.4 | 7,245.1 | 1,426,285 | 12.53 | 0.22 | 1.8 |
 | cosmos | 25 | 25.0 | 101.1 | 164.3 | 221.9 | 1,429,557 | 34.03 | 0.00 | 1.8 |
 | cosmos | 50 | 49.9 | 110.4 | 194.3 | 251.3 | 1,464,274 | 69.62 | 0.00 | 1.6 |
+| fabric | 10 | 10.0 | 131.1 | 197.4 | 253.1 | 1,352,694 | 12.86 | 0.22 | 2.0 |
+| fabric | 25 | 24.9 | 130.8 | 201.3 | 265.5 | 1,369,915 | 32.45 | 0.36 | 1.6 |
+| fabric | 50 | 50.0 | 144.3 | 224.8 | 292.8 | 1,364,122 | 33.98 | 47.73 | 1.8 |
 | sql | 10 | 10.0 | 29.2 | 105.9 | 140.7 | 1,442,446 | 13.75 | 0.00 | 1.8 |
 | sql | 25 | 25.0 | 26.3 | 83.9 | 114.4 | 1,444,732 | 34.40 | 0.00 | 1.9 |
 | sql | 50 | 50.0 | 37.5 | 110.7 | 169.3 | 1,413,635 | 67.36 | 0.00 | 1.7 |
@@ -86,6 +92,21 @@ meaningful, and mixing the two made identical-looking duplicate rows.
 | cosmos | full | 50 | 1.25-2MB | 458 | 113.1 | 185.7 | 258.0 | 1,573,810 |
 | cosmos | full | 50 | 2-4MB | 457 | 131.8 | 191.7 | 241.3 | 2,472,669 |
 | cosmos | full | 50 | >4MB | 81 | 207.2 | 266.1 | 349.7 | 5,089,789 |
+| fabric | full | 10 | <0.75MB | 84 | 115.6 | 133.7 | 150.7 | 515,593 |
+| fabric | full | 10 | 0.75-1.25MB | 191 | 128.3 | 136.6 | 162.1 | 986,773 |
+| fabric | full | 10 | 1.25-2MB | 94 | 148.7 | 161.4 | 184.3 | 1,574,344 |
+| fabric | full | 10 | 2-4MB | 69 | 164.8 | 206.6 | 239.7 | 2,486,830 |
+| fabric | full | 10 | >4MB | 11 | 248.1 | 280.0 | 282.2 | 5,090,594 |
+| fabric | full | 25 | <0.75MB | 219 | 112.6 | 124.8 | 149.0 | 515,381 |
+| fabric | full | 25 | 0.75-1.25MB | 454 | 126.6 | 140.7 | 166.1 | 987,004 |
+| fabric | full | 25 | 1.25-2MB | 228 | 147.4 | 177.2 | 194.8 | 1,574,061 |
+| fabric | full | 25 | 2-4MB | 195 | 168.5 | 225.4 | 255.4 | 2,505,285 |
+| fabric | full | 25 | >4MB | 25 | 255.4 | 296.8 | 298.1 | 5,091,596 |
+| fabric | full | 50 | <0.75MB | 227 | 121.5 | 154.0 | 184.0 | 515,210 |
+| fabric | full | 50 | 0.75-1.25MB | 484 | 136.2 | 176.2 | 226.2 | 986,949 |
+| fabric | full | 50 | 1.25-2MB | 238 | 155.8 | 188.9 | 214.3 | 1,574,004 |
+| fabric | full | 50 | 2-4MB | 202 | 186.4 | 252.9 | 308.6 | 2,513,209 |
+| fabric | full | 50 | >4MB | 25 | 272.9 | 309.2 | 310.9 | 5,091,596 |
 | sql | full | 10 | <0.75MB | 136 | 16.2 | 49.5 | 66.4 | 515,455 |
 | sql | full | 10 | 0.75-1.25MB | 213 | 22.7 | 93.4 | 112.3 | 986,375 |
 | sql | full | 10 | 1.25-2MB | 104 | 31.4 | 111.6 | 135.4 | 1,573,761 |
@@ -110,6 +131,7 @@ The full set, including the `mix` contributions, is in
 | Backend | Workload | DB ms | Reconstruct ms | Serialize ms | Client p50 ms | App CPU % | SQL CPU % | SQL IO % |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | cosmos | full | 109.32 | 0.13 | 1.31 | 110.4 | 0.0 | — | — |
+| fabric | full | 474.19 | 3.40 | 0.55 | 144.3 | 0.0 | — | — |
 | sql | full | 0.00 | 0.00 | 0.00 | 37.5 | 1.2 | 28.15 | 8.69 |
 | cosmos | mix | 38.19 | 0.03 | 0.20 | 39.5 | 0.0 | — | — |
 | sql | mix | 4.45 | 2.26 | 0.17 | 9.0 | 0.0 | 7.61 | 13.22 |
@@ -183,4 +205,13 @@ prices these measured values against live Azure retail rates.
 - `results/cosmos\run-021-full-10rps.json` — cosmos full @ 10 RPS
 - `results/cosmos\run-022-full-25rps.json` — cosmos full @ 25 RPS
 - `results/cosmos\run-023-full-50rps.json` — cosmos full @ 50 RPS
+- `results/fabric\run-001-summary-10rps.json` — fabric summary @ 10 RPS
+- `results/fabric\run-002-summary-25rps.json` — fabric summary @ 25 RPS
+- `results/fabric\run-003-summary-50rps.json` — fabric summary @ 50 RPS
+- `results/fabric\run-004-title-10rps.json` — fabric title @ 10 RPS
+- `results/fabric\run-005-title-25rps.json` — fabric title @ 25 RPS
+- `results/fabric\run-006-title-50rps.json` — fabric title @ 50 RPS
+- `results/fabric\run-007-full-10rps.json` — fabric full @ 10 RPS
+- `results/fabric\run-008-full-25rps.json` — fabric full @ 25 RPS
+- `results/fabric\run-009-full-50rps.json` — fabric full @ 50 RPS
 
