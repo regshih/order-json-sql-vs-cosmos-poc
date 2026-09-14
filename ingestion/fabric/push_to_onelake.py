@@ -100,17 +100,41 @@ def write_metadata(fs, lz: str, table: str, keys: list[str]) -> None:
     fc.upload_data(body, overwrite=True)
 
 
-def next_sequence(fs, lz: str, table: str) -> int:
-    """Fabric requires monotonically increasing 20-digit file names."""
+def next_sequence(fs, lz: str, table: str, watermarks: dict[str, Any]) -> int:
+    """Next landing-zone file number.
+
+    Fabric Open Mirroring requires monotonically increasing 20-digit file names
+    and IGNORES a sequence it has already processed.
+
+    The listing alone is not a safe source of truth: once the replicator has
+    consumed a file it removes it from the landing zone (leaving only
+    ``_metadata.json`` and ``_FilesReadyToDelete``), so a listing-derived counter
+    resets to 1 and the next upload is silently ignored. That is why an
+    incremental push appeared to succeed while the change never became visible
+    in Fabric.
+
+    So: take the maximum of what is still on disk and what we last used, which
+    is persisted alongside the extraction watermarks.
+    """
     highest = 0
     try:
         for p in fs.get_paths(path=f"{lz}/{table}", recursive=False):
             name = p.name.rsplit("/", 1)[-1]
-            if name.endswith(".parquet") and name[:-8].isdigit():
-                highest = max(highest, int(name[:-8]))
+            if name.endswith(".parquet") and name[: -len(".parquet")].isdigit():
+                highest = max(highest, int(name[: -len(".parquet")]))
     except Exception:
         pass
+    seen = watermarks.setdefault("_sequences", {})
+    highest = max(highest, int(seen.get(f"{lz}/{table}", 0)))
     return highest + 1
+
+
+def record_sequence(watermarks: dict[str, Any], lz: str, table: str, seq: int) -> None:
+    """Remember the highest sequence used, so it survives the replicator
+    deleting the file from the landing zone."""
+    seen = watermarks.setdefault("_sequences", {})
+    key = f"{lz}/{table}"
+    seen[key] = max(int(seen.get(key, 0)), int(seq))
 
 
 def upload_parquet(fs, lz: str, table: str, df: pd.DataFrame, seq: int) -> dict[str, Any]:
@@ -184,15 +208,17 @@ def push_sql(mode: str, lz: str, fs, tables: list[str], batch_rows: int) -> dict
                 }
 
             write_metadata(fs, lz, table, cfg["keys"])
-            seq = next_sequence(fs, lz, table)
+            seq = next_sequence(fs, lz, table, watermarks)
             # Chunk large tables so no single Parquet file is unwieldy.
             for i in range(0, len(df), batch_rows):
                 chunk = _mark(df.iloc[i:i + batch_rows])
                 r = upload_parquet(fs, lz, table, chunk, seq)
                 r["queryMs"] = round(query_ms, 1)
+                r["sequence"] = seq
                 if payload_stats:
                     r["jsonPayloadStats"] = payload_stats
                 out.append(r)
+                record_sequence(watermarks, lz, table, seq)
                 seq += 1
 
             if cfg["watermark"] and cfg["watermark"] in df.columns:
@@ -257,12 +283,14 @@ def push_cosmos(mode: str, lz: str, fs, batch_rows: int) -> dict[str, Any]:
 
     df = pd.DataFrame(rows)
     write_metadata(fs, lz, COSMOS_TABLE, COSMOS_KEYS)
-    seq = next_sequence(fs, lz, COSMOS_TABLE)
+    seq = next_sequence(fs, lz, COSMOS_TABLE, watermarks)
     for i in range(0, len(df), batch_rows):
         r = upload_parquet(fs, lz, COSMOS_TABLE, _mark(df.iloc[i:i + batch_rows]), seq)
         r["queryMs"] = round(query_ms, 1)
         r["readRu"] = round(ru, 2)
+        r["sequence"] = seq
         out.append(r)
+        record_sequence(watermarks, lz, COSMOS_TABLE, seq)
         seq += 1
 
     wm["ts"] = max_ts

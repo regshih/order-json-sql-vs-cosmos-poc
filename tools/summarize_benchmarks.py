@@ -46,10 +46,18 @@ def load_read_runs(results: Path) -> list[dict[str, Any]]:
             db = sum(m.get("db_ms", {}).get("p50", 0) * m.get("requests", 0) for m in srv_ops.values()) / total_req
             rec = sum(m.get("reconstruct_ms", {}).get("p50", 0) * m.get("requests", 0) for m in srv_ops.values()) / total_req
             ser = sum(m.get("serialize_ms", {}).get("p50", 0) * m.get("requests", 0) for m in srv_ops.values()) / total_req
-            ru_vals = [m["request_charge_ru"]["mean"] * m.get("requests", 0)
-                       for m in srv_ops.values() if "request_charge_ru" in m]
-            ru = (sum(ru_vals) / total_req) if ru_vals else None
+            # RU must be weighted over ONLY the operations that reported a
+            # charge, and by their own request counts. Dividing by the total
+            # across all operations (including any that report no RU) produced
+            # nonsense - e.g. 180 RU for a summary read that measures 4.28.
+            ru_ops = {k: m for k, m in srv_ops.items() if "request_charge_ru" in m}
+            ru_req = sum(m.get("requests", 0) for m in ru_ops.values())
+            ru = (
+                sum(m["request_charge_ru"]["mean"] * m.get("requests", 0) for m in ru_ops.values())
+                / ru_req
+            ) if ru_req else None
             throttles = sum(m.get("throttled_429", 0) for m in srv_ops.values())
+            retries = sum(m.get("retries", 0) for m in srv_ops.values())
 
             rows.append({
                 "file": str(f.relative_to(results)),
@@ -73,12 +81,14 @@ def load_read_runs(results: Path) -> list[dict[str, Any]]:
                 "srvSerializeMs": round(ser, 2),
                 "srvRuPerRequest": round(ru, 3) if ru is not None else None,
                 "throttled429": throttles,
+                "sdkRetries": retries,
                 "appCpuPct": (srv.get("process") or {}).get("systemCpuPercent"),
                 "appRssMb": (srv.get("process") or {}).get("rssMb"),
                 "sqlMaxCpuPct": ((srv.get("sqlResourceStats") or {}).get("maxCpuPct")),
                 "sqlMaxIoPct": ((srv.get("sqlResourceStats") or {}).get("maxDataIoPct")),
                 "byPayloadSize": agg.get("byPayloadSize") or {},
                 "byOperation": agg.get("byOperation") or {},
+                "_srvOps": srv_ops,
             })
     return rows
 
@@ -267,6 +277,39 @@ def build_md(reads: list[dict[str, Any]], writes: list[dict[str, Any]],
         a("**Reconstruction overhead** is the `Reconstruct ms` column: the cost of turning")
         a("stored blocks/items back into one order document. It is the price both designs")
         a("pay for decomposing the order, and it is directly comparable between them.")
+        a("")
+
+    # ---------------- per-operation Cosmos RU, straight from the runs --------
+    # A single weighted RU number per run can mislead, so the per-operation
+    # charges are reported too.
+    per_op: dict[str, dict[str, Any]] = {}
+    for r in reads:
+        if r["backend"] != "cosmos":
+            continue
+        for op, m in (r.get("_srvOps") or {}).items():
+            ru = m.get("request_charge_ru")
+            if not ru:
+                continue
+            slot = per_op.setdefault(op, {"requests": 0, "ruSum": 0.0, "p95": 0.0,
+                                          "dbSum": 0.0, "throttled": 0})
+            n = m.get("requests", 0)
+            slot["requests"] += n
+            slot["ruSum"] += ru["mean"] * n
+            slot["p95"] = max(slot["p95"], ru.get("p95", 0))
+            slot["dbSum"] += m.get("db_ms", {}).get("p50", 0) * n
+            slot["throttled"] += m.get("throttled_429", 0)
+    if per_op:
+        a("## Measured Cosmos RU per operation")
+        a("")
+        a("Aggregated across every Cosmos run, weighted by request count. This is")
+        a("the table the cost model consumes.")
+        a("")
+        a("| Operation | Requests | RU/request (mean) | RU p95 (max seen) | DB p50 ms | 429s |")
+        a("| --- | ---: | ---: | ---: | ---: | ---: |")
+        for op, v in sorted(per_op.items(), key=lambda kv: -kv[1]["ruSum"] / max(kv[1]["requests"], 1)):
+            n = max(v["requests"], 1)
+            a(f"| `{op}` | {v['requests']:,} | {v['ruSum'] / n:,.2f} | {v['p95']:,.2f} | "
+              f"{v['dbSum'] / n:,.1f} | {v['throttled']:,} |")
         a("")
 
     # ---------------- Cosmos RU ----------------
