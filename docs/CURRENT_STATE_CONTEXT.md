@@ -98,7 +98,29 @@ Code reaches the VMs by `git clone`/`git pull` from the public GitHub repository
 which is also why the repository hygiene rules in §28 of the brief are enforced
 rather than aspirational — the repository is genuinely public.
 
-### 3.3 Fabric capacity
+### 3.3 Benchmark VMs were deallocated mid-run, twice, with no activity-log entry
+
+Both benchmark VMs went from `VM running` to `VM deallocated` while result files
+were being retrieved, and `az monitor activity-log list` for the resource group
+showed **no** `deallocate` or `powerOff` event in the preceding four hours (the
+only caller recorded was the operator). The cause was not identified; the most
+likely explanation is a subscription- or management-group-level cost-governance
+automation that does not log at resource-group scope.
+
+Practical consequences, which are reflected in
+[RUNBOOK.md](RUNBOOK.md):
+
+- **Deallocation is not data loss** - the managed disks survive, so
+  `az vm start` followed by re-running
+  [`scripts/fetch_vm_results.py`](../scripts/fetch_vm_results.py) recovers
+  everything.
+- **Retrieve results promptly.** Anything that lives only on a VM is at risk;
+  benchmark result files should be pulled to the repository as soon as a run
+  finishes rather than at the end of a session.
+- A long chunked fetch can fail part-way through for this reason, so the fetcher
+  retries and reports rather than silently truncating.
+
+### 3.4 Fabric capacity
 
 A dedicated **F2** capacity (`fabordjsonpoc915d`) was created for the POC rather
 than reusing one of the pre-existing capacities in the subscription, so that
