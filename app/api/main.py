@@ -207,10 +207,31 @@ def bench_orders(limit: int = Query(1000, ge=1, le=20000)) -> dict[str, Any]:
 @app.get("/_bench/metrics")
 def bench_metrics() -> dict[str, Any]:
     """Server-side latency breakdown (db / reconstruct / serialize) and, for
-    Cosmos, measured RU. The load generator records client-side latency; this
-    is the only place the split is visible."""
+    Cosmos, measured RU.
+
+    IMPORTANT: the collector is in-process. With uvicorn --workers N > 1 each
+    worker has its OWN ring, so this endpoint returns whichever worker answered,
+    and /_bench/metrics/reset clears whichever worker answered - not the same
+    one. Server-side figures are therefore a SAMPLE of one worker and can carry
+    residue from a previous run.
+
+    Client-side latency and throughput (measured by the load generator) are
+    unaffected. For authoritative per-operation RU use
+    cosmos/indexing/measure_index_impact.py, which runs single-process.
+    """
     r = _repo()
+    workers = int(os.getenv("API_WORKERS", "1"))
     out: dict[str, Any] = {"backend": r.backend, **collector.summary()}
+    out["samplingWarning"] = {
+        "workers": workers,
+        "workerPid": os.getpid(),
+        "singleWorkerSample": workers > 1,
+        "note": (
+            "server-side metrics come from ONE uvicorn worker of "
+            f"{workers}; treat db/reconstruct/serialize/RU as indicative, not "
+            "authoritative. Client-side latency is unaffected."
+        ) if workers > 1 else "single worker - metrics are complete",
+    }
     out["process"] = _proc_stats()
     if hasattr(r, "resource_stats"):
         try:

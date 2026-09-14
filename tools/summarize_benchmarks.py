@@ -299,10 +299,15 @@ def build_md(reads: list[dict[str, Any]], writes: list[dict[str, Any]],
             slot["dbSum"] += m.get("db_ms", {}).get("p50", 0) * n
             slot["throttled"] += m.get("throttled_429", 0)
     if per_op:
-        a("## Measured Cosmos RU per operation")
+        a("## Cosmos RU per operation (INDICATIVE - sampled from one worker)")
         a("")
-        a("Aggregated across every Cosmos run, weighted by request count. This is")
-        a("the table the cost model consumes.")
+        a("> These come from the API's in-process telemetry under an 8-worker")
+        a("> uvicorn process and are **not** authoritative: a single-workload run")
+        a("> can show operations from the previous run because the reset and the")
+        a("> read hit different workers. Shown for shape, not for costing.")
+        a(">")
+        a("> **The cost model uses the single-process measurements in**")
+        a("> `results/cosmos/index-impact.json` **instead.**")
         a("")
         a("| Operation | Requests | RU/request (mean) | RU p95 (max seen) | DB p50 ms | 429s |")
         a("| --- | ---: | ---: | ---: | ---: | ---: |")
