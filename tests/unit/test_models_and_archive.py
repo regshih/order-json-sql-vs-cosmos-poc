@@ -603,3 +603,31 @@ def test_setinputsizes_targets_only_the_long_parameters() -> None:
     assert "sizes: list[Any] = [None] * 30" in src, "sizes list must cover all 30 params"
     assert "for i in (13, 14, 28, 29):" in src, (
         "only SummaryJson and JsonPayload in both MERGE branches should be forced")
+
+
+def test_every_repository_declares_the_same_bench_pool_shape() -> None:
+    """`list_order_ids` feeds the load generator and its shape is a contract.
+
+    The harness groups the pool by customer, so a backend that omits customerId
+    fails EVERY run with KeyError before issuing a request - which is exactly what
+    happened to three backends in the first full-document sweep. Cheap to assert
+    statically; expensive to discover after a 50-minute sweep.
+    """
+    import re
+    from pathlib import Path
+
+    required = {"orderId", "customerId", "payloadBytes"}
+    files = {
+        "sql_repository.py": "ord.Orders",
+        "sql_full_json_repository.py": "OrderDocuments",
+        "mongo_repository.py": "mongo",
+        "cosmos_repository.py": "cosmos",
+    }
+    for fname in files:
+        src = Path("app/repositories") / fname
+        text = src.read_text(encoding="utf-8")
+        m = re.search(r"def list_order_ids\(.*?\n(?P<body>(?:        .*\n|\n)+)", text)
+        assert m, f"{fname}: no list_order_ids found"
+        body = m.group("body")
+        missing = {k for k in required if f'"{k}"' not in body}
+        assert not missing, f"{fname}: list_order_ids omits {sorted(missing)}"

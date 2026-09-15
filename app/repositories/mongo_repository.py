@@ -334,9 +334,22 @@ class MongoOrderRepository(OrderRepository):
         return out
 
     def list_order_ids(self, limit: int = 1000) -> list[dict[str, Any]]:
-        cur = self.col.find({}, {"_proj.payloadBytes": 1}).limit(int(limit))
+        """Pool for the load generator. Shape must match every other backend.
+
+        `customerId` and `orderVersion` are required by the harness, which groups
+        the pool by customer to build search queries. Omitting them fails every
+        run with `KeyError: 'customerId'` before any request is issued.
+        """
+        cur = self.col.find(
+            {}, {"_proj.payloadBytes": 1, "customerId": 1, "orderVersion": 1}
+        ).limit(int(limit))
         return [
-            {"orderId": d["_id"], "payloadBytes": (d.get("_proj") or {}).get("payloadBytes", 0)}
+            {
+                "orderId": d["_id"],
+                "customerId": d.get("customerId"),
+                "orderVersion": d.get("orderVersion"),
+                "payloadBytes": (d.get("_proj") or {}).get("payloadBytes", 0),
+            }
             for d in cur
         ]
 

@@ -286,13 +286,25 @@ class SqlFullJsonRepository(OrderRepository):
         ]
 
     def list_order_ids(self, limit: int = 1000) -> list[dict[str, Any]]:
+        """Pool for the load generator. Shape must match every other backend.
+
+        `customerId` and `orderVersion` are not decoration: the harness groups the
+        pool by customer to build search queries, and omitting them fails every
+        run with `KeyError: 'customerId'` before a single request is issued.
+        """
         with self._cursor() as cur:
             cur.execute(
-                f"SELECT TOP (?) OrderId, PayloadBytes FROM {self.table} ORDER BY OrderId",
+                f"SELECT TOP (?) OrderId, CustomerId, OrderVersion, PayloadBytes "
+                f"FROM {self.table} ORDER BY OrderId",
                 int(limit),
             )
             return [
-                {"orderId": _guid(r.OrderId), "payloadBytes": r.PayloadBytes}
+                {
+                    "orderId": _guid(r.OrderId),
+                    "customerId": r.CustomerId,
+                    "orderVersion": r.OrderVersion,
+                    "payloadBytes": r.PayloadBytes,
+                }
                 for r in cur.fetchall()
             ]
 
