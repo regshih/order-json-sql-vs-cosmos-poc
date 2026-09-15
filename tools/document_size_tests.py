@@ -39,6 +39,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import orjson  # noqa: E402
 
+from app.telemetry.metrics import RequestMetrics  # noqa: E402
 from generator.profiles import PROFILES_BY_NAME  # noqa: E402
 from generator.synthetic_order_generator import (  # noqa: E402
     build_order,
@@ -89,21 +90,24 @@ def _timed(fn, *a, **kw) -> dict[str, Any]:
         return row
 
 
-class Metrics:
-    """Minimal RequestMetrics stand-in so repositories can be driven directly."""
+class _Null:
+    def __enter__(self): return None
+    def __exit__(self, *a): return False
 
-    def __init__(self) -> None:
-        self.sql_queries = 0
-        self.blocks_read = 0
-        self.extra: dict[str, Any] = {}
 
-    class _N:
-        def __enter__(self): return None
-        def __exit__(self, *a): return False
+def new_metrics():
+    """A REAL RequestMetrics with the phase timers the API layer attaches.
 
-    def db(self): return self._N()
-    def reconstruct(self): return self._N()
-    def serialize(self): return self._N()
+    An earlier hand-rolled stand-in omitted `sql_pool_checkout_ms`, so every SQL
+    point read died with AttributeError in 0.03 ms and the table reported 0.0 ms
+    reads for a 16 MB document. Subclassing the real dataclass means a field
+    added to the telemetry cannot silently break this harness again.
+    """
+    m = RequestMetrics(backend="size-test", endpoint="/orders/{id}", operation="full")
+    m.db = _Null  # type: ignore[assignment]
+    m.reconstruct = _Null  # type: ignore[assignment]
+    m.serialize = _Null  # type: ignore[assignment]
+    return m
 
 
 def make_repo(backend: str):
@@ -211,7 +215,7 @@ def run_backend(backend: str, profiles: list[str], seed: int, keep: bool) -> lis
 
         row["insert"] = _timed(repo.ingest_order, env)
         if row["insert"]["ok"] and order_id:
-            m = Metrics()
+            m = new_metrics()
             row["pointRead"] = _timed(repo.get_full_order, order_id, m)
             if hasattr(repo, "update_order_header"):
                 row["updateScalar"] = _timed(
