@@ -1,12 +1,36 @@
-# Azure SQL hybrid vs Azure Cosmos DB for large order JSON
+# Storing and serving a complete order JSON on Azure
 
-A measured proof of concept comparing two operational data-serving architectures
-for a title/escrow order workload whose source documents are large, deeply
-nested JSON (~0.5–5 MB), read-heavy, at ~50 requests/sec, retained ~2 years, and
-destined for Microsoft Fabric analytics.
+A measured proof of concept for a title/escrow order workload whose source
+documents are large, deeply nested JSON (~0.5–5 MB), read-heavy, at ~50
+requests/sec, retained ~2 years, and destined for Microsoft Fabric analytics.
 
-**Both paths expose the same API, hold the same data, run the same tests, and
-feed the same Fabric analytics model.** Neither was assumed to win.
+**Every design exposes the same API, holds the same data, runs the same tests,
+and feeds the same Fabric analytics model.** None was assumed to win.
+
+The POC has two parts, because the question was sharpened partway through.
+
+**Part 1 — can the API return the whole order?** Two *decomposed* designs, both of
+which reassemble the order on read: Azure SQL hybrid (relational + JSON blocks)
+and Azure Cosmos DB for NoSQL (semantic aggregate).
+
+**Part 2 — can the DATABASE hold the whole order as one item?** Two
+*full-document* designs that store one logical order per physical item: Azure SQL
+Full JSON (one row) and Azure Cosmos DB for MongoDB (one BSON document).
+
+| Design | `STORAGE_BACKEND` | Physical storage | One item? | API response |
+| --- | --- | --- | :---: | --- |
+| SQL Full JSON | `sql-full-json` | one row, `nvarchar(max)` | **yes** | full JSON |
+| SQL Full JSON (native) | `sql-full-json-native` | one row, `json` type | **yes** | full JSON |
+| Cosmos Mongo | `cosmos-mongo` | one BSON document | **yes** | full JSON |
+| SQL hybrid | `sql-hybrid` | 8 tables + JSON blocks | no | reassembled |
+| Cosmos NoSQL | `cosmos-nosql` | ~34 documents | no | reassembled |
+| Fabric (control) | `fabric` | Delta | n/a | full JSON |
+
+**Can Microsoft store the complete 1–5 MB order as ONE database item? Yes — in
+two products**, measured: Azure SQL accepts one row to **16.70 MB**, Cosmos DB for
+MongoDB one document to **15.04 MB**, and Cosmos DB for NoSQL refuses above
+**2 MB** (HTTP 413), which is exactly why its design decomposes.
+See [docs/DOCUMENT_SIZE_RESULTS.md](docs/DOCUMENT_SIZE_RESULTS.md).
 
 ```
             SOURCE ORDER JSON  (extract envelope, 0.5–5 MB)
@@ -197,12 +221,22 @@ warehouse and the Open Mirroring landing zones.
 ### 3. Ingest, serve, benchmark
 
 ```bash
-# Load the same 500 orders into both backends (from inside the VNet)
-python -m ingestion.run_ingest --backend both --orders 500 --seed 42 --workers 12
+# Load the same 500 orders into every backend (from inside the VNet)
+python -m ingestion.run_ingest --backend all --orders 500 --seed 42 --workers 12
+# or one at a time:
+python -m ingestion.run_ingest --backend sql-full-json --orders 500 --seed 42
 
-# Serve
-bash scripts/vm_api.sh start sql      # or: start cosmos
+# Serve (STORAGE_BACKEND is read once at startup, so the API restarts per design)
+bash scripts/vm_api.sh start sql-full-json     # or cosmos-mongo, sql-hybrid, ...
 python tools/smoke_test.py
+
+# Physical storage limits: what each backend ACTUALLY does per size
+python tools/document_size_probe.py            # local, no Azure needed
+python tools/document_size_tests.py --backend all
+python tools/summarize_document_sizes.py
+
+# The full-document 50 RPS sweep (rate sweep + per-payload-band)
+bash scripts/run_full_document_bench.sh
 
 # Full sweep: 10/25/50/100/200 RPS, all workload shapes
 bash scripts/run_benchmarks.sh <api-host> sql
