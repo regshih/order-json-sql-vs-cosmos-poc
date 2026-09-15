@@ -547,3 +547,59 @@ def test_stress_profiles_are_excluded_from_the_corpus() -> None:
     # Cosmos NoSQL 2 MB ceiling, not to describe the customer's corpus.
     p21 = next(p for p in SIZE_PROFILES if p.name == "p2_1m")
     assert p21.weight == 0.0 and not p21.stress
+
+
+def test_scenario_a_merge_binds_every_parameter_for_both_variants() -> None:
+    """The MERGE's placeholder count must match the arguments passed.
+
+    Guards a bug class that has now bitten this POC twice: long parameters bound
+    with the wrong size (HY104 on the hybrid path) and a payload bound without
+    the CAST the native json column requires (22018 on this path). Both were
+    invisible until a live write failed, and both are statically checkable.
+    """
+    import re
+    from pathlib import Path
+
+    src = Path("app/repositories/sql_full_json_repository.py").read_text(encoding="utf-8")
+    m = re.search(
+        r'cur\.execute\(\s*"""(?P<sql>.*?)"""\.format\(table=(?P<t>[^,]+), '
+        r'payload_param=(?P<p>[^)]+)\)(?P<args>.*?)\n            \)',
+        src, re.S,
+    )
+    assert m, "could not locate the Scenario A MERGE"
+
+    # Count the arguments passed after the SQL template.
+    arg_block = m.group("args")
+    n_args = len([
+        ln for ln in arg_block.splitlines()
+        if ln.strip() and not ln.strip().startswith("#")
+    ])
+    assert n_args > 0
+
+    for table, param in [("ord.OrderDocuments", "?"),
+                         ("ord.OrderDocumentsNative", "CAST(? AS json)")]:
+        sql = m.group("sql").format(table=table, payload_param=param)
+        assert "{" not in sql, f"unfilled placeholder left in SQL for {table}"
+        placeholders = sql.count("?")
+        assert placeholders == 30, (
+            f"{table}: expected 30 bind placeholders, found {placeholders}")
+
+    # The native variant MUST cast; the nvarchar variant must not.
+    native = m.group("sql").format(table="x", payload_param="CAST(? AS json)")
+    assert "CAST(? AS json)" in native
+    plain = m.group("sql").format(table="x", payload_param="?")
+    assert "CAST(? AS json)" not in plain
+
+
+def test_setinputsizes_targets_only_the_long_parameters() -> None:
+    """Forcing SQL_WVARCHAR on ints or the GUID would coerce them to wide strings.
+
+    The list must span all 30 positions (pyodbc applies it positionally) but name
+    only the four multi-megabyte strings.
+    """
+    from pathlib import Path
+
+    src = Path("app/repositories/sql_full_json_repository.py").read_text(encoding="utf-8")
+    assert "sizes: list[Any] = [None] * 30" in src, "sizes list must cover all 30 params"
+    assert "for i in (13, 14, 28, 29):" in src, (
+        "only SummaryJson and JsonPayload in both MERGE branches should be forced")
