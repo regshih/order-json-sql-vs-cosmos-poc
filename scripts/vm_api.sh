@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Start / stop / status the Order API on the API VM as a systemd service.
-# Usage (via az vm run-command):  vm_api.sh start sql | start cosmos | stop | status
+# Usage (via az vm run-command):
+#   vm_api.sh start sql-hybrid | cosmos-nosql | sql-full-json |
+#             sql-full-json-native | cosmos-mongo | fabric
+#   vm_api.sh stop | status
 set -euo pipefail
 ACTION="${1:-status}"
-BACKEND="${2:-sql}"
+BACKEND="${2:-sql-hybrid}"
 ROOT=/opt/poc
 UNIT=/etc/systemd/system/poc-api.service
 
@@ -27,6 +30,19 @@ Environment=COSMOS_DATABASE=${COSMOS_DATABASE:-orderdb}
 Environment=COSMOS_CONTAINER=${COSMOS_CONTAINER:-orders}
 Environment=FABRIC_SQL_ENDPOINT=${FABRIC_SQL_ENDPOINT:-}
 Environment=FABRIC_SQL_DATABASE=${FABRIC_SQL_DATABASE:-}
+# Scenario B. AZURE_SUBSCRIPTION_ID / AZURE_RESOURCE_GROUP / MONGO_ACCOUNT are
+# configuration, not secrets: the connection string is fetched from ARM at
+# startup with the VM's managed identity and held in memory only, because the
+# MongoDB RU API has no Entra data-plane auth (docs/SOURCES.md M.6).
+Environment=AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID:-}
+Environment=AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP:-}
+Environment=MONGO_ACCOUNT=${MONGO_ACCOUNT:-}
+Environment=MONGO_DATABASE=${MONGO_DATABASE:-orderdb}
+Environment=MONGO_COLLECTION=${MONGO_COLLECTION:-orders_full}
+Environment=MONGO_POOL_SIZE=${MONGO_POOL_SIZE:-32}
+# RU capture OFF under load: getLastRequestStatistics is connection-scoped, so
+# sampling it across a pool reports another request's charge (SOURCES.md M.7).
+Environment=MONGO_CAPTURE_RU=0
 Environment=LOG_LEVEL=WARNING
 LimitNOFILE=65535
 # Multiple workers: one Python process cannot serialise 250 MB/s of JSON.
