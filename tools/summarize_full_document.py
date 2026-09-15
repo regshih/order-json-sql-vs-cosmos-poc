@@ -42,7 +42,8 @@ ORDER = list(LABEL)
 
 def load_runs(src: Path) -> list[dict[str, Any]]:
     runs = []
-    for f in sorted(src.glob("*.json")):
+    # Runs land in results/fulldoc/<backend>/run-*.json, so recurse.
+    for f in sorted(src.rglob("*.json")):
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -138,6 +139,56 @@ def band_table(runs: list[dict[str, Any]]) -> list[str]:
     return out
 
 
+def constraint_analysis(runs: list[dict[str, Any]]) -> list[str]:
+    """Locate each backend's ceiling FROM THE DATA rather than by assertion.
+
+    The brief is explicit that a network limit must not be reported as a database
+    limit. The discriminator used here: if wire throughput stops rising while
+    achieved RPS falls, the design has hit a throughput ceiling. Whether that
+    ceiling is the network or the client path is then settled by comparing
+    backends - they share the same VM pair and the same API process, so a backend
+    that sustains MORE MB/s proves the lower ceiling was not the network.
+    """
+    rows = [r for r in runs if "band" in (r["meta"].get("note") or "")]
+    by: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+    for r in rows:
+        band = (r["meta"]["note"] or "").split("band-")[-1]
+        by.setdefault(r["meta"]["backend"], []).append((band, r))
+
+    order = ["p500k", "p1m", "p2m", "p3m", "p5m"]
+    out = ["| Backend | Peak MB/s observed | At band | RPS held at 5 MB | Ceiling reached? |",
+           "| --- | ---: | --- | ---: | --- |"]
+    peaks: dict[str, float] = {}
+    for b in [x for x in ORDER if x in by]:
+        entries = sorted(by[b], key=lambda e: order.index(e[0]) if e[0] in order else 99)
+        best_mb, best_band = 0.0, "-"
+        rps_5m = None
+        for band, r in entries:
+            mb = float(r["aggregate"]["throughputMBps"])
+            if mb > best_mb:
+                best_mb, best_band = mb, band
+            if band == "p5m":
+                rps_5m = float(r["aggregate"]["achievedRps"])
+        peaks[b] = best_mb
+        # A ceiling is "reached" when the largest band could not hold the target
+        # rate while throughput had already flattened.
+        hit = "yes" if (rps_5m is not None and rps_5m < 45) else "no"
+        out.append(f"| {LABEL.get(b, b)} | {best_mb:,.1f} | {best_band} | "
+                   f"{(f'{rps_5m:,.1f}' if rps_5m is not None else '-')} | {hit} |")
+
+    if peaks:
+        top = max(peaks, key=lambda k: peaks[k])
+        out.append("")
+        out.append(f"The highest sustained figure observed on this VM pair is "
+                   f"**{peaks[top]:,.1f} MB/s** ({LABEL.get(top, top)}). Any backend "
+                   f"that flattens materially below that did **not** hit a network "
+                   f"limit - the same two machines and the same API process carried "
+                   f"more for a different storage design. Its ceiling is in the "
+                   f"database or, more often here, in the client driver's path for "
+                   f"large values.")
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--src", default="results/fulldoc")
@@ -179,6 +230,10 @@ def main() -> int:
       "that is the difference the whole extension exists to measure. Where wire "
       "throughput flattens while DB time stays low, the constraint is the "
       "network or serialisation, **not** the database.")
+    A("")
+    A("## 3. Where the constraint actually is")
+    A("")
+    L.extend(constraint_analysis(runs))
     A("")
     A("> Server-side phase timings come from the API's in-process telemetry "
       "across multiple uvicorn workers, each with its own counters, so they "

@@ -1,0 +1,288 @@
+{
+  "meta": {
+    "runUtc": "2026-09-15T19:05:48.370618+00:00",
+    "backend": "sql-full-json",
+    "workload": "full",
+    "workloadWeights": {
+      "full": 1.0
+    },
+    "targetRps": 50.0,
+    "durationSec": 45.0,
+    "warmupSec": 12.0,
+    "repeats": 1,
+    "maxInflight": 256,
+    "baseUrl": "http://10.60.1.4:8000",
+    "orderPoolSize": 511,
+    "sizeFilter": [
+      2800000,
+      3400000
+    ],
+    "loadClient": {
+      "host": "vm-orderjsonpoc-load",
+      "python": "3.12.3"
+    },
+    "note": "fulldoc-band-p3m"
+  },
+  "runs": [
+    {
+      "targetRps": 50.0,
+      "durationSec": 45.98,
+      "requestsIssued": 2250,
+      "requestsOk": 2250,
+      "requestsFailed": 0,
+      "errorRatePct": 0.0,
+      "achievedRps": 48.94,
+      "achievedOkRps": 48.94,
+      "totalResponseBytes": 7203204194,
+      "throughputMBps": 149.41,
+      "overall": {
+        "count": 2250,
+        "latencyMs": {
+          "p50": 928.76,
+          "p90": 1450.1,
+          "p95": 1551.06,
+          "p99": 1710.49,
+          "max": 1834.13,
+          "mean": 757.49
+        },
+        "queueMs": {
+          "p50": 0.69,
+          "p95": 1.83,
+          "max": 2.35
+        },
+        "responseBytes": {
+          "p50": 3201450,
+          "p95": 3208348,
+          "mean": 3201424,
+          "max": 3211656
+        },
+        "throughputMBps": 149.41
+      },
+      "byOperation": {
+        "full": {
+          "count": 2250,
+          "latencyMs": {
+            "p50": 928.76,
+            "p90": 1450.1,
+            "p95": 1551.06,
+            "p99": 1710.49,
+            "max": 1834.13,
+            "mean": 757.49
+          },
+          "queueMs": {
+            "p50": 0.69,
+            "p95": 1.83,
+            "max": 2.35
+          },
+          "responseBytes": {
+            "p50": 3201450,
+            "p95": 3208348,
+            "mean": 3201424,
+            "max": 3211656
+          },
+          "throughputMBps": 149.41
+        }
+      },
+      "byPayloadSize": {
+        "2-4MB": {
+          "count": 2250,
+          "latencyMs": {
+            "p50": 928.76,
+            "p90": 1450.1,
+            "p95": 1551.06,
+            "p99": 1710.49,
+            "max": 1834.13,
+            "mean": 757.49
+          },
+          "queueMs": {
+            "p50": 0.69,
+            "p95": 1.83,
+            "max": 2.35
+          },
+          "responseBytes": {
+            "p50": 3201450,
+            "p95": 3208348,
+            "mean": 3201424,
+            "max": 3211656
+          },
+          "throughputMBps": 149.41
+        }
+      },
+      "errorKinds": {}
+    }
+  ],
+  "aggregate": {
+    "targetRps": 50.0,
+    "durationSec": 45.98,
+    "requestsIssued": 2250,
+    "requestsOk": 2250,
+    "requestsFailed": 0,
+    "errorRatePct": 0.0,
+    "achievedRps": 48.94,
+    "achievedOkRps": 48.94,
+    "totalResponseBytes": 7203204194,
+    "throughputMBps": 149.41,
+    "overall": {
+      "count": 2250,
+      "latencyMs": {
+        "p50": 928.76,
+        "p90": 1450.1,
+        "p95": 1551.06,
+        "p99": 1710.49,
+        "max": 1834.13,
+        "mean": 757.49
+      },
+      "queueMs": {
+        "p50": 0.69,
+        "p95": 1.83,
+        "max": 2.35
+      },
+      "responseBytes": {
+        "p50": 3201450,
+        "p95": 3208348,
+        "mean": 3201424,
+        "max": 3211656
+      },
+      "throughputMBps": 149.41
+    },
+    "byOperation": {
+      "full": {
+        "count": 2250,
+        "latencyMs": {
+          "p50": 928.76,
+          "p90": 1450.1,
+          "p95": 1551.06,
+          "p99": 1710.49,
+          "max": 1834.13,
+          "mean": 757.49
+        },
+        "queueMs": {
+          "p50": 0.69,
+          "p95": 1.83,
+          "max": 2.35
+        },
+        "responseBytes": {
+          "p50": 3201450,
+          "p95": 3208348,
+          "mean": 3201424,
+          "max": 3211656
+        },
+        "throughputMBps": 149.41
+      }
+    },
+    "byPayloadSize": {
+      "2-4MB": {
+        "count": 2250,
+        "latencyMs": {
+          "p50": 928.76,
+          "p90": 1450.1,
+          "p95": 1551.06,
+          "p99": 1710.49,
+          "max": 1834.13,
+          "mean": 757.49
+        },
+        "queueMs": {
+          "p50": 0.69,
+          "p95": 1.83,
+          "max": 2.35
+        },
+        "responseBytes": {
+          "p50": 3201450,
+          "p95": 3208348,
+          "mean": 3201424,
+          "max": 3211656
+        },
+        "throughputMBps": 149.41
+      }
+    },
+    "errorKinds": {}
+  },
+  "serverMetrics": {
+    "backend": "sql-full-json",
+    "requests": 703,
+    "overall": {
+      "requests": 703,
+      "errors": 0,
+      "total_ms": {
+        "p50": 26.999,
+        "p95": 1485.337,
+        "p99": 1634.149,
+        "mean": 511.221,
+        "max": 1816.743
+      },
+      "db_ms": {
+        "p50": 23.651,
+        "p95": 1305.974,
+        "mean": 446.224
+      },
+      "reconstruct_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "mean": 0.0
+      },
+      "serialize_ms": {
+        "p50": 0.47,
+        "p95": 0.799,
+        "mean": 0.508
+      },
+      "response_bytes": {
+        "p50": 3201450,
+        "p95": 3208348,
+        "mean": 3201415,
+        "max": 3211656
+      }
+    },
+    "byOperation": {
+      "full": {
+        "requests": 703,
+        "errors": 0,
+        "total_ms": {
+          "p50": 26.999,
+          "p95": 1485.337,
+          "p99": 1634.149,
+          "mean": 511.221,
+          "max": 1816.743
+        },
+        "db_ms": {
+          "p50": 23.651,
+          "p95": 1305.974,
+          "mean": 446.224
+        },
+        "reconstruct_ms": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "mean": 0.0
+        },
+        "serialize_ms": {
+          "p50": 0.47,
+          "p95": 0.799,
+          "mean": 0.508
+        },
+        "response_bytes": {
+          "p50": 3201450,
+          "p95": 3208348,
+          "mean": 3201415,
+          "max": 3211656
+        }
+      }
+    },
+    "samplingWarning": {
+      "workers": 1,
+      "workerPid": 28798,
+      "singleWorkerSample": false,
+      "note": "single worker - metrics are complete"
+    },
+    "process": {
+      "cpuPercent": 0.0,
+      "rssMb": 1018.9,
+      "numThreads": 22,
+      "systemCpuPercent": 0.0,
+      "systemMemPercent": 14.5
+    },
+    "sqlResourceStats": {
+      "cpuPercent": 99.35,
+      "dataIoPercent": 0.15,
+      "logWritePercent": 0.0
+    }
+  }
+}

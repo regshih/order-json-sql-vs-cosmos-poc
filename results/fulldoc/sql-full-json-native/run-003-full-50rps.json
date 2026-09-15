@@ -1,0 +1,475 @@
+{
+  "meta": {
+    "runUtc": "2026-09-15T19:14:25.359673+00:00",
+    "backend": "sql-full-json-native",
+    "workload": "full",
+    "workloadWeights": {
+      "full": 1.0
+    },
+    "targetRps": 50.0,
+    "durationSec": 45.0,
+    "warmupSec": 12.0,
+    "repeats": 1,
+    "maxInflight": 256,
+    "baseUrl": "http://10.60.1.4:8000",
+    "orderPoolSize": 511,
+    "sizeFilter": null,
+    "loadClient": {
+      "host": "vm-orderjsonpoc-load",
+      "python": "3.12.3"
+    },
+    "note": "fulldoc-rate"
+  },
+  "runs": [
+    {
+      "targetRps": 50.0,
+      "durationSec": 161.28,
+      "requestsIssued": 2250,
+      "requestsOk": 2164,
+      "requestsFailed": 86,
+      "errorRatePct": 3.822,
+      "achievedRps": 13.95,
+      "achievedOkRps": 13.42,
+      "totalResponseBytes": 3288442386,
+      "throughputMBps": 19.44,
+      "overall": {
+        "count": 2164,
+        "latencyMs": {
+          "p50": 55591.48,
+          "p90": 104550.33,
+          "p95": 111533.19,
+          "p99": 117355.6,
+          "max": 142114.19,
+          "mean": 57350.2
+        },
+        "queueMs": {
+          "p50": 38496.09,
+          "p95": 90608.09,
+          "max": 97034.33
+        },
+        "responseBytes": {
+          "p50": 992911,
+          "p95": 3204945,
+          "mean": 1519612,
+          "max": 17507540
+        },
+        "throughputMBps": 19.44
+      },
+      "byOperation": {
+        "full": {
+          "count": 2164,
+          "latencyMs": {
+            "p50": 55591.48,
+            "p90": 104550.33,
+            "p95": 111533.19,
+            "p99": 117355.6,
+            "max": 142114.19,
+            "mean": 57350.2
+          },
+          "queueMs": {
+            "p50": 38496.09,
+            "p95": 90608.09,
+            "max": 97034.33
+          },
+          "responseBytes": {
+            "p50": 992911,
+            "p95": 3204945,
+            "mean": 1519612,
+            "max": 17507540
+          },
+          "throughputMBps": 19.44
+        }
+      },
+      "byPayloadSize": {
+        "<0.75MB": {
+          "count": 396,
+          "latencyMs": {
+            "p50": 47527.98,
+            "p90": 98858.29,
+            "p95": 104997.89,
+            "p99": 114650.32,
+            "max": 115995.78,
+            "mean": 50585.88
+          },
+          "queueMs": {
+            "p50": 38058.32,
+            "p95": 91499.73,
+            "max": 97034.33
+          },
+          "responseBytes": {
+            "p50": 515022,
+            "p95": 519362,
+            "mean": 514965,
+            "max": 523075
+          },
+          "throughputMBps": 1.21
+        },
+        "0.75-1.25MB": {
+          "count": 742,
+          "latencyMs": {
+            "p50": 51765.7,
+            "p90": 99117.62,
+            "p95": 106102.91,
+            "p99": 114903.89,
+            "max": 116945.84,
+            "mean": 53511.53
+          },
+          "queueMs": {
+            "p50": 38406.91,
+            "p95": 90140.55,
+            "max": 96992.47
+          },
+          "responseBytes": {
+            "p50": 986931,
+            "p95": 993469,
+            "mean": 987141,
+            "max": 999000
+          },
+          "throughputMBps": 4.33
+        },
+        "1.25-2MB": {
+          "count": 506,
+          "latencyMs": {
+            "p50": 58500.79,
+            "p90": 105791.5,
+            "p95": 112376.9,
+            "p99": 117264.62,
+            "max": 118103.42,
+            "mean": 59536.9
+          },
+          "queueMs": {
+            "p50": 39228.41,
+            "p95": 91488.95,
+            "max": 96979.06
+          },
+          "responseBytes": {
+            "p50": 1574379,
+            "p95": 1582016,
+            "mean": 1575480,
+            "max": 1867387
+          },
+          "throughputMBps": 4.71
+        },
+        "2-4MB": {
+          "count": 444,
+          "latencyMs": {
+            "p50": 62259.06,
+            "p90": 109838.58,
+            "p95": 114529.63,
+            "p99": 118051.96,
+            "max": 121510.05,
+            "mean": 63349.83
+          },
+          "queueMs": {
+            "p50": 38551.19,
+            "p95": 90284.98,
+            "max": 96959.46
+          },
+          "responseBytes": {
+            "p50": 2109113,
+            "p95": 3205349,
+            "mean": 2420272,
+            "max": 3211656
+          },
+          "throughputMBps": 6.35
+        },
+        ">4MB": {
+          "count": 76,
+          "latencyMs": {
+            "p50": 83570.91,
+            "p90": 118907.95,
+            "p95": 123703.28,
+            "p99": 139075.12,
+            "max": 142114.19,
+            "mean": 80464.08
+          },
+          "queueMs": {
+            "p50": 37298.83,
+            "p95": 92987.07,
+            "max": 96973.94
+          },
+          "responseBytes": {
+            "p50": 5095574,
+            "p95": 15772403,
+            "mean": 6319253,
+            "max": 17507540
+          },
+          "throughputMBps": 2.84
+        }
+      },
+      "errorKinds": {
+        "HTTP 500": 81,
+        "ReadTimeout": 5
+      }
+    }
+  ],
+  "aggregate": {
+    "targetRps": 50.0,
+    "durationSec": 161.28,
+    "requestsIssued": 2250,
+    "requestsOk": 2164,
+    "requestsFailed": 86,
+    "errorRatePct": 3.822,
+    "achievedRps": 13.95,
+    "achievedOkRps": 13.42,
+    "totalResponseBytes": 3288442386,
+    "throughputMBps": 19.44,
+    "overall": {
+      "count": 2164,
+      "latencyMs": {
+        "p50": 55591.48,
+        "p90": 104550.33,
+        "p95": 111533.19,
+        "p99": 117355.6,
+        "max": 142114.19,
+        "mean": 57350.2
+      },
+      "queueMs": {
+        "p50": 38496.09,
+        "p95": 90608.09,
+        "max": 97034.33
+      },
+      "responseBytes": {
+        "p50": 992911,
+        "p95": 3204945,
+        "mean": 1519612,
+        "max": 17507540
+      },
+      "throughputMBps": 19.44
+    },
+    "byOperation": {
+      "full": {
+        "count": 2164,
+        "latencyMs": {
+          "p50": 55591.48,
+          "p90": 104550.33,
+          "p95": 111533.19,
+          "p99": 117355.6,
+          "max": 142114.19,
+          "mean": 57350.2
+        },
+        "queueMs": {
+          "p50": 38496.09,
+          "p95": 90608.09,
+          "max": 97034.33
+        },
+        "responseBytes": {
+          "p50": 992911,
+          "p95": 3204945,
+          "mean": 1519612,
+          "max": 17507540
+        },
+        "throughputMBps": 19.44
+      }
+    },
+    "byPayloadSize": {
+      "<0.75MB": {
+        "count": 396,
+        "latencyMs": {
+          "p50": 47527.98,
+          "p90": 98858.29,
+          "p95": 104997.89,
+          "p99": 114650.32,
+          "max": 115995.78,
+          "mean": 50585.88
+        },
+        "queueMs": {
+          "p50": 38058.32,
+          "p95": 91499.73,
+          "max": 97034.33
+        },
+        "responseBytes": {
+          "p50": 515022,
+          "p95": 519362,
+          "mean": 514965,
+          "max": 523075
+        },
+        "throughputMBps": 1.21
+      },
+      "0.75-1.25MB": {
+        "count": 742,
+        "latencyMs": {
+          "p50": 51765.7,
+          "p90": 99117.62,
+          "p95": 106102.91,
+          "p99": 114903.89,
+          "max": 116945.84,
+          "mean": 53511.53
+        },
+        "queueMs": {
+          "p50": 38406.91,
+          "p95": 90140.55,
+          "max": 96992.47
+        },
+        "responseBytes": {
+          "p50": 986931,
+          "p95": 993469,
+          "mean": 987141,
+          "max": 999000
+        },
+        "throughputMBps": 4.33
+      },
+      "1.25-2MB": {
+        "count": 506,
+        "latencyMs": {
+          "p50": 58500.79,
+          "p90": 105791.5,
+          "p95": 112376.9,
+          "p99": 117264.62,
+          "max": 118103.42,
+          "mean": 59536.9
+        },
+        "queueMs": {
+          "p50": 39228.41,
+          "p95": 91488.95,
+          "max": 96979.06
+        },
+        "responseBytes": {
+          "p50": 1574379,
+          "p95": 1582016,
+          "mean": 1575480,
+          "max": 1867387
+        },
+        "throughputMBps": 4.71
+      },
+      "2-4MB": {
+        "count": 444,
+        "latencyMs": {
+          "p50": 62259.06,
+          "p90": 109838.58,
+          "p95": 114529.63,
+          "p99": 118051.96,
+          "max": 121510.05,
+          "mean": 63349.83
+        },
+        "queueMs": {
+          "p50": 38551.19,
+          "p95": 90284.98,
+          "max": 96959.46
+        },
+        "responseBytes": {
+          "p50": 2109113,
+          "p95": 3205349,
+          "mean": 2420272,
+          "max": 3211656
+        },
+        "throughputMBps": 6.35
+      },
+      ">4MB": {
+        "count": 76,
+        "latencyMs": {
+          "p50": 83570.91,
+          "p90": 118907.95,
+          "p95": 123703.28,
+          "p99": 139075.12,
+          "max": 142114.19,
+          "mean": 80464.08
+        },
+        "queueMs": {
+          "p50": 37298.83,
+          "p95": 92987.07,
+          "max": 96973.94
+        },
+        "responseBytes": {
+          "p50": 5095574,
+          "p95": 15772403,
+          "mean": 6319253,
+          "max": 17507540
+        },
+        "throughputMBps": 2.84
+      }
+    },
+    "errorKinds": {
+      "HTTP 500": 81,
+      "ReadTimeout": 5
+    }
+  },
+  "serverMetrics": {
+    "backend": "sql-full-json-native",
+    "requests": 928,
+    "overall": {
+      "requests": 928,
+      "errors": 34,
+      "total_ms": {
+        "p50": 9664.464,
+        "p95": 25070.831,
+        "p99": 40816.855,
+        "mean": 11374.094,
+        "max": 138420.755
+      },
+      "db_ms": {
+        "p50": 6866.855,
+        "p95": 21919.833,
+        "mean": 8826.831
+      },
+      "reconstruct_ms": {
+        "p50": 0.0,
+        "p95": 0.0,
+        "mean": 0.0
+      },
+      "serialize_ms": {
+        "p50": 0.167,
+        "p95": 0.556,
+        "mean": 0.255
+      },
+      "response_bytes": {
+        "p50": 992122,
+        "p95": 3207201,
+        "mean": 1595921,
+        "max": 17507540
+      }
+    },
+    "byOperation": {
+      "full": {
+        "requests": 928,
+        "errors": 34,
+        "total_ms": {
+          "p50": 9664.464,
+          "p95": 25070.831,
+          "p99": 40816.855,
+          "mean": 11374.094,
+          "max": 138420.755
+        },
+        "db_ms": {
+          "p50": 6866.855,
+          "p95": 21919.833,
+          "mean": 8826.831
+        },
+        "reconstruct_ms": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "mean": 0.0
+        },
+        "serialize_ms": {
+          "p50": 0.167,
+          "p95": 0.556,
+          "mean": 0.255
+        },
+        "response_bytes": {
+          "p50": 992122,
+          "p95": 3207201,
+          "mean": 1595921,
+          "max": 17507540
+        }
+      }
+    },
+    "samplingWarning": {
+      "workers": 1,
+      "workerPid": 30044,
+      "singleWorkerSample": false,
+      "note": "single worker - metrics are complete"
+    },
+    "process": {
+      "cpuPercent": 0.0,
+      "rssMb": 929.1,
+      "numThreads": 43,
+      "systemCpuPercent": 0.0,
+      "systemMemPercent": 14.8
+    },
+    "sqlResourceStats": {
+      "cpuPercent": 97.38,
+      "dataIoPercent": 5.24,
+      "logWritePercent": 0.0
+    }
+  }
+}
