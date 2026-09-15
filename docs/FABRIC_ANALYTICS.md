@@ -444,3 +444,73 @@ sufficient for every step here, including the 7.5-second OPENJSON shred over
 5. **Open Mirroring is the right integration under private-only networking**,
    and Fabric managed private endpoints (available on F2) make native mirroring
    a viable alternative once a connection credential is provisioned.
+
+---
+
+## 11. Analytics for the full-document designs (Part 2)
+
+The extension added two designs that store one complete order per database item.
+Their analytics paths are **not** equivalent, and the difference is a platform
+constraint rather than a design choice.
+
+### 11.1 Scenario A - Azure SQL Full JSON
+
+Reaches Fabric through the **same** mechanism as the hybrid design. The
+`ord.OrderDocuments` table is an ordinary table with an `nvarchar(max)` column,
+so it mirrors exactly like `ord.OrderJsonBlocks` does today, and the extractor
+needs no new code path.
+
+**The variant table does not.** `ord.OrderDocumentsNative` uses the native `json`
+type, and a table containing a `json` column **cannot be mirrored**
+([SOURCES.md](SOURCES.md) N.2). So the two Scenario A variants are not
+interchangeable for analytics: one feeds Fabric, the other cannot.
+
+That constraint turned out to cost nothing. Measured, `nvarchar(max)` is faster
+than the native type on both read and write at every payload size
+([DOCUMENT_SIZE_RESULTS.md](DOCUMENT_SIZE_RESULTS.md)), so the mirrorable
+representation is also the faster one. This document previously described the
+choice as a compromise forced by Fabric; that was wrong, and the measurement is
+what corrected it.
+
+One genuine difference from the hybrid path is worth planning for: a mirrored
+`OrderDocuments` row carries the **entire order** in one column, so the Parquet
+that crosses to OneLake is the full payload rather than the projected columns the
+Cosmos mirror sends. Any payload-level analytics then shreds JSON at query time
+in the Warehouse, exactly as the hybrid path already does for its blocks.
+
+### 11.2 Scenario B - Cosmos DB for MongoDB has no native mirroring
+
+**Fabric mirroring from Azure Cosmos DB supports the NoSQL API only.** There is
+no mirrored-database source for the API for MongoDB ([SOURCES.md](SOURCES.md)
+M.5). Scenario B is therefore the only design in this POC that cannot use the
+same integration as the others.
+
+Three options exist, none of them free:
+
+| Option | What it costs |
+| --- | --- |
+| **Open Mirroring with a custom extractor** | The mechanism this POC already uses. Reuses the existing landing-zone pusher, but the extractor must read through the Mongo driver rather than the Cosmos SDK, and it inherits the schema-pinning discipline that halted this POC's mirrors twice. |
+| **Data Factory / pipeline copy** | A supported connector exists for Cosmos DB for MongoDB. Scheduled batch rather than continuous, so freshness becomes a pipeline cadence. |
+| **Migrate to Azure DocumentDB** | Microsoft's documented direction for MongoDB-compatible workloads, with free online migration from MongoDB (RU). Changes the product, not just the pipeline, and is out of scope here. |
+
+**Not measured.** No Scenario B analytics path was built or benchmarked. The
+finding is the absence of the native option, which is documented rather than
+observed, and it is stated here rather than left to be discovered during an
+implementation.
+
+### 11.3 What this means for the operational choice
+
+For three of the four designs - SQL Full JSON, SQL hybrid, Cosmos NoSQL - the
+analytics architecture is genuinely unaffected by the operational choice: same
+mechanism, same OneLake landing, same star schema, same Power BI model.
+
+For Scenario B it is affected. Choosing Cosmos DB for MongoDB means building and
+operating a second, different ingestion path for the same analytics destination.
+That is a real and recurring cost, and it sits alongside the CMK and
+authentication constraints in [SOURCES.md](SOURCES.md) M.2 and M.6 rather than
+being traded off against latency.
+
+**Fabric remains off the synchronous request path in every design.** The
+direct-Fabric-serving control in section 7 measured what happens otherwise:
+47.73% errors on whole-order reads at 50 RPS, and 31.29% errors with a 3.0 second
+median on the *cheapest* request shape.
