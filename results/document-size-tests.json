@@ -1,5 +1,5 @@
 {
-  "generatedUtc": "2026-09-15T15:48:37.535372+00:00",
+  "generatedUtc": "2026-09-15T15:57:02.325723+00:00",
   "seed": 42,
   "profiles": [
     "p500k",
@@ -24,24 +24,23 @@
       "bsonBytes": 519816,
       "insert": {
         "ok": true,
-        "ms": 368.65
+        "ms": 398.73
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 18.97
       },
       "updateScalar": {
         "ok": true,
-        "ms": 178.92
+        "ms": 107.62
       },
       "updateNested": {
         "ok": true,
-        "ms": 78.45
+        "ms": 50.53
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 159.26
+        "ms": 60.37
       }
     },
     {
@@ -52,24 +51,23 @@
       "bsonBytes": 990762,
       "insert": {
         "ok": true,
-        "ms": 112.91
+        "ms": 106.77
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 11.35
       },
       "updateScalar": {
         "ok": true,
-        "ms": 37.49
+        "ms": 37.67
       },
       "updateNested": {
         "ok": true,
-        "ms": 72.41
+        "ms": 39.84
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 74.74
+        "ms": 56.7
       }
     },
     {
@@ -80,24 +78,23 @@
       "bsonBytes": 1600930,
       "insert": {
         "ok": true,
-        "ms": 158.09
+        "ms": 171.58
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 14.36
       },
       "updateScalar": {
         "ok": true,
-        "ms": 310.14
+        "ms": 139.86
       },
       "updateNested": {
         "ok": true,
-        "ms": 64.45
+        "ms": 58.56
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 224.23
+        "ms": 346.88
       }
     },
     {
@@ -108,24 +105,23 @@
       "bsonBytes": 1894999,
       "insert": {
         "ok": true,
-        "ms": 179.05
+        "ms": 164.29
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.04
+        "ok": true,
+        "ms": 15.47
       },
       "updateScalar": {
         "ok": true,
-        "ms": 659.39
+        "ms": 606.57
       },
       "updateNested": {
         "ok": true,
-        "ms": 74.15
+        "ms": 257.06
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 733.77
+        "ms": 534.14
       }
     },
     {
@@ -136,24 +132,23 @@
       "bsonBytes": 2135789,
       "insert": {
         "ok": true,
-        "ms": 174.71
+        "ms": 175.83
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 16.55
       },
       "updateScalar": {
         "ok": true,
-        "ms": 80.58
+        "ms": 66.94
       },
       "updateNested": {
         "ok": true,
-        "ms": 69.73
+        "ms": 67.25
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 145.08
+        "ms": 144.05
       }
     },
     {
@@ -164,24 +159,23 @@
       "bsonBytes": 2352154,
       "insert": {
         "ok": true,
-        "ms": 233.58
+        "ms": 209.68
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 17.83
       },
       "updateScalar": {
         "ok": true,
-        "ms": 531.12
+        "ms": 758.71
       },
       "updateNested": {
         "ok": true,
-        "ms": 247.25
+        "ms": 243.27
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 839.13
+        "ms": 814.89
       }
     },
     {
@@ -192,24 +186,23 @@
       "bsonBytes": 3249551,
       "insert": {
         "ok": true,
-        "ms": 287.34
+        "ms": 293.88
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 23.51
       },
       "updateScalar": {
         "ok": true,
-        "ms": 1080.92
+        "ms": 906.98
       },
       "updateNested": {
         "ok": true,
-        "ms": 478.33
+        "ms": 502.74
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 1045.68
+        "ms": 1061.05
       }
     },
     {
@@ -220,24 +213,23 @@
       "bsonBytes": 5180546,
       "insert": {
         "ok": true,
-        "ms": 467.79
+        "ms": 802.82
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 36.0
       },
       "updateScalar": {
         "ok": true,
-        "ms": 158.14
+        "ms": 151.42
       },
       "updateNested": {
         "ok": true,
-        "ms": 156.77
+        "ms": 151.9
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 311.69
+        "ms": 331.04
       }
     },
     {
@@ -248,24 +240,23 @@
       "bsonBytes": 10229617,
       "insert": {
         "ok": true,
-        "ms": 923.37
+        "ms": 975.68
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 118.89
       },
       "updateScalar": {
         "ok": true,
-        "ms": 3659.2
+        "ms": 3949.85
       },
       "updateNested": {
         "ok": true,
-        "ms": 1559.67
+        "ms": 1410.6
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 3723.37
+        "ms": 3915.32
       }
     },
     {
@@ -276,24 +267,23 @@
       "bsonBytes": 16013523,
       "insert": {
         "ok": true,
-        "ms": 1352.12
+        "ms": 1502.54
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 114.44
       },
       "updateScalar": {
         "ok": true,
-        "ms": 6236.87
+        "ms": 6314.08
       },
       "updateNested": {
         "ok": true,
-        "ms": 2722.4
+        "ms": 2528.51
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 5768.73
+        "ms": 5897.16
       }
     },
     {
@@ -304,24 +294,23 @@
       "bsonBytes": 17778796,
       "insert": {
         "ok": true,
-        "ms": 1178.97
+        "ms": 1098.91
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 133.19
       },
       "updateScalar": {
         "ok": true,
-        "ms": 7044.45
+        "ms": 7070.96
       },
       "updateNested": {
         "ok": true,
-        "ms": 2862.19
+        "ms": 2780.41
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 6672.6
+        "ms": 6643.75
       }
     },
     {
@@ -332,24 +321,23 @@
       "bsonBytes": 519816,
       "insert": {
         "ok": true,
-        "ms": 133.92
+        "ms": 81.42
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 27.42
       },
       "updateScalar": {
         "ok": true,
-        "ms": 118.63
+        "ms": 96.48
       },
       "updateNested": {
         "ok": true,
-        "ms": 94.3
+        "ms": 77.06
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 86.05
+        "ms": 83.34
       }
     },
     {
@@ -360,24 +348,23 @@
       "bsonBytes": 990762,
       "insert": {
         "ok": true,
-        "ms": 191.68
+        "ms": 178.28
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 42.62
       },
       "updateScalar": {
         "ok": true,
-        "ms": 221.58
+        "ms": 203.29
       },
       "updateNested": {
         "ok": true,
-        "ms": 144.96
+        "ms": 144.66
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 184.25
+        "ms": 183.6
       }
     },
     {
@@ -388,24 +375,23 @@
       "bsonBytes": 1600930,
       "insert": {
         "ok": true,
-        "ms": 390.65
+        "ms": 383.76
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 65.23
       },
       "updateScalar": {
         "ok": true,
-        "ms": 430.5
+        "ms": 429.09
       },
       "updateNested": {
         "ok": true,
-        "ms": 298.04
+        "ms": 298.2
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 398.7
+        "ms": 385.08
       }
     },
     {
@@ -416,24 +402,23 @@
       "bsonBytes": 1894999,
       "insert": {
         "ok": true,
-        "ms": 511.55
+        "ms": 510.46
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 90.28
       },
       "updateScalar": {
         "ok": true,
-        "ms": 577.23
+        "ms": 577.1
       },
       "updateNested": {
         "ok": true,
-        "ms": 395.66
+        "ms": 417.54
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 534.44
+        "ms": 530.2
       }
     },
     {
@@ -444,24 +429,23 @@
       "bsonBytes": 2135789,
       "insert": {
         "ok": true,
-        "ms": 684.65
+        "ms": 620.8
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 85.5
       },
       "updateScalar": {
         "ok": true,
-        "ms": 685.14
+        "ms": 707.14
       },
       "updateNested": {
         "ok": true,
-        "ms": 474.21
+        "ms": 526.88
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 750.47
+        "ms": 611.42
       }
     },
     {
@@ -472,24 +456,23 @@
       "bsonBytes": 2352154,
       "insert": {
         "ok": true,
-        "ms": 745.81
+        "ms": 701.33
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.05
+        "ok": true,
+        "ms": 94.99
       },
       "updateScalar": {
         "ok": true,
-        "ms": 827.68
+        "ms": 782.58
       },
       "updateNested": {
         "ok": true,
-        "ms": 564.42
+        "ms": 553.51
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 730.77
+        "ms": 734.33
       }
     },
     {
@@ -500,24 +483,23 @@
       "bsonBytes": 3249551,
       "insert": {
         "ok": true,
-        "ms": 1334.36
+        "ms": 1328.61
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 127.35
       },
       "updateScalar": {
         "ok": true,
-        "ms": 1425.29
+        "ms": 1386.22
       },
       "updateNested": {
         "ok": true,
-        "ms": 944.46
+        "ms": 914.57
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 1334.43
+        "ms": 1381.75
       }
     },
     {
@@ -528,24 +510,23 @@
       "bsonBytes": 5180546,
       "insert": {
         "ok": true,
-        "ms": 2890.99
+        "ms": 2849.46
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 203.62
       },
       "updateScalar": {
         "ok": true,
-        "ms": 2931.76
+        "ms": 2857.91
       },
       "updateNested": {
         "ok": true,
-        "ms": 2056.23
+        "ms": 2024.43
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 2815.91
+        "ms": 2902.33
       }
     },
     {
@@ -556,24 +537,23 @@
       "bsonBytes": 10229617,
       "insert": {
         "ok": true,
-        "ms": 8090.33
+        "ms": 8158.86
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.02
+        "ok": true,
+        "ms": 395.06
       },
       "updateScalar": {
         "ok": true,
-        "ms": 9036.35
+        "ms": 8836.46
       },
       "updateNested": {
         "ok": true,
-        "ms": 6593.98
+        "ms": 6650.74
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 8829.37
+        "ms": 8406.35
       }
     },
     {
@@ -584,24 +564,23 @@
       "bsonBytes": 16013523,
       "insert": {
         "ok": true,
-        "ms": 17049.36
+        "ms": 15019.8
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 624.32
       },
       "updateScalar": {
         "ok": true,
-        "ms": 16293.27
+        "ms": 15876.53
       },
       "updateNested": {
         "ok": true,
-        "ms": 11041.58
+        "ms": 11250.93
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 15280.27
+        "ms": 15427.38
       }
     },
     {
@@ -612,24 +591,23 @@
       "bsonBytes": 17778796,
       "insert": {
         "ok": true,
-        "ms": 15965.86
+        "ms": 14942.96
       },
       "pointRead": {
-        "ok": false,
-        "error": "AttributeError: 'Metrics' object has no attribute 'sql_pool_checkout_ms'",
-        "ms": 0.03
+        "ok": true,
+        "ms": 680.3
       },
       "updateScalar": {
         "ok": true,
-        "ms": 17121.14
+        "ms": 17252.98
       },
       "updateNested": {
         "ok": true,
-        "ms": 12367.91
+        "ms": 13656.74
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 16856.64
+        "ms": 18377.59
       }
     },
     {
@@ -640,27 +618,27 @@
       "bsonBytes": 519816,
       "insert": {
         "ok": true,
-        "ms": 388.36,
-        "ru": 190.39,
+        "ms": 468.18,
+        "ru": 373.62,
         "bsonBytes": 519816
       },
       "pointRead": {
         "ok": true,
-        "ms": 50.65
+        "ms": 43.9
       },
       "updateScalar": {
         "ok": true,
-        "ms": 58.52,
+        "ms": 70.97,
         "ru": 410.47
       },
       "updateNested": {
         "ok": true,
-        "ms": 40.29,
+        "ms": 58.33,
         "ru": 324.19
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 43.01,
+        "ms": 34.36,
         "ru": 283.24,
         "bsonBytes": 519816
       }
@@ -673,27 +651,27 @@
       "bsonBytes": 990762,
       "insert": {
         "ok": true,
-        "ms": 46.42,
-        "ru": 626.72,
+        "ms": 52.61,
+        "ru": 1250.39,
         "bsonBytes": 990762
       },
       "pointRead": {
         "ok": true,
-        "ms": 66.88
+        "ms": 47.97
       },
       "updateScalar": {
         "ok": true,
-        "ms": 73.07,
+        "ms": 81.62,
         "ru": 1396.29
       },
       "updateNested": {
         "ok": true,
-        "ms": 63.17,
+        "ms": 67.76,
         "ru": 955.86
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 53.99,
+        "ms": 59.34,
         "ru": 809.96,
         "bsonBytes": 990762
       }
@@ -706,27 +684,27 @@
       "bsonBytes": 1600930,
       "insert": {
         "ok": true,
-        "ms": 73.15,
-        "ru": 1251.72,
+        "ms": 88.39,
+        "ru": 2500.38,
         "bsonBytes": 1600930
       },
       "pointRead": {
         "ok": true,
-        "ms": 101.72
+        "ms": 80.84
       },
       "updateScalar": {
         "ok": true,
-        "ms": 114.98,
+        "ms": 118.45,
         "ru": 2792.18
       },
       "updateNested": {
         "ok": true,
-        "ms": 93.72,
+        "ms": 99.62,
         "ru": 2167.19
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 77.85,
+        "ms": 81.69,
         "ru": 1875.39,
         "bsonBytes": 1600930
       }
@@ -739,27 +717,27 @@
       "bsonBytes": 1894999,
       "insert": {
         "ok": true,
-        "ms": 88.94,
-        "ru": 1251.72,
+        "ms": 94.39,
+        "ru": 2500.38,
         "bsonBytes": 1894999
       },
       "pointRead": {
         "ok": true,
-        "ms": 96.25
+        "ms": 98.37
       },
       "updateScalar": {
         "ok": true,
-        "ms": 137.71,
+        "ms": 153.41,
         "ru": 2792.18
       },
       "updateNested": {
         "ok": true,
-        "ms": 116.54,
+        "ms": 127.93,
         "ru": 2167.19
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 90.57,
+        "ms": 112.13,
         "ru": 1875.39,
         "bsonBytes": 1894999
       }
@@ -772,27 +750,27 @@
       "bsonBytes": 2135789,
       "insert": {
         "ok": true,
-        "ms": 94.26,
-        "ru": 1251.72,
+        "ms": 111.51,
+        "ru": 2500.38,
         "bsonBytes": 2135789
       },
       "pointRead": {
         "ok": true,
-        "ms": 106.36
+        "ms": 112.93
       },
       "updateScalar": {
         "ok": true,
-        "ms": 161.17,
+        "ms": 137.59,
         "ru": 2792.18
       },
       "updateNested": {
         "ok": true,
-        "ms": 143.92,
+        "ms": 126.08,
         "ru": 2167.19
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 102.36,
+        "ms": 104.57,
         "ru": 1875.39,
         "bsonBytes": 2135789
       }
@@ -805,27 +783,27 @@
       "bsonBytes": 2352154,
       "insert": {
         "ok": true,
-        "ms": 102.59,
-        "ru": 1251.72,
+        "ms": 121.87,
+        "ru": 2500.38,
         "bsonBytes": 2352154
       },
       "pointRead": {
         "ok": true,
-        "ms": 116.02
+        "ms": 118.91
       },
       "updateScalar": {
         "ok": true,
-        "ms": 156.87,
+        "ms": 170.33,
         "ru": 2792.18
       },
       "updateNested": {
         "ok": true,
-        "ms": 141.98,
+        "ms": 161.83,
         "ru": 2167.19
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 111.0,
+        "ms": 111.6,
         "ru": 1875.39,
         "bsonBytes": 2352154
       }
@@ -838,27 +816,27 @@
       "bsonBytes": 3249551,
       "insert": {
         "ok": true,
-        "ms": 139.33,
-        "ru": 1318.53,
+        "ms": 165.26,
+        "ru": 2634.01,
         "bsonBytes": 3249551
       },
       "pointRead": {
         "ok": true,
-        "ms": 156.84
+        "ms": 163.11
       },
       "updateScalar": {
         "ok": true,
-        "ms": 225.97,
+        "ms": 248.2,
         "ru": 2941.43
       },
       "updateNested": {
         "ok": true,
-        "ms": 184.85,
+        "ms": 196.96,
         "ru": 2874.61
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 150.52,
+        "ms": 157.83,
         "ru": 2567.19,
         "bsonBytes": 3249551
       }
@@ -871,27 +849,27 @@
       "bsonBytes": 5180546,
       "insert": {
         "ok": true,
-        "ms": 255.59,
-        "ru": 2136.04,
+        "ms": 276.25,
+        "ru": 4269.04,
         "bsonBytes": 5180546
       },
       "pointRead": {
         "ok": true,
-        "ms": 247.82
+        "ms": 247.2
       },
       "updateScalar": {
         "ok": true,
-        "ms": 326.12,
+        "ms": 379.02,
         "ru": 4767.53
       },
       "updateNested": {
         "ok": true,
-        "ms": 370.5,
+        "ms": 329.14,
         "ru": 3956.09
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 247.77,
+        "ms": 268.79,
         "ru": 3457.6,
         "bsonBytes": 5180546
       }
@@ -904,27 +882,27 @@
       "bsonBytes": 10229617,
       "insert": {
         "ok": true,
-        "ms": 433.7,
-        "ru": 4209.6,
+        "ms": 554.51,
+        "ru": 8416.14,
         "bsonBytes": 10229617
       },
       "pointRead": {
         "ok": true,
-        "ms": 518.68
+        "ms": 507.43
       },
       "updateScalar": {
         "ok": true,
-        "ms": 737.69,
+        "ms": 766.65,
         "ru": 9399.28
       },
       "updateNested": {
         "ok": true,
-        "ms": 591.3,
+        "ms": 633.26,
         "ru": 7739.96
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 458.92,
+        "ms": 520.48,
         "ru": 6756.82,
         "bsonBytes": 10229617
       }
@@ -937,27 +915,27 @@
       "bsonBytes": 16013523,
       "insert": {
         "ok": true,
-        "ms": 698.41,
-        "ru": 7685.56,
+        "ms": 960.71,
+        "ru": 15368.07,
         "bsonBytes": 16013523
       },
       "pointRead": {
         "ok": true,
-        "ms": 812.96
+        "ms": 931.04
       },
       "updateScalar": {
         "ok": true,
-        "ms": 1135.02,
+        "ms": 1192.57,
         "ru": 17163.64
       },
       "updateNested": {
         "ok": true,
-        "ms": 923.86,
-        "ru": 14532.53
+        "ms": 1425.91,
+        "ru": 14532.91
       },
       "replaceWhole": {
         "ok": true,
-        "ms": 1144.07,
+        "ms": 840.59,
         "ru": 12736.96,
         "bsonBytes": 16013523
       }
@@ -971,7 +949,7 @@
       "insert": {
         "ok": false,
         "error": "DocumentTooLarge: update command document too large",
-        "ms": 105.07
+        "ms": 104.44
       }
     },
     {
@@ -982,11 +960,11 @@
       "bsonBytes": 519816,
       "insert": {
         "ok": true,
-        "ms": 181.07
+        "ms": 163.83
       },
       "pointRead": {
         "ok": true,
-        "ms": 79.29
+        "ms": 102.74
       }
     },
     {
@@ -997,11 +975,11 @@
       "bsonBytes": 990762,
       "insert": {
         "ok": true,
-        "ms": 73.67
+        "ms": 58.43
       },
       "pointRead": {
         "ok": true,
-        "ms": 21.57
+        "ms": 77.0
       }
     },
     {
@@ -1012,11 +990,11 @@
       "bsonBytes": 1600930,
       "insert": {
         "ok": true,
-        "ms": 97.07
+        "ms": 82.87
       },
       "pointRead": {
         "ok": true,
-        "ms": 457.71
+        "ms": 220.69
       }
     },
     {
@@ -1027,11 +1005,11 @@
       "bsonBytes": 1894999,
       "insert": {
         "ok": true,
-        "ms": 798.36
+        "ms": 1041.34
       },
       "pointRead": {
         "ok": true,
-        "ms": 1563.75
+        "ms": 136.64
       }
     },
     {
@@ -1042,9 +1020,9 @@
       "bsonBytes": 2135789,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 8a40390a-005b-4826-aceb-21a99a44a616, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 1730cd21-1d00-45f8-a659-14cfea19740a, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 22.79
+        "ms": 1369.73
       }
     },
     {
@@ -1055,9 +1033,9 @@
       "bsonBytes": 2352154,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 56e00377-d45b-4fd2-b884-97894efb59f2, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 06873744-51f9-4e69-a0fd-f347be404cec, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 24.02
+        "ms": 23.76
       }
     },
     {
@@ -1068,9 +1046,9 @@
       "bsonBytes": 3249551,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 9b6a8470-64da-4730-aa36-1ec0f8884445, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 55cd4cb0-5b96-4a8c-837c-41b199859965, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 33.16
+        "ms": 31.9
       }
     },
     {
@@ -1081,9 +1059,9 @@
       "bsonBytes": 5180546,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: b2559141-5bca-4c32-8fe1-50d28f05518d, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: ccb8cbcf-c73d-4c2e-b920-f365b83e82a9, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 64.12
+        "ms": 49.33
       }
     },
     {
@@ -1094,9 +1072,9 @@
       "bsonBytes": 10229617,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: d882dc65-0fef-430c-b24f-c8b47e99d2e0, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 7df4aa3e-accd-4a1e-899e-4d8bf1a911c0, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 95.91
+        "ms": 101.48
       }
     },
     {
@@ -1107,9 +1085,9 @@
       "bsonBytes": 16013523,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 8c794af0-930f-41da-8230-8121530c0d9f, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: e9500908-9dbc-4049-ac7c-a31880a1589c, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 140.11
+        "ms": 139.76
       }
     },
     {
@@ -1120,9 +1098,9 @@
       "bsonBytes": 17778796,
       "insert": {
         "ok": false,
-        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: 26892e28-d935-41d4-85dd-b523b0111c7a, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
+        "error": "CosmosHttpResponseError: (RequestEntityTooLarge) Message: {\"Errors\":[\"Request size is too large\"]}\r\nActivityId: e0ea27cc-59f0-4844-be64-6e44e8013e1c, Request URI: /apps/56ada6bd-5a60-4436-9835-23212828207c/services/48888a7b-a967-435d-a7a5-08536860613e/partitions/85b1aee3-623f-4f90-afa5-560adc6e68ae/replicas/134338805392691823p/, RequestStats: , SDK: Microsoft.Azure.Documents.Common/2.14.0\nCode: Re",
         "statusCode": 413,
-        "ms": 161.44
+        "ms": 160.29
       }
     }
   ]

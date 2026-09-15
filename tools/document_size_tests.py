@@ -73,7 +73,15 @@ def _fail(exc: BaseException) -> dict[str, Any]:
     return out
 
 
-def _timed(fn, *a, **kw) -> dict[str, Any]:
+def _timed(fn, *a, metrics: Any = None, **kw) -> dict[str, Any]:
+    """Time one operation and harvest whatever cost signal it exposes.
+
+    Writes return an IngestResult carrying `request_charge`. READS return a
+    payload and put their RU on the metrics object instead, so both paths have
+    to be harvested or read RU silently reads as zero - which is exactly what
+    happened on the first pass, leaving the brief's "complete-document point
+    lookup" RU unanswered while the table looked complete.
+    """
     t0 = time.perf_counter()
     try:
         res = fn(*a, **kw)
@@ -83,6 +91,16 @@ def _timed(fn, *a, **kw) -> dict[str, Any]:
         if hasattr(res, "extra") and isinstance(res.extra, dict):
             if res.extra.get("bsonBytes"):
                 row["bsonBytes"] = res.extra["bsonBytes"]
+        if metrics is not None:
+            samples = [s for s in (getattr(metrics, "extra", {}) or {}).get("ru", []) if s]
+            if samples:
+                row["ru"] = round(sum(float(s.get("requestCharge", 0.0)) for s in samples), 2)
+                row["ruCommands"] = [s.get("commandName") for s in samples]
+                metrics.extra["ru"] = []  # consume, so the next op starts clean
+        if isinstance(res, (bytes, bytearray)):
+            row["responseBytes"] = len(res)
+        elif isinstance(res, dict):
+            row["responseBytes"] = len(orjson.dumps(res))
         return row
     except BaseException as exc:  # noqa: BLE001 - a failure IS the result here
         row = _fail(exc)
@@ -216,7 +234,7 @@ def run_backend(backend: str, profiles: list[str], seed: int, keep: bool) -> lis
         row["insert"] = _timed(repo.ingest_order, env)
         if row["insert"]["ok"] and order_id:
             m = new_metrics()
-            row["pointRead"] = _timed(repo.get_full_order, order_id, m)
+            row["pointRead"] = _timed(repo.get_full_order, order_id, m, metrics=m)
             if hasattr(repo, "update_order_header"):
                 row["updateScalar"] = _timed(
                     repo.update_order_header, order_id, {"status": "SizeTested"})
