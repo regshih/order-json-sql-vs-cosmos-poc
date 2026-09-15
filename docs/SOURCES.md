@@ -1125,3 +1125,211 @@ Additionally, **there is no native JSON index in Azure SQL Database**: `CREATE J
 15. **Regional pricing for regions other than West US 3 and East US.** Only these two were queried. Fabric pricing is explicitly regional (*"Pricing is regional"*). Azure SQL and Storage figures in §D.3 / §D.4 are West US 3 only.
 
 16. **Azure SQL Database MB/s throughput per SLO.** Microsoft publishes max data IOPS and an IO-size range (8 KB to 64 KB), not MB/s. The ~160 MB/s figure cited in §B.5 for `GP_Gen5_8` is arithmetic inference, not a documented number.
+
+---
+
+# PART 2 — Full-Document Extension
+
+**Verified on 2026-09-15.** Accessed date for every link in Part 2: **2026-09-15**.
+
+This part covers the four-scenario full-document extension (SQL Full JSON, Cosmos
+DB for MongoDB, and the two existing decomposed models). Same rule as Part 1:
+nothing from memory, contradictions called out, unretrievable facts listed as
+unverified rather than guessed.
+
+## M. Azure Cosmos DB for MongoDB — the 16 MB document capability
+
+### M.1 What the capability does, and the two hard constraints
+
+> "16-MB document support raises the size limit for documents from 2 MB to 16 MB.
+> This limit applies only to collections created after enabling the feature.
+> After you enable this feature for a database account, it can't be disabled."
+
+> "We recommend that you enable Server Side Retry and avoid using wildcard indexes
+> to ensure that requests in larger documents succeed. Raising your database or
+> collection request units might also help performance."
+
+Source: [7.0 supported features and syntax — Azure Cosmos DB for MongoDB](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/feature-support-70)
+(page `ms.date` 2025-08-20, `updated_at` 2026-04-27).
+
+Two consequences that drive the test plan:
+
+1. The capability must be enabled **before** the test collection is created. A
+   collection created earlier keeps the 2 MB limit. The provisioning order is
+   therefore not a style choice.
+2. Enablement is **one-way per account**. It cannot be removed.
+
+Enablement path: the **Features** tab in the portal, or programmatically by adding
+the `EnableMongo16MBDocumentSupport` capability
+([how to configure capabilities](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/how-to-configure-capabilities)).
+
+### M.2 SECURITY — 16 MB documents and customer-managed keys are mutually exclusive
+
+**This is the most consequential finding in Part 2 and it is not in an appendix.**
+
+`EnableMongo16MBDocumentSupport` and CMK encryption **cannot coexist on the same
+account**. Attempting to enable CMK on an account that has the capability returns
+an error stating that *"EnableMongo16MBDocumentSupport and CMK encryption are not
+supported together"*. Because the capability also cannot be removed (M.1), an
+account created for 16 MB documents can **never** be brought under
+customer-managed-key encryption. The only remedy is to create a new account
+without the capability and migrate the data.
+
+Sources: [Configure customer-managed keys — Azure Cosmos DB](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-customer-managed-keys),
+[Configure CMK on existing accounts](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-customer-managed-keys-existing-accounts),
+[CMK troubleshooting guide](https://learn.microsoft.com/en-us/azure/cosmos-db/cmk-troubleshooting-guide),
+and the Microsoft Q&A thread [How to remove EnableMongo16MBDocumentSupport capability to enable CMK encryption](https://learn.microsoft.com/en-gb/answers/questions/5520221/title-how-to-remove-enablemongo16mbdocumentsupport).
+
+For a title and escrow workload the order payload carries SSNs, bank and wire
+instructions, and loan detail. Where CMK is a stated control, **Scenario B is
+disqualified at the platform level regardless of how well it benchmarks.** That
+is a design finding, not a performance one, and it is recorded here before any
+measurement was taken.
+
+### M.3 Indexing and query constraints relevant to a large nested document
+
+From [feature-support-70](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/feature-support-70):
+
+| Capability | Supported |
+| --- | --- |
+| Single field / compound / multikey index | Yes |
+| `2dsphere` | Yes |
+| **Text index** | **No** (use `$regex`) |
+| **Hashed index** | **No** |
+| **Sparse** index property | **No** |
+| `Partial` index property | Only for unique indexes |
+| **Case-insensitive** index property | **No** |
+| TTL, Unique, Background | Yes |
+
+Also documented on the same page and directly relevant here:
+
+- Wildcard indexes are explicitly discouraged with 16 MB documents (M.1). Broadly
+  indexing a deeply nested order payload is therefore contraindicated by the
+  vendor, not merely by our own measurement.
+- Multi-document transactions work **only within a single non-sharded
+  collection**, never across collections or shards, with a fixed **5 second**
+  timeout.
+- Retryable writes require the shard key in the filter for updates and deletes on
+  sharded collections (`ShardKeyNotFound(61)` otherwise), and do not support bulk
+  *unordered* writes. Capability: `EnableMongoRetryableWrites`.
+- Write concerns specified by client code are **ignored**; all writes are quorum.
+- Users and roles are not supported; access is via Azure RBAC or account keys.
+- Documents are BSON. Accounts on 4.0+ use an improved internal encoding, and
+  documents written before an upgrade do not benefit until rewritten.
+
+### M.4 Product direction — Microsoft now routes away from this API in both directions
+
+The feature-support page for MongoDB 7.0 opens with two redirections:
+
+> "Are you looking to migrate an existing MongoDB application or use MongoDB Query
+> Language (MQL) features? Consider Azure DocumentDB."
+
+> "Are you looking for a database solution for **high-scale** scenarios with a
+> 99.999% availability service level agreement (SLA), instant autoscale, and
+> automatic failover across multiple regions? Consider Azure Cosmos DB for NoSQL."
+
+Azure DocumentDB is the service **formerly named Azure Cosmos DB for MongoDB
+(vCore)**, renamed to align with the Linux Foundation open-source DocumentDB
+project, and is now generally available. Free online migration from MongoDB (RU)
+to Azure DocumentDB is GA.
+
+Sources: [feature-support-70](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/feature-support-70),
+[Azure DocumentDB is now generally available](https://devblogs.microsoft.com/cosmosdb/azure-documentdb-is-now-generally-available/),
+[Azure DocumentDB FAQ](https://learn.microsoft.com/en-us/azure/documentdb/faq),
+[Migrate to Azure DocumentDB](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/how-to-migrate-documentdb),
+[Migration from MongoDB (RU) to Azure DocumentDB is now GA](https://devblogs.microsoft.com/cosmosdb/mongoru-to-documentdb/).
+
+**Difference from an assumption in the prompt.** The prompt asks whether Cosmos DB
+for MongoDB "remains appropriate for this POC". Per M.1, the 16 MB capability is a
+**MongoDB (RU)** account capability, so the scenario the prompt specifies can only
+be built on the API that Microsoft's own documentation now steers new workloads
+away from. Both facts are recorded; the scenario is still built and measured, as
+the prompt directs.
+
+### M.5 Fabric analytics — no native mirroring for the MongoDB API
+
+Fabric mirroring from Azure Cosmos DB supports **Azure Cosmos DB for NoSQL
+accounts only**. There is no native mirrored-database source for the API for
+MongoDB, so Scenario B's analytics path must use a different mechanism (Open
+Mirroring with a custom extractor, or a Data Factory / pipeline copy).
+
+Sources: [Mirrored databases from Azure Cosmos DB](https://learn.microsoft.com/en-us/fabric/mirroring/azure-cosmos-db),
+[Limits and quotas in mirrored databases from Azure Cosmos DB](https://learn.microsoft.com/en-us/fabric/mirroring/azure-cosmos-db-limitations),
+[Copy data from Azure Cosmos DB for MongoDB (Data Factory connector)](https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-cosmos-db-mongodb-api).
+
+Also documented for the NoSQL mirroring path: continuous backup is a
+prerequisite, and replication itself does not consume RUs.
+
+## N. Azure SQL Database — the native `json` type for Scenario A
+
+### N.1 The type is real, GA on Azure SQL Database, and present on this server
+
+> "The **json** data type stores JSON documents in a native binary format."
+
+> is generally available for Azure SQL Database and Azure SQL Managed Instance with
+> the **SQL Server 2025** or **Always-up-to-date** update policy.
+> is in preview for SQL Server 2025 (17.x) and SQL database in Fabric.
+
+Documented size limits:
+
+| Field | Limitation |
+| --- | --- |
+| JSON data type size (binary) | **Up to 2 GB** |
+| Number of unique keys | Up to 32K |
+| Per key string size | 7,998 bytes |
+| Per string value size | 536,870,911 bytes |
+| Number of properties in one object | **Up to 65,535** |
+| Number of elements in one array | **Up to 65,535** |
+| Number of nested levels | **128** |
+
+Source: [json data type — SQL Server / Azure SQL](https://learn.microsoft.com/en-us/sql/t-sql/data-types/json-data-type)
+(page `ms.date` 2026-01-14, `updated_at` 2026-01-15).
+
+Verified against the POC's own provisioned database on 2026-09-15:
+`SERVERPROPERTY('EngineEdition')` = **5** (Azure SQL Database) and
+`SELECT COUNT(*) FROM sys.types WHERE name='json'` = **1**. The type exists here.
+
+At 1-5 MB an order is four orders of magnitude inside the 2 GB ceiling. The limits
+that could actually bite are the **65,535 elements per array** and **65,535
+properties per object** ceilings, which the >10 MB boundary profiles must be
+checked against rather than assumed safe.
+
+Other documented behaviours that affect the implementation:
+
+- The `json` type **cannot be an index key column**; it may be an *included*
+  column, and may appear in a filtered index's `WHERE` clause.
+- `sp_describe_first_result_set` does not report the type correctly, so "many data
+  access clients and drivers see a **varchar** or **nvarchar** data type" — TDS
+  >= 7.4 sees `varchar(max)` with `Latin1_General_100_BIN2_UTF8`. Observed
+  directly: pyodbc raised `ODBC SQL type -16 is not yet supported` on a probe that
+  surfaced a native type to the driver, which is the same class of driver gap.
+- `OPENJSON()` does not accept the `json` type on some platforms; cast to
+  `nvarchar(max)` explicitly first.
+- No implicit conversions. `CAST`/`CONVERT` to and from char/nchar/varchar/nvarchar
+  only. A `varchar(max)` column can be altered **to** `json`, but a `json` column
+  can never be altered back to a string type.
+
+### N.2 The blocking constraint — a mirrored table may not contain a `json` column
+
+> "A table can't be mirrored if it has the json or vector data type."
+
+> "You can't ALTER a column to the vector or json data type when a table is
+> mirrored."
+
+Sources: [Limitations and behaviors for Fabric mirrored databases from Azure SQL Database](https://learn.microsoft.com/en-us/fabric/mirroring/azure-sql-database-limitations),
+[Limitations of Fabric mirrored databases from SQL Server](https://learn.microsoft.com/en-us/fabric/mirroring/sql-server-limitations),
+[Limitations in mirrored databases from Azure SQL Managed Instance](https://learn.microsoft.com/en-us/fabric/mirroring/azure-sql-managed-instance-limitations).
+
+This re-confirms, against current documentation, the constraint that shaped the
+existing hybrid model: **the faster, purpose-built JSON type and Fabric mirroring
+are mutually exclusive on the same table.** Scenario A is therefore built and
+measured **both** ways to answer the prompt honestly:
+
+| Variant | Column type | Mirrorable to Fabric | Purpose |
+| --- | --- | --- | --- |
+| `sql-full-json` | `nvarchar(max)` + `ISJSON` check | Yes | the deployable design |
+| `sql-full-json-native` | `json` | **No** | the performance ceiling the constraint costs |
+
+Measuring only one of these would either overstate what is deployable or
+understate what the type can do. The prompt's instruction to "measure actual
+behavior rather than assuming one representation is faster" is why both exist.
