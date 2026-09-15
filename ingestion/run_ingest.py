@@ -32,15 +32,31 @@ from ingestion.archive.raw_archive import build_archive  # noqa: E402
 from app.repositories.base import OrderRepository  # noqa: E402
 
 
+# Old names kept: "sql" and "cosmos" are the two DECOMPOSED designs and every
+# committed script from the first phase passes them.
+BACKEND_ALIASES = {"sql": "sql-hybrid", "cosmos": "cosmos-nosql"}
+ALL_BACKENDS = ["sql-hybrid", "cosmos-nosql", "sql-full-json",
+                "sql-full-json-native", "cosmos-mongo"]
+
+
 def make_repo(backend: str) -> OrderRepository:
-    if backend == "sql":
+    backend = BACKEND_ALIASES.get(backend, backend)
+    if backend == "sql-hybrid":
         from app.repositories.sql_repository import SqlOrderRepository
 
         return SqlOrderRepository()
-    if backend == "cosmos":
+    if backend == "cosmos-nosql":
         from app.repositories.cosmos_repository import CosmosOrderRepository
 
         return CosmosOrderRepository()
+    if backend in ("sql-full-json", "sql-full-json-native"):
+        from app.repositories.sql_full_json_repository import SqlFullJsonRepository
+
+        return SqlFullJsonRepository(native=backend.endswith("-native"))
+    if backend == "cosmos-mongo":
+        from app.repositories.mongo_repository import MongoOrderRepository
+
+        return MongoOrderRepository()
     raise ValueError(f"unknown backend {backend!r}")
 
 
@@ -202,7 +218,8 @@ def _stats(values: list[float]) -> dict[str, float] | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--backend", choices=["sql", "cosmos", "both"], required=True)
+    ap.add_argument("--backend", required=True,
+                    help="one of " + " | ".join(ALL_BACKENDS) + " | sql | cosmos | both | all")
     ap.add_argument("--orders", type=int, default=200)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--customers", type=int, default=8)
@@ -212,7 +229,15 @@ def main() -> None:
     ap.add_argument("--out", default="results/ingestion")
     args = ap.parse_args()
 
-    backends = ["sql", "cosmos"] if args.backend == "both" else [args.backend]
+    if args.backend == "both":
+        backends = ["sql-hybrid", "cosmos-nosql"]
+    elif args.backend == "all":
+        backends = list(ALL_BACKENDS)
+    else:
+        backends = [args.backend]
+    unknown = [b for b in backends if BACKEND_ALIASES.get(b, b) not in ALL_BACKENDS]
+    if unknown:
+        raise SystemExit(f"unknown backend(s) {unknown}; expected {ALL_BACKENDS}")
     for b in backends:
         run(b, args)
 
