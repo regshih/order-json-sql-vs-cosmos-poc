@@ -92,6 +92,18 @@ class SqlFullJsonRepository(OrderRepository):
         return _CursorCtx(self, m)  # type: ignore[arg-type]
 
     @property
+    def _payload_param(self) -> str:
+        """How to BIND a payload parameter.
+
+        The native `json` type accepts no implicit conversion from nvarchar
+        (SOURCES.md N.1), so a plain `?` fails with
+        `22018 Operand type clash: nvarchar(max) is incompatible with json`.
+        An explicit CAST is required on every write. The nvarchar variant binds
+        directly.
+        """
+        return "CAST(? AS json)" if self.native else "?"
+
+    @property
     def _payload_expr(self) -> str:
         """How to SELECT the payload so pyodbc can bind the result.
 
@@ -300,10 +312,22 @@ class SqlFullJsonRepository(OrderRepository):
             # nvarchar(max) parameters must bind as SQL_WVARCHAR with precision 0.
             # Anything else raises HY104 on a multi-megabyte value - the defect
             # that once failed 100% of block writes in the hybrid path.
-            cur.setinputsizes([(pyodbc.SQL_WVARCHAR, 0, 0)] * 1)
+            #
+            # pyodbc applies this list POSITIONALLY, so it must span all 30
+            # parameters - this MERGE binds SummaryJson and the payload twice,
+            # once per branch. A short list leaves the later long values on the
+            # default binding, which is how HY104 appeared the first time.
+            #
+            # Only the four long strings are forced; everything else is None so
+            # ints, decimals and the uniqueidentifier keep their natural types
+            # instead of being coerced to wide strings.
+            sizes: list[Any] = [None] * 30
+            for i in (13, 14, 28, 29):  # SummaryJson, JsonPayload, x2 branches
+                sizes[i] = (pyodbc.SQL_WVARCHAR, 0, 0)
+            cur.setinputsizes(sizes)
             cur.execute(
-                f"""
-                MERGE {self.table} AS t
+                """
+                MERGE {table} AS t
                 USING (SELECT CAST(? AS uniqueidentifier) AS OrderId) AS s
                    ON t.OrderId = s.OrderId
                 WHEN MATCHED THEN UPDATE SET
@@ -311,14 +335,14 @@ class SqlFullJsonRepository(OrderRepository):
                     PrimaryState = ?, MaxLoanAmount = ?, TotalLoanAmount = ?,
                     PropertyCount = ?, LoanCount = ?, PartyCount = ?,
                     PayloadBytes = ?, PayloadHash = ?, SummaryJson = ?,
-                    UpdatedAt = SYSUTCDATETIME(), JsonPayload = ?
+                    UpdatedAt = SYSUTCDATETIME(), JsonPayload = {payload_param}
                 WHEN NOT MATCHED THEN INSERT
                     (OrderId, CustomerId, OrderVersion, OrderNumber, Status,
                      PrimaryState, MaxLoanAmount, TotalLoanAmount,
                      PropertyCount, LoanCount, PartyCount,
                      PayloadBytes, PayloadHash, SummaryJson, UpdatedAt, JsonPayload)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSUTCDATETIME(), ?);
-                """,
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, SYSUTCDATETIME(), {payload_param});
+                """.format(table=self.table, payload_param=self._payload_param),
                 proj["orderId"],
                 # matched
                 proj["customerId"], proj["orderVersion"], proj["orderNumber"], proj["status"],

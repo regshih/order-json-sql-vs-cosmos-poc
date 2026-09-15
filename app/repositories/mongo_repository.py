@@ -151,20 +151,39 @@ class MongoOrderRepository(OrderRepository):
         return [c.get("name") for c in caps if c.get("name")]
 
     def ping(self) -> dict[str, Any]:
+        """Liveness that actually touches the DATA plane.
+
+        `ping` alone is not enough and that is not a theoretical concern: on an
+        account created with `disableLocalAuth: true` - which is what the CLI
+        produced here without being asked - the handshake succeeds while every
+        read and write fails `Unauthorized (13)`. An earlier version of this
+        method swallowed that into a bare `except` and reported ok=True on a
+        backend where nothing worked. A health check that green-lights a dead
+        dependency is worse than no health check.
+        """
         t0 = time.perf_counter()
         self.db.command("ping")
+        handshake_ms = round((time.perf_counter() - t0) * 1000, 2)
         out: dict[str, Any] = {
             "backend": self.backend,
-            "ok": True,
             "database": self.database_name,
             "collection": self.collection_name,
             "captureRu": self.capture_ru,
-            "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+            "handshakeMs": handshake_ms,
         }
         try:
+            t1 = time.perf_counter()
             out["documents"] = self.col.estimated_document_count()
-        except Exception:
-            pass
+            out["dataPlaneMs"] = round((time.perf_counter() - t1) * 1000, 2)
+            out["ok"] = True
+        except Exception as exc:
+            out["ok"] = False
+            out["dataPlaneError"] = f"{type(exc).__name__}: {exc}"[:220]
+            if "Unauthorized" in str(exc):
+                out["hint"] = ("data plane rejected the account key - check "
+                               "disableLocalAuth on the account. The MongoDB RU "
+                               "API has no Entra data-plane alternative.")
+        out["latency_ms"] = handshake_ms
         return out
 
     def close(self) -> None:
