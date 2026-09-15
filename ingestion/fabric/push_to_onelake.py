@@ -40,6 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 ONELAKE_DFS = "https://onelake.dfs.fabric.microsoft.com"
 STATE_FILE = Path("artifacts/fabric-environment.json")
 WATERMARK_FILE = Path("artifacts/fabric-push-watermarks.json")
+SCHEMA_FILE = Path("artifacts/fabric-parquet-schemas.json")
 
 # Relational projection mirrored from Azure SQL.
 #
@@ -176,6 +177,59 @@ def record_sequence(watermarks: dict[str, Any], lz: str, table: str, seq: int) -
     seen[key] = max(int(seen.get(key, 0)), int(seq))
 
 
+def load_schemas() -> dict[str, Any]:
+    return json.loads(SCHEMA_FILE.read_text()) if SCHEMA_FILE.exists() else {}
+
+
+def save_schemas(s: dict[str, Any]) -> None:
+    SCHEMA_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SCHEMA_FILE.write_text(json.dumps(s, indent=2), encoding="utf-8")
+
+
+def _schema_to_json(schema: pa.Schema) -> list[list[str]]:
+    return [[f.name, str(f.type)] for f in schema]
+
+
+def _schema_from_json(spec: list[list[str]]) -> pa.Schema:
+    return pa.schema([(name, pa.type_for_alias(typ)) for name, typ in spec])
+
+
+def pinned_schema(registry: dict[str, Any], lz: str, table: str,
+                  df: pd.DataFrame) -> tuple[pa.Schema, bool]:
+    """Return the Parquet schema to use for ``table``, pinning it on first use.
+
+    Why this is not optional. ``pd.read_sql`` infers dtypes from the rows it
+    happens to return, so the SAME table yields different Parquet schemas for a
+    full snapshot and for an incremental: a nullable integer column with no NULLs
+    in the batch becomes int64 where the snapshot produced float64, and a column
+    that is entirely NULL in the batch becomes `null` type. Either way the file no
+    longer matches the Delta table, and Fabric's replicator **silently refuses
+    it** - the push reports success, the landing-zone file is never consumed, and
+    replication for that table stops dead with no error anywhere.
+
+    The invariant that matters is "every batch must match what the FIRST push
+    created", so that is what this records: the schema is captured from the first
+    (full) push of each table and every later batch is cast to it. Deriving it
+    beats hand-writing one schema per table - there are eight of them, and a
+    hand-written list silently rots the moment a column is added.
+    """
+    key = f"{lz}/{table}"
+    spec = registry.get(key)
+    if spec:
+        return _schema_from_json(spec), False
+    schema = pa.Table.from_pandas(df, preserve_index=False).schema
+    bad = [f.name for f in schema if pa.types.is_null(f.type)]
+    if bad:
+        # Pinning a `null` column would make the defect permanent.
+        raise SystemExit(
+            f"refusing to pin a schema for {table}: column(s) {bad} inferred as "
+            f"null type. Pin this table from a FULL push, where every column has "
+            f"at least one value."
+        )
+    registry[key] = _schema_to_json(schema)
+    return schema, True
+
+
 def upload_parquet(fs, lz: str, table: str, df: pd.DataFrame, seq: int,
                    schema: pa.Schema | None = None) -> dict[str, Any]:
     """Write one Parquet file into the landing zone.
@@ -226,6 +280,7 @@ def push_sql(mode: str, lz: str, fs, tables: list[str], batch_rows: int) -> dict
 
     repo = SqlOrderRepository()
     watermarks = load_watermarks()
+    schemas = load_schemas()
     wm_key = "sql"
     wm = watermarks.setdefault(wm_key, {})
     out: list[dict[str, Any]] = []
@@ -264,11 +319,16 @@ def push_sql(mode: str, lz: str, fs, tables: list[str], batch_rows: int) -> dict
 
             write_metadata(fs, lz, table, cfg["keys"])
             seq = next_sequence(fs, lz, table, watermarks)
+            # Pin the column types to whatever the first push of this table
+            # produced. Without this, an incremental batch infers different types
+            # and the replicator drops the file without reporting anything.
+            schema, pinned_now = pinned_schema(schemas, lz, table, _mark(df))
             # Chunk large tables so no single Parquet file is unwieldy.
             for i in range(0, len(df), batch_rows):
                 chunk = _mark(df.iloc[i:i + batch_rows])
-                r = upload_parquet(fs, lz, table, chunk, seq)
+                r = upload_parquet(fs, lz, table, chunk, seq, schema=schema)
                 r["queryMs"] = round(query_ms, 1)
+                r["schemaPinnedThisRun"] = pinned_now
                 r["sequence"] = seq
                 if payload_stats:
                     r["jsonPayloadStats"] = payload_stats
@@ -283,6 +343,7 @@ def push_sql(mode: str, lz: str, fs, tables: list[str], batch_rows: int) -> dict
         repo.close()
 
     save_watermarks(watermarks)
+    save_schemas(schemas)
     return {"backend": "sql", "mode": mode, "files": out}
 
 

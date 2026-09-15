@@ -420,3 +420,56 @@ def test_cosmos_schema_matches_the_rows_the_extractor_builds() -> None:
         "__rowMarker__", "_extractedUtc",
     }
     assert set(COSMOS_SCHEMA.names) == emitted
+
+
+def test_sql_mirror_schema_is_pinned_from_the_full_snapshot() -> None:
+    """A full snapshot and a sparse incremental must produce ONE schema.
+
+    This is the SQL-side twin of the Cosmos schema-drift bug, and it is the
+    defect that actually halted the SQL mirror: `pd.read_sql` types each batch
+    independently, so an incremental where a nullable column happens to be all
+    NULL - or happens to contain no NULLs at all - yields a different Parquet
+    schema than the seed did, and the replicator drops the file in silence.
+    """
+    import pandas as pd
+    import pyarrow as pa
+
+    from ingestion.fabric.push_to_onelake import _mark, pinned_schema
+
+    # A full snapshot: the nullable integer column has a NULL, so pandas makes
+    # it float64, and the optional text column has a value.
+    full = pd.DataFrame([
+        {"OrderId": "a", "Sequence": 1, "BlockSubType": "Primary"},
+        {"OrderId": "b", "Sequence": None, "BlockSubType": None},
+    ])
+    registry: dict[str, object] = {}
+    schema, pinned_now = pinned_schema(registry, "lz", "OrderJsonBlocks", _mark(full))
+    assert pinned_now is True
+    assert registry, "the pinned schema must be persisted for later pushes"
+
+    # An incremental that would infer int64 for Sequence and null for
+    # BlockSubType if left to itself.
+    incr = pd.DataFrame([{"OrderId": "c", "Sequence": 7, "BlockSubType": None}])
+    inferred = pa.Table.from_pandas(_mark(incr), preserve_index=False).schema
+    assert inferred != schema, "precondition: inference really does drift here"
+
+    # Reusing the registry must return the ORIGINAL schema, not re-pin it...
+    again, pinned_now = pinned_schema(registry, "lz", "OrderJsonBlocks", _mark(incr))
+    assert pinned_now is False
+    assert again == schema
+
+    # ...and the incremental batch must serialise byte-compatibly against it.
+    tbl = pa.Table.from_pandas(_mark(incr), schema=again, preserve_index=False)
+    assert tbl.schema == schema
+
+
+def test_pinning_refuses_a_schema_built_from_an_all_null_column() -> None:
+    """Pinning from a sparse batch would make the silent failure permanent."""
+    import pandas as pd
+    import pytest
+
+    from ingestion.fabric.push_to_onelake import pinned_schema
+
+    header_only = pd.DataFrame([{"OrderId": "a", "BlockSubType": None}])
+    with pytest.raises(SystemExit, match="inferred as null type"):
+        pinned_schema({}, "lz", "OrderJsonBlocks", header_only)
