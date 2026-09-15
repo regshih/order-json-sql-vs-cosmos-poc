@@ -438,3 +438,148 @@ Stated plainly, because the measurements above do not cover it:
    figures used here were taken at 500 orders / ~660 MB; at the modelled 441 GiB
    the partition count — and therefore the RU — will differ again.
 8. **Hyperscale evaluation** as the SQL growth path.
+
+---
+
+# PART 2 — The four full-document approaches
+
+Added 2026-09-15, when the customer's requirement was clarified:
+
+> "The ask is to architect the ideal solution for serving the full JSON within an
+> operational workflow, such as an API. If Microsoft does not have a suitable
+> solution within its stack, that is acceptable - we need to know that."
+
+Part 1 above compares two **decomposed** designs. It answers "can the API return
+the whole order?" - both can. It does not answer the question actually being
+asked now, which is whether the **database can physically hold the whole order as
+one item**, and what that costs.
+
+The distinction matters and is used strictly from here on:
+
+| Term | Meaning |
+| --- | --- |
+| **LOGICAL ORDER** | one business order - the complete extract envelope, 1-5 MB |
+| **DATABASE ITEM** | one physical row, BSON document, or Cosmos item |
+| **API RESPONSE** | what `GET /orders/{id}` returns |
+
+## 11. The four approaches
+
+| | Physical storage | Complete order in ONE item? | API response |
+| --- | --- | :---: | --- |
+| **A. SQL Full JSON** | one `ord.OrderDocuments` row | **yes** | full JSON, no reassembly |
+| **B. Cosmos Mongo** | one BSON document | **yes** | full JSON, no reassembly |
+| **C. Cosmos NoSQL aggregate** | ~34 items per order | no | full JSON, **reassembled** |
+| **D. SQL hybrid** | 8 relational tables + JSON blocks | no | full JSON, **reassembled** |
+
+A and B are new. C and D are unchanged and are the designs Part 1 measured.
+
+## 12. Can Microsoft store the complete order as one item? — MEASURED
+
+| Physical storage | Largest accepted | First rejection | Failure mode |
+| --- | ---: | ---: | --- |
+| Azure SQL, one row, `nvarchar(max)` | **16.70 MB** | none | - |
+| Azure SQL, one row, native `json` | **16.70 MB** | none | - |
+| Cosmos DB for MongoDB, one document | **15.04 MB** | 16.70 MB | `DocumentTooLarge` |
+| Cosmos DB for NoSQL, one item | 1.78 MB | **2.01 MB** | HTTP **413** |
+
+**The answer is yes, in two Microsoft products**, for the customer's stated 1-5 MB
+range with a wide margin. Full detail, including BSON-vs-JSON encoding and the
+per-operation latency, is in [DOCUMENT_SIZE_RESULTS.md](DOCUMENT_SIZE_RESULTS.md).
+
+The Cosmos NoSQL row is a **counterfactual** run deliberately: it stores a whole
+order as one item to locate the 2 MB ceiling exactly. Scenario C never does this.
+The limit constrains the **document model**, not the engine.
+
+## 13. Two results that overturn earlier statements in this document
+
+### 13.1 The native `json` type is slower, not faster, for this workload
+
+Part 1 recorded that a table containing a native `json` column cannot be mirrored
+to Fabric, and treated `nvarchar(max)` as a **compromise** accepted to keep the
+analytics path. Measured, it is not a compromise on any axis:
+
+| Payload | read `nvarchar(max)` | read native `json` | insert `nvarchar(max)` | insert native `json` |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.93 MB | **11.3 ms** | 42.6 ms | **106.8 ms** | 178.3 ms |
+| 3.05 MB | **23.5 ms** | 127.3 ms | **293.9 ms** | 1,328.6 ms |
+| 4.87 MB | **36.0 ms** | 203.6 ms | **802.8 ms** | 2,849.5 ms |
+| 15.04 MB | **114.4 ms** | 624.3 ms | **1,502.5 ms** | 15,019.8 ms |
+
+Up to **6x faster on read and 10x faster on insert**, and the gap widens with
+size. The mechanism is specific and explains why this is not a surprise once
+stated: a whole-document workload pays `CAST(? AS json)` to parse and binary-
+encode on write, then `CAST(... AS nvarchar(max))` to serialise back on read, and
+**never queries the binary form in between**. The native type is built for partial
+access - `JSON_VALUE`, `JSON_QUERY`, in-place `modify` - and this is the one
+workload that uses none of that while paying all of its conversion cost.
+
+**Consequence: the Fabric mirroring constraint costs nothing here.** The
+representation it forces is the one that was faster anyway.
+
+### 13.2 On Cosmos Mongo, a one-field edit costs as much as a full rewrite
+
+| Payload | read RU | insert RU | **one scalar `$set`** | one nested `$set` | full `replace_one` |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.49 MB | 7.9 | 373.6 | 410.5 | 328.2 | 283.2 |
+| 0.93 MB | 13.1 | 1,250.4 | 1,396.3 | 955.9 | 810.0 |
+| 4.87 MB | 57.2 | 4,269.0 | **4,767.5** | 3,956.1 | 3,457.6 |
+| 9.61 MB | 110.2 | 8,416.1 | 9,399.3 | 7,740.0 | 6,756.8 |
+| 15.04 MB | 199.4 | 15,368.1 | 17,163.6 | 14,532.9 | 12,737.0 |
+
+Two things follow, and both are properties of the storage model rather than of
+tuning:
+
+1. **Reads are roughly two orders of magnitude cheaper than writes** for the same
+   document - about 12 RU/MB to read, about 1,000 RU/MB to write.
+2. **Update cost tracks DOCUMENT size, not CHANGE size.** Setting one top-level
+   scalar on a 4.87 MB document costs **4,767.5 RU** - *more* than replacing the
+   entire document at 3,457.6 RU, because `$set` forces a server-side
+   read-modify-write while `replace_one` simply writes. There is no cheap small
+   edit to a large document.
+
+This answers the customer's question 6 directly: **yes**, a 5 MB Mongo document
+creates an unacceptable write/update cost even though its read cost is fine.
+
+## 14. What no benchmark can offset
+
+Scenario B carries three platform constraints established from Microsoft
+documentation *before* any measurement (docs/SOURCES.md M.2, M.5, M.6):
+
+| Constraint | Consequence |
+| --- | --- |
+| `EnableMongo16MBDocumentSupport` is **incompatible with customer-managed keys**, and **cannot be removed** once enabled | An account built for 16 MB documents can **never** be brought under CMK. For a title/escrow payload carrying SSNs, wire instructions and loan detail, this disqualifies Scenario B wherever CMK is a stated control - regardless of performance. |
+| The MongoDB RU API has **no Entra data-plane authentication** | Account keys only. The documented mitigation - fetch the key with a managed identity - requires granting the workload a **control-plane** role that can list account keys, which is a strictly more powerful grant than data-plane access and cannot be scoped per collection or made read-only per identity. |
+| **No native Fabric mirroring** for the MongoDB API | Scenario B is the only design here that cannot use the same analytics integration as the others. |
+
+Two further operational frictions, observed rather than documented:
+
+- **Capabilities cannot be set through ARM or Bicep** ("Changing capabilities
+  using Azure Resource Manager is not available for Azure Cosmos DB for MongoDB
+  accounts"). The account cannot be fully declared as IaC.
+- The account was created with **`disableLocalAuth: true`** by default. Because
+  the API has no alternative to key auth, that default makes a new account
+  silently unusable - while a `ping` handshake still succeeds, so a naive health
+  check reports green. This was an account-creation default in this
+  subscription, **not** an enforced policy: every policy assignment in the
+  resource group is audit-only and the setting was changeable.
+
+## 15. Which full-document approach is strongest
+
+**On the evidence so far, Scenario A - Azure SQL, one complete order per
+`nvarchar(max)` row - is the strongest full-document design.** It stores the
+complete order at every size tested, reads it fastest at every size, writes it
+fastest at every size, mirrors to Fabric, authenticates with Entra like every
+other component, and is declarable as IaC.
+
+Scenario B is a genuine full-document store and performs respectably, but it
+would be chosen *despite* three governance constraints rather than because of any
+measured advantage. It was not faster than Scenario A at any payload size tested.
+
+This is a **full-document** ranking. It does not by itself replace the Part 1
+recommendation, because the 50 RPS comparison against the decomposed designs -
+where reassembly cost and per-request RU enter - is a separate measurement.
+
+**Still required before this becomes a production recommendation:** the 50 RPS
+full-document benchmark across all four designs at each payload band, which is
+what separates a database constraint from a network or serialisation constraint
+at ~250 MB/s.
