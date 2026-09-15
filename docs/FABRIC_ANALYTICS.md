@@ -395,6 +395,26 @@ separately so the result is diagnostic rather than one opaque number:
 | `pushToVisibleSec` | Fabric replicator merge + SQL endpoint metadata sync |
 | `endToEndSec` | operational write → queryable in Fabric |
 
+### Result (MEASURED, both paths)
+
+| Interval | Azure SQL → Fabric | Cosmos DB → Fabric |
+| --- | ---: | ---: |
+| `writeMs` operational write | **81 ms** | **190 ms** |
+| `pushSec` incremental extract + Parquet upload | **2.8 s** | **1.3 s** |
+| `pushToVisibleSec` Fabric replicator merge + metadata sync | **104.0 s** | **62.7 s** |
+| `endToEndSec` | **106.9 s** | **64.2 s** |
+
+Provenance: both runs executed from the in-VNet VM via
+`az vm run-command`, so the numbers above were transcribed from that run's
+stdout. The `results/fabric-analytics/` run JSON was left on the VM and is **not**
+committed - it is the one measurement in this POC without a machine-readable
+artifact in the repository. Re-running `--freshness` from a machine with
+private-endpoint access reproduces it and writes the JSON locally.
+
+Cosmos is quicker here for a structural reason rather than an engine one: its
+incremental payload is one mirrored table, against eight for SQL, so the
+replicator has less to merge and fewer tables to re-sync.
+
 **The pipeline is pull-based on a manual trigger in this POC**, so `endToEnd` is
 dominated by how often the extractor runs, not by Fabric. The number that
 characterises *Fabric* is `pushToVisibleSec`. A production deployment would run
