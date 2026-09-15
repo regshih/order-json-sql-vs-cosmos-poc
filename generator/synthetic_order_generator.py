@@ -934,27 +934,31 @@ def calibrated_profiles(seed: int = 1, cache: Path | None = None) -> list[SizePr
     """Return the size profiles with calibrated scale factors, using a cached
     calibration file when available so runs stay fast and reproducible."""
     cache = cache or Path("artifacts/size-calibration.json")
+    scales: dict[str, float] = {}
     if cache.exists():
         data = json.loads(cache.read_text())
         if data.get("seed") == seed:
-            out = []
-            for p in SIZE_PROFILES:
-                out.append(
-                    SizeProfile(p.name, p.target_compact_bytes, p.weight, data["scales"][p.name])
-                )
-            return out
+            scales = dict(data.get("scales") or {})
 
-    out = []
-    scales = {}
-    for p in SIZE_PROFILES:
-        s = calibrate(p, seed=seed)
-        scales[p.name] = s
-        out.append(SizeProfile(p.name, p.target_compact_bytes, p.weight, s))
-        print(f"  calibrated {p.name}: scale={s}", file=sys.stderr)
+    # Calibrate only what the cache is missing, and merge. Adding a profile must
+    # not silently invalidate the calibration of the existing ones: the corpus
+    # profiles' scales are what make every committed dataset statistic
+    # reproducible, so they are reused untouched.
+    missing = [p for p in SIZE_PROFILES if p.name not in scales]
+    if missing:
+        for p in missing:
+            s = calibrate(p, seed=seed)
+            scales[p.name] = s
+            print(f"  calibrated {p.name}: scale={s}", file=sys.stderr)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(
+            json.dumps({"seed": seed, "scales": scales}, indent=2), encoding="utf-8"
+        )
 
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps({"seed": seed, "scales": scales}, indent=2), encoding="utf-8")
-    return out
+    return [
+        SizeProfile(p.name, p.target_compact_bytes, p.weight, scales[p.name], p.stress)
+        for p in SIZE_PROFILES
+    ]
 
 
 # --------------------------------------------------------------------------

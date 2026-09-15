@@ -47,9 +47,14 @@ class RequestMetrics:
     # SQL
     sql_queries: int = 0
     sql_pool_checkout_ms: float = 0.0
+    # Backend-specific detail that does not deserve a first-class field, e.g.
+    # per-operation Mongo RU samples. Kept out of to_dict() unless non-empty so
+    # the hot-path telemetry line stays small.
+    extra: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {k: v for k, v in asdict(self).items() if v not in (None, 0, 0.0, "")} | {
+        return {k: v for k, v in asdict(self).items()
+                if v not in (None, 0, 0.0, "", {}, [])} | {
             "backend": self.backend,
             "endpoint": self.endpoint,
             "operation": self.operation,

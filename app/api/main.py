@@ -1,6 +1,8 @@
 """The SAME REST API over either storage backend.
 
-Backend is chosen once, at startup, from STORAGE_BACKEND=sql|cosmos|fabric.
+Backend is chosen once, at startup, from STORAGE_BACKEND. Five storage designs
+plus a Fabric control share this one contract; see BACKEND_ALIASES below for the
+physical-storage vs API-response matrix.
 Endpoint logic is written exactly once here; the repositories differ only in
 how they fetch and reassemble. This is what makes the contract tests - and the
 benchmark comparison - meaningful.
@@ -33,21 +35,50 @@ log = logging.getLogger("orderapi")
 repo: OrderRepository | None = None
 
 
+# STORAGE_BACKEND -> repository. The four named scenarios plus the Fabric control.
+#
+#   PHYSICAL STORAGE                                    API RESPONSE
+#   sql-full-json          one SQL row                  full JSON
+#   sql-full-json-native   one SQL row (json type)      full JSON
+#   cosmos-mongo           one BSON document            full JSON
+#   sql-hybrid             relational rows + JSON blocks reconstructed full JSON
+#   cosmos-nosql           many documents                reconstructed full JSON
+#
+# `sql` and `cosmos` remain accepted as the original names for the two
+# decomposed backends, so every committed benchmark script and systemd unit from
+# the first phase of this POC keeps working unchanged.
+BACKEND_ALIASES = {"sql": "sql-hybrid", "cosmos": "cosmos-nosql"}
+
+
 def build_repository() -> OrderRepository:
-    backend = os.getenv("STORAGE_BACKEND", "sql").lower()
-    if backend == "sql":
+    raw = os.getenv("STORAGE_BACKEND", "sql-hybrid").lower()
+    backend = BACKEND_ALIASES.get(raw, raw)
+
+    if backend == "sql-hybrid":
         from app.repositories.sql_repository import SqlOrderRepository
 
         return SqlOrderRepository()
-    if backend == "cosmos":
+    if backend == "cosmos-nosql":
         from app.repositories.cosmos_repository import CosmosOrderRepository
 
         return CosmosOrderRepository()
+    if backend in ("sql-full-json", "sql-full-json-native"):
+        from app.repositories.sql_full_json_repository import SqlFullJsonRepository
+
+        return SqlFullJsonRepository(native=backend.endswith("-native"))
+    if backend == "cosmos-mongo":
+        from app.repositories.mongo_repository import MongoOrderRepository
+
+        return MongoOrderRepository()
     if backend == "fabric":
         from app.repositories.fabric_repository import FabricOrderRepository
 
         return FabricOrderRepository()
-    raise ValueError(f"unknown STORAGE_BACKEND={backend!r}; expected sql|cosmos|fabric")
+    raise ValueError(
+        f"unknown STORAGE_BACKEND={raw!r}; expected one of "
+        "sql-hybrid (sql) | cosmos-nosql (cosmos) | sql-full-json | "
+        "sql-full-json-native | cosmos-mongo | fabric"
+    )
 
 
 @asynccontextmanager
@@ -90,9 +121,19 @@ def _repo() -> OrderRepository:
 
 
 def _emit(m, body: Any) -> Response:
-    """Serialise inside the measured window and record the byte count."""
-    with m.serialize():
-        payload = orjson.dumps(body)
+    """Serialise inside the measured window and record the byte count.
+
+    A full-document backend can hand back the stored bytes verbatim (Scenario A
+    reads nvarchar(max) straight out of the row). Re-parsing and re-serialising
+    those would charge Scenario A for work its design exists to avoid, and would
+    make the comparison against the decomposed backends meaningless. Bytes pass
+    through untouched; anything else is serialised inside the measured window.
+    """
+    if isinstance(body, (bytes, bytearray)):
+        payload = bytes(body)
+    else:
+        with m.serialize():
+            payload = orjson.dumps(body)
     m.response_bytes = len(payload)
     return Response(content=payload, media_type="application/json")
 

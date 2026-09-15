@@ -1333,3 +1333,67 @@ measured **both** ways to answer the prompt honestly:
 Measuring only one of these would either overstate what is deployable or
 understate what the type can do. The prompt's instruction to "measure actual
 behavior rather than assuming one representation is faster" is why both exist.
+
+### M.6 SECURITY — the MongoDB (RU) API has no Entra data-plane authentication
+
+**A second, independent enterprise-governance conflict, stacking on M.2.**
+
+Azure Cosmos DB for MongoDB (RU) **does not support Microsoft Entra ID or managed
+identity for data-plane access**. The Mongo wire protocol connection authenticates
+with the **account key** in the connection string; that is the only supported
+method. Entra-based authentication for MongoDB workloads on Cosmos DB exists on
+**vCore** (now Azure DocumentDB, M.4), not on RU.
+
+The documented mitigation is to keep the account key in Azure Key Vault and have
+the application fetch it at runtime with a managed identity. That removes the key
+from source control but the connection is **still key-based**: a long-lived shared
+secret exists, it can be listed by anyone with the right control-plane role, and
+it is not subject to Conditional Access or per-identity RBAC the way an Entra
+token is.
+
+Sources: [Secure access to data in Azure Cosmos DB](https://learn.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data),
+[Connect using role-based access control and Microsoft Entra ID](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-connect-role-based-access-control),
+[Configure Microsoft Entra ID authentication — Cosmos DB for MongoDB vCore](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/how-to-configure-entra-authentication),
+[Entra ID and native DocumentDB authentication — vCore](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/entra-authentication),
+and the Q&A threads [How to connect to Cosmos DB for Mongo using managed identity](https://learn.microsoft.com/en-us/answers/questions/5510005/how-to-connect-to-cosmos-db-for-mongo-using-manage)
+and [Managed identity authentication support for Cosmos DB for MongoDB](https://learn.microsoft.com/en-us/answers/questions/5876598/azure-data-factory-managed-identity-authentication).
+
+**Consequence for this POC.** Every other backend here authenticates with
+`DefaultAzureCredential` and stores no secret. Scenario B **cannot**, by platform
+design rather than by implementation choice. The implementation therefore fetches
+the connection string from ARM at startup using `DefaultAzureCredential`, holds it
+in memory only, and never logs or persists it - the closest achievable equivalent,
+and a demonstration of the documented mitigation rather than a claim that the
+problem does not exist.
+
+**Taken with M.2, Scenario B conflicts with two common enterprise controls
+simultaneously: no customer-managed keys, ever, and no identity-based data-plane
+authentication.** Both are properties of the API, not of the document size.
+
+### M.7 RU telemetry for the MongoDB API — and the trap in it
+
+The RU charge is exposed by a custom database command:
+
+    db.command("getLastRequestStatistics")
+
+which returns, for example:
+
+```json
+{ "_t": "GetRequestStatisticsResponse", "ok": 1, "CommandName": "find",
+  "RequestCharge": 10.1, "RequestDurationInMilliSeconds": 7.2 }
+```
+
+Source: [Find request unit charge for Azure Cosmos DB for MongoDB operations](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/find-request-unit-charge).
+
+**The trap, recognised from the NoSQL path in Part 1.** "Last request" is
+*connection-scoped state*, exactly like `last_response_headers` on the NoSQL SDK -
+the defect that under-reported NoSQL RU by about 42x in this POC before it was
+found. With a connection pool and concurrent readers, `getLastRequestStatistics`
+can return **another request's** charge.
+
+This POC therefore does not sample it under concurrent load. RU capture is
+opt-in (`MONGO_CAPTURE_RU=1`) and, when enabled, runs against a dedicated client
+with `maxPoolSize=1` under a lock so that "the last request" is unambiguous.
+Latency benchmarks run with capture **off**, because the extra command is itself a
+round trip that costs RU and adds latency. Any RU figure in the report that came
+from a concurrent run is labelled as indicative, never used for costing.

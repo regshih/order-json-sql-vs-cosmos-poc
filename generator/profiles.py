@@ -173,8 +173,13 @@ class SizeProfile:
 
     name: str
     target_compact_bytes: int
-    weight: float  # relative frequency in a mixed corpus
+    weight: float  # relative frequency in a mixed corpus; 0 = never mixed in
     scale: float = 1.0
+    #: Boundary/stress profile, not a claim about the customer's real data.
+    #: These exist to find where each platform physically refuses a document -
+    #: principally the Mongo 16 MB ceiling - and are excluded from any mixed
+    #: corpus and from every cost or capacity model.
+    stress: bool = False
 
     @property
     def target_kib(self) -> float:
@@ -187,10 +192,33 @@ SIZE_PROFILES: list[SizeProfile] = [
     SizeProfile("p500k", 500 * 1024, weight=0.22),
     SizeProfile("p1m", 1024 * 1024, weight=0.34),
     SizeProfile("p1_5m", int(1.5 * 1024 * 1024), weight=0.22),
+    # p1_8m exists because p1_9m does NOT land under 2 MiB: measured, it produces
+    # ~2.01 MiB compact JSON, which the Cosmos NoSQL 2 MB item limit rejects. The
+    # brief asks for a 1.9 MB item that a single-item NoSQL design ACCEPTS, so a
+    # profile that reliably lands below the ceiling is required. p1_9m is kept
+    # unchanged - its scale is baked into committed dataset statistics, and as the
+    # "just over the line" case it is useful exactly as it is.
+    SizeProfile("p1_8m", int(1.8 * 1024 * 1024), weight=0.0),
     SizeProfile("p1_9m", int(1.9 * 1024 * 1024), weight=0.12),
+    # 2.1 MB straddles the Cosmos NoSQL 2 MB item ceiling: the smallest profile
+    # that a single-item NoSQL design must reject and a Mongo 16 MB collection
+    # must accept. That contrast is the point of it.
+    SizeProfile("p2_1m", int(2.1 * 1024 * 1024), weight=0.0),
     SizeProfile("p3m", 3 * 1024 * 1024, weight=0.07),
     SizeProfile("p5m", 5 * 1024 * 1024, weight=0.03),
+    # --- Boundary / stress only. NOT a statement about the customer's data. ---
+    SizeProfile("p10m", 10 * 1024 * 1024, weight=0.0, stress=True),
+    SizeProfile("p15m", 15 * 1024 * 1024, weight=0.0, stress=True),
+    # Deliberately above the documented 16 MB Mongo maximum, to observe the
+    # actual failure rather than infer it. Named for intent, not for a size the
+    # customer has.
+    SizeProfile("p17m", 17 * 1024 * 1024, weight=0.0, stress=True),
 ]
+
+#: Profiles that represent the customer's real corpus. Everything else is a
+#: boundary probe and must be labelled as such wherever it appears.
+CORPUS_PROFILES: list[SizeProfile] = [p for p in SIZE_PROFILES if p.weight > 0]
+STRESS_PROFILES: list[SizeProfile] = [p for p in SIZE_PROFILES if p.stress]
 
 PROFILES_BY_NAME = {p.name: p for p in SIZE_PROFILES}
 

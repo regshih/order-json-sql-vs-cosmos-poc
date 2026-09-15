@@ -1,0 +1,237 @@
+{
+  "generatedUtc": "2026-09-15T05:22:29.587465+00:00",
+  "seed": 42,
+  "orderIndex": 1,
+  "documentedLimits": {
+    "cosmosNoSqlItemBytes": 2097152,
+    "mongo16MbDocumentBytes": 16777216,
+    "mongoDefaultDocumentBytes": 2097152,
+    "sqlJsonMaxArrayElements": 65535,
+    "sqlJsonMaxObjectProperties": 65535,
+    "sqlJsonMaxNestingLevels": 128,
+    "sqlJsonMaxBytes": 2147483648
+  },
+  "note": "Sizes are of ONE generated logical order per profile. 'predicted' columns are derived from documented limits only and must be confirmed against live database behaviour before being reported as results.",
+  "profiles": [
+    {
+      "profile": "p500k",
+      "stress": false,
+      "targetBytes": 512000,
+      "scale": 1.6105,
+      "jsonBytesCompact": 514464,
+      "jsonBytesPretty": 876924,
+      "bsonBytes": 521916,
+      "bsonError": null,
+      "bsonOverheadPct": 1.45,
+      "maxArrayElements": 77,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": true,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": true,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p1m",
+      "stress": false,
+      "targetBytes": 1048576,
+      "scale": 2.5469,
+      "jsonBytesCompact": 990969,
+      "jsonBytesPretty": 1701357,
+      "bsonBytes": 1003962,
+      "bsonError": null,
+      "bsonOverheadPct": 1.31,
+      "maxArrayElements": 122,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": true,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": true,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p1_5m",
+      "stress": false,
+      "targetBytes": 1572864,
+      "scale": 3.015,
+      "jsonBytesCompact": 1571030,
+      "jsonBytesPretty": 2765821,
+      "bsonBytes": 1594277,
+      "bsonError": null,
+      "bsonOverheadPct": 1.48,
+      "maxArrayElements": 145,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": true,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": true,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p1_8m",
+      "stress": false,
+      "targetBytes": 1887436,
+      "scale": 3.4832,
+      "jsonBytesCompact": 1877191,
+      "jsonBytesPretty": 3304066,
+      "bsonBytes": 1904736,
+      "bsonError": null,
+      "bsonOverheadPct": 1.47,
+      "maxArrayElements": 167,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": true,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": true,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p1_9m",
+      "stress": false,
+      "targetBytes": 1992294,
+      "scale": 3.5222,
+      "jsonBytesCompact": 2109252,
+      "jsonBytesPretty": 3731543,
+      "bsonBytes": 2139925,
+      "bsonError": null,
+      "bsonOverheadPct": 1.45,
+      "maxArrayElements": 169,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p2_1m",
+      "stress": false,
+      "targetBytes": 2202009,
+      "scale": 3.7953,
+      "jsonBytesCompact": 2306128,
+      "jsonBytesPretty": 4095194,
+      "bsonBytes": 2340687,
+      "bsonError": null,
+      "bsonOverheadPct": 1.5,
+      "maxArrayElements": 182,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p3m",
+      "stress": false,
+      "targetBytes": 3145728,
+      "scale": 4.7316,
+      "jsonBytesCompact": 3202945,
+      "jsonBytesPretty": 5694118,
+      "bsonBytes": 3249222,
+      "bsonError": null,
+      "bsonOverheadPct": 1.44,
+      "maxArrayElements": 227,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p5m",
+      "stress": false,
+      "targetBytes": 5242880,
+      "scale": 6.2922,
+      "jsonBytesCompact": 5095284,
+      "jsonBytesPretty": 9094882,
+      "bsonBytes": 5170477,
+      "bsonError": null,
+      "bsonOverheadPct": 1.48,
+      "maxArrayElements": 302,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p10m",
+      "stress": true,
+      "targetBytes": 10485760,
+      "scale": 9.4133,
+      "jsonBytesCompact": 10064284,
+      "jsonBytesPretty": 18083412,
+      "bsonBytes": 10213772,
+      "bsonError": null,
+      "bsonOverheadPct": 1.49,
+      "maxArrayElements": 452,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p15m",
+      "stress": true,
+      "targetBytes": 15728640,
+      "scale": 11.9102,
+      "jsonBytesCompact": 15788262,
+      "jsonBytesPretty": 28482265,
+      "bsonBytes": 16029420,
+      "bsonError": null,
+      "bsonOverheadPct": 1.53,
+      "maxArrayElements": 572,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": true,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    },
+    {
+      "profile": "p17m",
+      "stress": true,
+      "targetBytes": 17825792,
+      "scale": 12.5344,
+      "jsonBytesCompact": 17534924,
+      "jsonBytesPretty": 31689169,
+      "bsonBytes": 17806068,
+      "bsonError": null,
+      "bsonOverheadPct": 1.55,
+      "maxArrayElements": 602,
+      "maxObjectProperties": 87,
+      "maxNestingDepth": 13,
+      "predicted": {
+        "cosmosNoSqlSingleItem": false,
+        "mongoWith16Mb": false,
+        "mongoWithout16Mb": false,
+        "sqlJsonShapeOk": true
+      }
+    }
+  ]
+}

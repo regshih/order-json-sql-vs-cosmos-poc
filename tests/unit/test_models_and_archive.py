@@ -473,3 +473,77 @@ def test_pinning_refuses_a_schema_built_from_an_all_null_column() -> None:
     header_only = pd.DataFrame([{"OrderId": "a", "BlockSubType": None}])
     with pytest.raises(SystemExit, match="inferred as null type"):
         pinned_schema({}, "lz", "OrderJsonBlocks", header_only)
+
+
+def test_full_document_sections_match_the_decomposed_path() -> None:
+    """Scenarios A/B must derive the SAME sections the decomposed backends rebuild.
+
+    This is the semantic-equivalence proof that does not need a live backend. For
+    every named block, pulling the section straight out of a stored envelope must
+    equal what `split_object_data` -> `reassemble` produces for that block type in
+    the hybrid and NoSQL paths. If these ever diverge, the four backends stop
+    returning the same API response and the whole comparison is void.
+    """
+    from generator.synthetic_order_generator import build_order
+    from generator.profiles import PROFILES_BY_NAME
+    from ingestion.parser.block_splitter import (
+        BLOCK_MAP,
+        reassemble,
+        split_object_data,
+    )
+    from app.repositories.full_document_common import object_data, sections_for_block
+
+    env = build_order(seed=7, order_index=1, profile=PROFILES_BY_NAME["p500k"],
+                      customer_id="CUST-TEST")
+    od = object_data(env)
+    assert od, "generator must produce ObjectData"
+
+    blocks = split_object_data(od)
+    by_type: dict[str, list] = {}
+    for b in blocks:
+        by_type.setdefault(b.block_type, []).append(b)
+
+    checked = 0
+    for block_type in sorted(by_type):
+        expected = reassemble(by_type[block_type])
+        actual = sections_for_block(env, block_type)
+        assert actual == expected, (
+            f"{block_type}: full-document extraction diverged from reassembly\n"
+            f"  keys expected: {sorted(expected)}\n  keys actual:   {sorted(actual)}"
+        )
+        checked += 1
+    assert checked >= 5, f"only {checked} block types exercised; fixture too thin"
+
+
+def test_full_document_summary_matches_the_canonical_projection() -> None:
+    """The stored projection must BE the canonical summary body, not a lookalike."""
+    from generator.synthetic_order_generator import build_order
+    from generator.profiles import PROFILES_BY_NAME
+    from ingestion.parser.block_splitter import parse_envelope
+    from ingestion.parser.relational_extract import extract, summary_from_projection
+    from app.repositories.full_document_common import derive_projection
+
+    env = build_order(seed=11, order_index=2, profile=PROFILES_BY_NAME["p1m"],
+                      customer_id="CUST-TEST")
+    payload_bytes = 1234
+    derived = derive_projection(env, payload_bytes)
+    canonical = summary_from_projection(extract(parse_envelope(env)), payload_bytes)
+    assert derived["summary"] == canonical
+    # The indexed scalars must agree with the summary they are derived from.
+    assert derived["status"] == canonical["status"]
+    assert derived["orderVersion"] == canonical["orderVersion"]
+    assert derived["payloadBytes"] == payload_bytes
+
+
+def test_stress_profiles_are_excluded_from_the_corpus() -> None:
+    """A 17 MB boundary probe must never leak into a mixed corpus or a cost model."""
+    from generator.profiles import CORPUS_PROFILES, SIZE_PROFILES, STRESS_PROFILES
+
+    assert {p.name for p in STRESS_PROFILES} == {"p10m", "p15m", "p17m"}
+    assert all(not p.stress for p in CORPUS_PROFILES)
+    assert all(p.weight == 0.0 for p in STRESS_PROFILES)
+    assert abs(sum(p.weight for p in CORPUS_PROFILES) - 1.0) < 1e-6
+    # p2_1m is a real size but deliberately unweighted: it exists to straddle the
+    # Cosmos NoSQL 2 MB ceiling, not to describe the customer's corpus.
+    p21 = next(p for p in SIZE_PROFILES if p.name == "p2_1m")
+    assert p21.weight == 0.0 and not p21.stress
