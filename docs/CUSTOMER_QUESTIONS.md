@@ -54,16 +54,50 @@ design runs into trouble.
 
 ### 4. What are the actual performance characteristics at ~50 full-document reads/sec?
 
-**PENDING.** The `GET /orders/{id}` sweep at 10/25/50/100 RPS across all four
-designs, and separately per payload band, is what answers this. It is the one
-measurement that separates a *database* constraint from a *network or
-serialisation* constraint — at 50 RPS a 5 MB response is roughly 250 MB/s before
-HTTP overhead. Harness: [`scripts/run_full_document_bench.sh`](../scripts/run_full_document_bench.sh).
+**MEASURED.** 46 runs, [FULL_DOCUMENT_BENCHMARK.md](FULL_DOCUMENT_BENCHMARK.md).
+Open-model load from a separate VM in the same VNet, so queueing delay appears in
+the latency rather than being hidden by coordinated omission.
 
-Single-request latency at each size is already measured and is in
-[DOCUMENT_SIZE_RESULTS.md](DOCUMENT_SIZE_RESULTS.md), but single requests do not
-establish behaviour under concurrency — a lesson this POC learned expensively in
-Part 1, where isolated RU measurement understated the real figure by 1.7–2.1x.
+At the customer's stated 50 RPS, all payload sizes mixed:
+
+| Design | Achieved RPS | p50 | p95 | Errors | MB/s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| **A. SQL Full JSON (`nvarchar(max)`)** | **50.0** | **17.2 ms** | 63.1 ms | 0.00% | 73.9 |
+| D. SQL hybrid (reassembled) | 49.0 | 29.5 ms | 92.1 ms | 0.00% | 63.3 |
+| B. Cosmos Mongo (one document) | 49.9 | 66.9 ms | 181.1 ms | 0.00% | 68.8 |
+| A'. SQL Full JSON (native `json`) | 13.9 | **55,591 ms** | 111,533 ms | 3.82% | 19.4 |
+| C. Cosmos NoSQL (reassembled) | 12.4 | **65,169 ms** | 126,316 ms | 0.00% | 16.2 |
+
+Three findings, in order of how much they change the recommendation:
+
+1. **The native `json` type cannot serve this workload at all.** It is already
+   degraded at 0.49 MB (38.1 RPS, ~8 s p50) and collapses by 25 RPS. Every read
+   casts the whole binary document back to `nvarchar`. This is the third
+   independent reason against it, after unmirrorable-to-Fabric and ~10x slower
+   writes.
+2. **The ranking inverts above the stated rate.** At 100 RPS Cosmos Mongo holds
+   99.8 RPS at p50 73.1 ms while SQL Full JSON falls to 95.7 RPS at p50 1,532 ms.
+   50 RPS is comfortable for Scenario A; it is not the point where Scenario A
+   stops being comfortable, and that point is closer than the 50 RPS figures
+   suggest.
+3. **The ~150 MB/s flattening in both SQL designs is not the network.** Cosmos
+   Mongo sustained **240.8 MB/s** at 4.86 MB payloads and 49.6 RPS across the
+   *same two VMs and the same API process*, so the SQL ceiling is in the client
+   driver's large-value path. Attributing it to the network would have been the
+   easy and wrong conclusion.
+
+**Provisioning disparity, stated because it changes how row C must be read.**
+The Cosmos NoSQL container was at autoscale max **6,000 RU/s** and the Mongo
+collection at **10,000 RU/s** — not a like-for-like comparison. A whole-order
+read on C costs ~515 RU, so 6,000 RU/s supports ~11.6 RPS, which is what the
+12.4 RPS observation is. Part 1 held 50 RPS on the same design at 40,000 RU/s.
+**Row C is throttling, not incapability.** What *is* provisioning-independent is
+the ratio: ~515 RU for a reassembled whole-order read (the under-load derivation
+used for costing) against ~16 RU for a single-document read of an order of the
+same mean size (**ESTIMATED**, interpolated between the measured 13.1 RU at
+0.93 MB and 57.2 RU at 4.87 MB) — on the order of **30x** the request cost for
+whole-order serving, and more if the isolated 1,187.5 RU figure from Part 1 is
+used instead.
 
 ### 5. What is the measured cost/resource impact of 1, 2, 3 and 5 MB documents?
 
@@ -115,12 +149,26 @@ requirement — serving the complete order — dominates.
 
 ### 8. How much overhead does reconstruction introduce for SQL Hybrid and Cosmos NoSQL?
 
-**PENDING** for a like-for-like comparison against the full-document designs.
+**MEASURED, and it is far cheaper than expected.** Server-side reassembly time
+at 50 RPS, from the same sweep as question 4:
 
-Part 1 measured reconstruction in isolation on the decomposed backends, but the
-meaningful number now is the *difference* between a design that reassembles and
-one that does not, at the same payload size and rate. That comes out of the same
-full-document sweep as question 4.
+| Payload band | SQL hybrid reassembly | Cosmos NoSQL reassembly | full-document designs |
+| --- | ---: | ---: | ---: |
+| 0.50 MB | 3.55 ms | 0.12 ms | 0.00 ms by construction |
+| 1.97 MB | 12.79 ms | 0.13 ms | 0.00 ms |
+| 3.01 MB | 6.21 ms | 0.12 ms | 0.00 ms |
+| 4.76 MB | 15.06 ms | 0.14 ms | 0.00 ms |
+
+Against 8-37 ms of database time in the same runs, **reassembly is not where
+decomposition costs anything.** The price of splitting an order is the round
+trips and the request units needed to fetch ~34 items, not the CPU to glue them
+back together. (Cosmos NoSQL's reassembly appears near-zero because its items
+are returned already-parsed and its cost is entirely in the fetch — 6.5-10 s of
+database time per request under throttling.)
+
+This reverses the intuition that motivated the full-document scenarios: removing
+reassembly saves single-digit milliseconds, while removing round trips and RU
+saves far more.
 
 ### 9. Does one physical document materially simplify the API/application?
 
@@ -145,8 +193,17 @@ to Fabric, and authenticates with Entra like everything else.
 **For Cosmos Mongo: no.** The simplicity is real but is paid for with an
 irreversible CMK conflict, no Entra data-plane authentication, no native Fabric
 mirroring, and a write cost proportional to document size. None of those is
-offset by a measured performance advantage — it was slower than Azure SQL at
-every payload size tested.
+offset by a measured performance advantage at the stated workload — it was
+slower than Azure SQL at every payload size tested for a single request, and
+slower at 50 RPS.
+
+**One qualification added after the 50 RPS sweep:** Cosmos Mongo *does* overtake
+Azure SQL above the stated rate — 99.8 RPS at p50 73.1 ms against 95.7 RPS at
+p50 1,532 ms, and 240.8 MB/s against ~150 MB/s at 4.86 MB payloads. So the
+answer is "no" *for the workload as stated*. If the real rate is materially
+higher than 50 RPS, or payloads sit near 5 MB, the performance side of this
+trade stops favouring Azure SQL — and the security side (question 11) still
+does.
 
 ### 11. Are any enterprise security requirements incompatible with the Mongo 16-MB capability?
 

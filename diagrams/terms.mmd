@@ -1,0 +1,31 @@
+%% THE THREE WORDS THAT GET CONFUSED.
+%%
+%% Most of the confusion in this POC came from using one word for three
+%% different things. Every design in this repo returns the same API RESPONSE.
+%% Only two of them store the LOGICAL ORDER as one DATABASE ITEM.
+flowchart TB
+    subgraph L1["1. LOGICAL ORDER - the business thing"]
+        LO["ONE escrow/title order<br/>1-5 MB of deeply nested JSON<br/>parties, properties, loans,<br/>title, CDF, notes, checklists<br/><i>106 top-level sections</i>"]
+    end
+
+    subgraph L2["2. DATABASE ITEM - the physical thing on disk"]
+        ONE["ONE item<br/>1 SQL row, or<br/>1 BSON document"]
+        MANY["MANY items<br/>8 tables + ~34 JSON blocks, or<br/>~34 Cosmos documents"]
+    end
+
+    subgraph L3["3. API RESPONSE - what the caller sees"]
+        RESP["GET /orders/{id}<br/><b>the complete order JSON</b><br/>byte-for-byte equivalent<br/>in ALL five designs"]
+    end
+
+    LO -->|"stored as"| ONE
+    LO -->|"stored as"| MANY
+    ONE -->|"read, return"| RESP
+    MANY -->|"read, REASSEMBLE, return"| RESP
+
+    NOTE["The customer's question was NOT<br/>'can the API return the whole order?'<br/>(all five can)<br/>It was 'can the DATABASE hold it<br/>as one item?' - a different question."]
+    RESP -.-> NOTE
+
+    classDef term fill:#eef4ff,stroke:#3a5f9f,stroke-width:2px
+    classDef note fill:#fff8e1,stroke:#b8860b,stroke-dasharray:3 3
+    class LO,ONE,MANY,RESP term
+    class NOTE note

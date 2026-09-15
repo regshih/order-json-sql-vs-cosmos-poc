@@ -1,0 +1,62 @@
+%% SCENARIO A - Azure SQL Database, ONE complete order JSON per ROW.
+%%
+%% Nothing is decomposed. The scalar columns are ROUTING AND INDEX METADATA
+%% (duplicated scalars) so that summary and search never touch a 5 MB payload.
+%% The complete logical order stays in JsonPayload byte-for-byte.
+%%
+%% Measured: accepted to 16.70 MB, read 11.3 ms at 0.93 MB, 50.0 RPS / p50
+%% 17.2 ms at the customer's stated rate. See docs/FULL_DOCUMENT_BENCHMARK.md.
+flowchart TB
+    SRC["Source order JSON<br/>0.5-5 MB, deeply nested"]
+    ARC[("Raw archive<br/>ADLS Gen2, gzipped<br/>immutable, write-once")]
+    ING["Ingest<br/>derive projection ONLY<br/><i>no splitting</i>"]
+
+    SRC --> ARC
+    SRC --> ING
+
+    subgraph TBL["ord.OrderDocuments - ONE ROW PER LOGICAL ORDER"]
+        direction TB
+        PK["OrderId uniqueidentifier PK<br/>CustomerId, OrderVersion"]
+        META["ROUTING / INDEX METADATA<br/>OrderNumber, Status, PrimaryState<br/>MaxLoanAmount, TotalLoanAmount<br/>PropertyCount, LoanCount, PartyCount<br/>PayloadBytes, PayloadHash, UpdatedAt"]
+        SUM["SummaryJson nvarchar(max)<br/>precomputed at ingest<br/>keeps the hot endpoint<br/>off the payload entirely"]
+        PAY["<b>JsonPayload nvarchar(max)</b><br/>THE COMPLETE ORDER<br/>CHECK ISJSON(JsonPayload) = 1"]
+    end
+
+    ING --> PK
+    ING --> META
+    ING --> SUM
+    ING --> PAY
+
+    IDX["Nonclustered indexes<br/>(CustomerId, UpdatedAt DESC)<br/>(Status), (PrimaryState)<br/>INCLUDE projection columns only<br/><i>a filtered scan never parses JSON</i>"]
+    META -.-> IDX
+
+    subgraph READS["Read paths"]
+        RFULL["GET /orders/{id}<br/>SELECT JsonPayload WHERE OrderId = ?<br/>returned as RAW BYTES - no re-serialise"]
+        RBLOCK["GET /orders/{id}/blocks/{b}<br/>server-side JSON_QUERY<br/>only the block crosses the wire"]
+        RSUM["GET /orders/{id}/summary<br/>SummaryJson - payload untouched"]
+        RSEARCH["GET /orders?...<br/>index seek on projection columns"]
+    end
+
+    PAY --> RFULL
+    PAY --> RBLOCK
+    SUM --> RSUM
+    IDX --> RSEARCH
+
+    subgraph WHYNV["Why nvarchar(max) and NOT the native json type"]
+        direction TB
+        W1["A mirrored table may not contain<br/>a json column - Fabric would be lost"]
+        W2["MEASURED: native json is 6x slower<br/>to read and 10x slower to insert<br/>for a whole-document workload"]
+        W3["Native json pays CAST-in on write and<br/>CAST-out on read and never queries<br/>the binary form in between"]
+        W4["So the Fabric constraint costs<br/>NOTHING - it forces the faster option"]
+    end
+    PAY -.-> WHYNV
+
+    FAB[("Microsoft Fabric<br/>mirroring supported<br/>Entra auth, IaC-declarable")]
+    TBL --> FAB
+
+    classDef payload fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    classDef meta fill:#eef4ff,stroke:#3a5f9f
+    classDef why fill:#fff8e1,stroke:#b8860b
+    class PAY payload
+    class PK,META,SUM,IDX meta
+    class W1,W2,W3,W4 why

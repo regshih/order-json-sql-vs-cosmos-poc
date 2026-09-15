@@ -61,7 +61,8 @@ See [docs/DOCUMENT_SIZE_RESULTS.md](docs/DOCUMENT_SIZE_RESULTS.md).
 
 | | |
 | --- | --- |
-| **Start here** | [docs/DECISION_MATRIX.md](docs/DECISION_MATRIX.md) — the evidence-based comparison and the answers to the customer's 20 questions |
+| **Start here, non-specialist** | [docs/PLAIN_LANGUAGE_SUMMARY.md](docs/PLAIN_LANGUAGE_SUMMARY.md) — the whole POC in plain language, with diagrams, a glossary, and what was *not* measured |
+| **Start here, engineer** | [docs/DECISION_MATRIX.md](docs/DECISION_MATRIX.md) — the evidence-based comparison and the answers to the customer's 20 questions |
 | Measured results | [results/BENCHMARK_SUMMARY.md](results/BENCHMARK_SUMMARY.md) (generated, never hand-typed) |
 | Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Source data profile | [docs/DATA_PROFILE.md](docs/DATA_PROFILE.md) |
@@ -76,7 +77,8 @@ See [docs/DOCUMENT_SIZE_RESULTS.md](docs/DOCUMENT_SIZE_RESULTS.md).
 | Verified Microsoft docs | [docs/SOURCES.md](docs/SOURCES.md) |
 | Environment constraints | [docs/CURRENT_STATE_CONTEXT.md](docs/CURRENT_STATE_CONTEXT.md) |
 | Operations | [docs/RUNBOOK.md](docs/RUNBOOK.md) |
-| Diagrams | [diagrams/](diagrams/) (Mermaid) |
+| Diagrams | [diagrams/](diagrams/) (Mermaid, 13 files) |
+| Slides / drawn diagrams | [docs/PRESENTATION_PROMPT.md](docs/PRESENTATION_PROMPT.md) — paste-ready LLM prompts with an embedded fact sheet so no figure gets invented |
 
 ---
 

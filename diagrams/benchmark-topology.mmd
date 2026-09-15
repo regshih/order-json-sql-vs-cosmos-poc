@@ -1,0 +1,55 @@
+%% HOW EVERY NUMBER IN THIS POC WAS MEASURED - and what the two VMs are for.
+%%
+%% The VMs are TEST HARNESS, not part of the proposed architecture. Nothing the
+%% customer would deploy depends on them. They exist because of three facts:
+%%   1. 50 RPS x ~1.3 MB mean response is ~65 MB/s sustained. That is not
+%%      measurable over a consumer internet link - the link would be the result.
+%%   2. Tenant policy forced private-only endpoints on every data store, so the
+%%      benchmark had to run INSIDE the VNet. There was no public path to test.
+%%   3. Co-locating the load generator with the API would send multi-megabyte
+%%      responses over loopback at memory speed, hiding the network entirely,
+%%      and the generator's CPU would compete with the API's.
+flowchart TB
+    OP["Operator workstation<br/>outbound SSH BLOCKED by policy<br/>so every VM action goes through<br/><i>az vm run-command invoke</i>"]
+
+    subgraph VNET["POC VNet - same Azure region as every data store"]
+        direction TB
+        subgraph COMPUTE["snet-compute"]
+            LOAD["<b>vm-orderjsonpoc-load</b><br/>D4s_v5, 4 vCPU<br/><b>WHY: the load generator</b><br/>open-model, constant arrival rate<br/>latency = scheduled-to-complete<br/>so queueing shows up in the number"]
+            APIVM["<b>vm-orderjsonpoc-api</b><br/>D8s_v5, 8 vCPU<br/><b>WHY: hosts the API under test</b><br/>FastAPI, 8 uvicorn workers<br/>one STORAGE_BACKEND at a time<br/>/health asserted before every run"]
+        end
+        subgraph PE["snet-data - private endpoints 10.60.2.0/24"]
+            SQL[("Azure SQL Database")]
+            COSN[("Cosmos DB for NoSQL")]
+            COSM[("Cosmos DB for MongoDB")]
+            ADLS[("ADLS Gen2 archive")]
+        end
+    end
+
+    OP -->|"run-command: start API,<br/>run sweep, fetch results"| LOAD
+    OP -->|"run-command"| APIVM
+    LOAD ==>|"HTTP over a REAL NIC<br/>accelerated networking<br/>multi-MB responses cross the wire"| APIVM
+    APIVM --> SQL
+    APIVM --> COSN
+    APIVM --> COSM
+    APIVM --> ADLS
+
+    RES["Result JSON per run<br/>fetched to results/fulldoc/<br/>then summarised by tooling.<br/><b>No figure is typed by hand.</b>"]
+    LOAD --> RES
+
+    subgraph PROOF["What the two-VM split PROVED that one VM could not"]
+        direction TB
+        X1["Cosmos Mongo sustained 240.8 MB/s<br/>at 4.86 MB payloads, 49.6 RPS"]
+        X2["Both SQL designs flattened at ~150 MB/s<br/>with rate falling to ~31 RPS"]
+        X3["SAME two machines, SAME API process<br/>=> the SQL ceiling is NOT the network.<br/>It is the client driver's path for<br/>large values."]
+        X1 --> X3
+        X2 --> X3
+    end
+    RES -.-> PROOF
+
+    classDef vm fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef store fill:#f3e5f5,stroke:#6a1b9a
+    classDef proof fill:#e8f5e9,stroke:#2e7d32
+    class LOAD,APIVM vm
+    class SQL,COSN,COSM,ADLS store
+    class X1,X2,X3 proof

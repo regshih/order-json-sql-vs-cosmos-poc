@@ -1,0 +1,33 @@
+%% WHICH DESIGN, GIVEN WHICH CONSTRAINT - decided from measurement, not preference.
+%% Every leaf cites the measurement or the documented constraint behind it.
+flowchart TB
+    START{"Must the DATABASE hold the<br/>complete order as ONE item?"}
+
+    START -->|"no - reassembly is acceptable"| DEC{"Is the dominant read<br/>the WHOLE order?"}
+    START -->|"yes"| CMK{"Are customer-managed keys<br/>a stated requirement?"}
+
+    %% ---- full-document branch ----
+    CMK -->|"yes"| A1["<b>SCENARIO A - Azure SQL, one nvarchar(max) row</b><br/>Cosmos Mongo is DISQUALIFIED: the 16 MB<br/>capability is incompatible with CMK and<br/>cannot be removed once enabled"]
+    CMK -->|"no"| RATE{"Sustained rate well<br/>above 50 RPS, or payloads<br/>consistently near 5 MB?"}
+
+    RATE -->|"no - 50 RPS, 1-5 MB"| A2["<b>SCENARIO A - Azure SQL, one nvarchar(max) row</b><br/>MEASURED 50.0 RPS, p50 17.2 ms, 0 errors<br/>fastest read AND write at every size tested<br/>mirrors to Fabric, Entra auth, IaC-declarable"]
+    RATE -->|"yes"| B1["<b>SCENARIO B - Cosmos Mongo</b> becomes competitive<br/>MEASURED at 100 RPS: 99.8 RPS / 73.1 ms<br/>vs SQL Full JSON 95.7 RPS / 1,532 ms<br/>and 240.8 MB/s at 4.86 MB vs SQL's ~150<br/><b>but</b> accept: no CMK ever, no Entra data-plane<br/>auth, no native Fabric mirroring"]
+
+    WRITES{"Are frequent SMALL edits to<br/>large orders expected?"}
+    B1 --> WRITES
+    WRITES -->|"yes"| WARN["<b>RECONSIDER B</b><br/>MEASURED: one scalar $set on 4.87 MB<br/>= 4,767.5 RU, MORE than a full replace<br/>at 3,457.6 RU. No cheap small edit exists."]
+    WRITES -->|"no - append-only versions"| B1OK["B is viable on performance grounds"]
+
+    %% ---- decomposed branch ----
+    DEC -->|"yes, mostly whole orders"| D1["<b>SCENARIO D - SQL hybrid</b> also works<br/>MEASURED 49.0 RPS, p50 29.5 ms, 0 errors<br/>reassembly is CHEAP: 3.55 ms at 1 MB,<br/>15.06 ms at 5 MB<br/>but A is simpler and faster for this shape"]
+    DEC -->|"no - mostly summaries,<br/>search, single sections"| C1["<b>SCENARIO C - Cosmos NoSQL aggregate</b> or D<br/>C's cost COLLAPSES on partial reads:<br/>~5.8 RU summary vs 515 RU whole order.<br/>C at whole-order serving is ~32x the RU<br/>of a single-document read."]
+
+    NEVER["<b>NEVER: Azure SQL native json type</b> for this workload<br/>MEASURED 13.9 RPS, p50 55.6 SECONDS, 3.82% errors<br/>at the customer's 50 RPS - already degraded at 500 KB.<br/>Also unmirrorable to Fabric and ~10x slower to write.<br/>Three independent reasons, all measured."]
+    A2 -.->|"do not substitute"| NEVER
+
+    classDef pick fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    classDef caution fill:#fff8e1,stroke:#b8860b,stroke-width:2px
+    classDef bad fill:#ffebee,stroke:#c62828,stroke-width:3px
+    class A1,A2 pick
+    class B1,B1OK,D1,C1 caution
+    class WARN,NEVER bad
