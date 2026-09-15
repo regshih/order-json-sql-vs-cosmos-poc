@@ -1,0 +1,412 @@
+{
+  "generatedUtc": "2026-09-15T17:14:35.037713+00:00",
+  "seed": 42,
+  "profiles": [
+    "p500k",
+    "p1m",
+    "p1_5m",
+    "p1_8m",
+    "p1_9m",
+    "p2_1m",
+    "p3m",
+    "p5m",
+    "p10m",
+    "p15m",
+    "p17m"
+  ],
+  "note": "Each row is ONE complete logical order stored as ONE database item. A rejection is a result, not a run failure. Stress profiles (10/15/17 MB) are boundary probes and do not describe the customer's corpus.",
+  "results": [
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p500k",
+      "stress": false,
+      "jsonBytes": 512412,
+      "bsonBytes": 519816,
+      "insert": {
+        "ok": true,
+        "ms": 445.97,
+        "ru": 373.62,
+        "bsonBytes": 519816
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 29.84,
+        "ru": 7.93,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 512412
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 69.22,
+        "ru": 410.47
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 37.9,
+        "ru": 328.19
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 31.85,
+        "ru": 283.24,
+        "bsonBytes": 519816
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p1m",
+      "stress": false,
+      "jsonBytes": 977703,
+      "bsonBytes": 990762,
+      "insert": {
+        "ok": true,
+        "ms": 63.47,
+        "ru": 1250.39,
+        "bsonBytes": 990762
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 49.45,
+        "ru": 13.1,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 977703
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 106.65,
+        "ru": 1396.29
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 100.78,
+        "ru": 955.86
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 57.74,
+        "ru": 809.96,
+        "bsonBytes": 990762
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p1_5m",
+      "stress": false,
+      "jsonBytes": 1577584,
+      "bsonBytes": 1600930,
+      "insert": {
+        "ok": true,
+        "ms": 79.85,
+        "ru": 2500.38,
+        "bsonBytes": 1600930
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 97.15,
+        "ru": 19.46,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 1577584
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 121.56,
+        "ru": 2792.18
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 115.86,
+        "ru": 2167.19
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 86.72,
+        "ru": 1875.39,
+        "bsonBytes": 1600930
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p1_8m",
+      "stress": false,
+      "jsonBytes": 1867387,
+      "bsonBytes": 1894999,
+      "insert": {
+        "ok": true,
+        "ms": 90.67,
+        "ru": 2500.38,
+        "bsonBytes": 1894999
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 91.36,
+        "ru": 22.51,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 1867387
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 133.59,
+        "ru": 2792.18
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 129.1,
+        "ru": 2167.19
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 96.85,
+        "ru": 1875.39,
+        "bsonBytes": 1894999
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p1_9m",
+      "stress": false,
+      "jsonBytes": 2105015,
+      "bsonBytes": 2135789,
+      "insert": {
+        "ok": true,
+        "ms": 112.72,
+        "ru": 2500.38,
+        "bsonBytes": 2135789
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 107.53,
+        "ru": 24.87,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 2105015
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 146.93,
+        "ru": 2792.18
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 125.78,
+        "ru": 2167.19
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 106.48,
+        "ru": 1875.39,
+        "bsonBytes": 2135789
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p2_1m",
+      "stress": false,
+      "jsonBytes": 2317542,
+      "bsonBytes": 2352154,
+      "insert": {
+        "ok": true,
+        "ms": 118.5,
+        "ru": 2500.38,
+        "bsonBytes": 2352154
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 123.79,
+        "ru": 27.06,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 2317542
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 162.58,
+        "ru": 2792.18
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 162.79,
+        "ru": 2167.19
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 122.08,
+        "ru": 1875.39,
+        "bsonBytes": 2352154
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p3m",
+      "stress": false,
+      "jsonBytes": 3203369,
+      "bsonBytes": 3249551,
+      "insert": {
+        "ok": true,
+        "ms": 149.89,
+        "ru": 2634.01,
+        "bsonBytes": 3249551
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 146.98,
+        "ru": 36.31,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 3203369
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 216.95,
+        "ru": 2941.43
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 195.66,
+        "ru": 2874.61
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 150.6,
+        "ru": 2567.19,
+        "bsonBytes": 3249551
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p5m",
+      "stress": false,
+      "jsonBytes": 5105129,
+      "bsonBytes": 5180546,
+      "insert": {
+        "ok": true,
+        "ms": 256.04,
+        "ru": 4269.04,
+        "bsonBytes": 5180546
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 252.24,
+        "ru": 57.21,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 5105129
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 367.21,
+        "ru": 4767.53
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 301.11,
+        "ru": 3956.09
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 238.13,
+        "ru": 3457.6,
+        "bsonBytes": 5180546
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p10m",
+      "stress": true,
+      "jsonBytes": 10080175,
+      "bsonBytes": 10229617,
+      "insert": {
+        "ok": true,
+        "ms": 530.53,
+        "ru": 8416.14,
+        "bsonBytes": 10229617
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 504.88,
+        "ru": 110.21,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 10080175
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 727.9,
+        "ru": 9399.28
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 607.48,
+        "ru": 7739.96
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 497.39,
+        "ru": 6756.82,
+        "bsonBytes": 10229617
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p15m",
+      "stress": true,
+      "jsonBytes": 15772403,
+      "bsonBytes": 16013523,
+      "insert": {
+        "ok": true,
+        "ms": 861.24,
+        "ru": 15368.07,
+        "bsonBytes": 16013523
+      },
+      "pointRead": {
+        "ok": true,
+        "ms": 973.43,
+        "ru": 199.45,
+        "ruCommands": [
+          "find"
+        ],
+        "responseBytes": 15772403
+      },
+      "updateScalar": {
+        "ok": true,
+        "ms": 1183.47,
+        "ru": 17163.64
+      },
+      "updateNested": {
+        "ok": true,
+        "ms": 1348.2,
+        "ru": 14532.91
+      },
+      "replaceWhole": {
+        "ok": true,
+        "ms": 828.41,
+        "ru": 12736.96,
+        "bsonBytes": 16013523
+      }
+    },
+    {
+      "backend": "cosmos-mongo",
+      "profile": "p17m",
+      "stress": true,
+      "jsonBytes": 17507540,
+      "bsonBytes": 17778796,
+      "insert": {
+        "ok": false,
+        "error": "DocumentTooLarge: update command document too large",
+        "ms": 118.77
+      }
+    }
+  ]
+}
