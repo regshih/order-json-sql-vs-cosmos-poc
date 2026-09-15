@@ -583,3 +583,85 @@ where reassembly cost and per-request RU enter - is a separate measurement.
 full-document benchmark across all four designs at each payload band, which is
 what separates a database constraint from a network or serialisation constraint
 at ~250 MB/s.
+
+## 16. Current Microsoft product direction
+
+Asked because a design that benchmarks well on a product the vendor is steering
+away from is not a safe recommendation.
+
+### 16.1 Microsoft now routes new workloads away from Cosmos DB for MongoDB (RU)
+
+The MongoDB 7.0 feature-support page — the same page that documents the 16 MB
+capability this scenario depends on — **opens with two redirections**:
+
+> "Are you looking to migrate an existing MongoDB application or use MongoDB
+> Query Language (MQL) features? Consider **Azure DocumentDB**."
+
+> "Are you looking for a database solution for **high-scale** scenarios with a
+> 99.999% availability SLA, instant autoscale, and automatic failover across
+> multiple regions? Consider **Azure Cosmos DB for NoSQL**."
+
+Between them those two sentences cover this workload twice over. Free online
+migration from MongoDB (RU) to Azure DocumentDB is generally available.
+
+**The awkward part:** `EnableMongo16MBDocumentSupport` is a **MongoDB (RU)
+account capability**. The scenario the brief asks for can only be built on the
+API that Microsoft's own documentation points away from. That is not a reason to
+skip the experiment — it was built and measured — but it is a reason not to
+recommend it on performance grounds alone.
+
+### 16.2 Is Cosmos DB for MongoDB still appropriate for this POC?
+
+**As an experiment, yes. As a destination, it is hard to justify.** It is the
+only way to test the 16 MB single-document question on Cosmos, so building it was
+correct. But nothing measured favours it:
+
+- It was **slower than Azure SQL at every payload size tested**, on both read
+  and write.
+- Its write cost scales with document size, so no small edit is cheap
+  (section 13.2).
+- It carries a permanent CMK conflict and no Entra data-plane authentication
+  (section 14).
+- It is the only design with **no native Fabric mirroring**.
+
+It would be chosen despite those, not because of a measured advantage.
+
+### 16.3 Is Azure DocumentDB an adjacent option worth considering?
+
+**Yes, and it resolves two of the three governance problems** — but it was not
+built or benchmarked here, and nothing below is measured.
+
+Azure DocumentDB is the service formerly named **Azure Cosmos DB for MongoDB
+(vCore)**, renamed to align with the Linux Foundation open-source DocumentDB
+project, now generally available. Differences that matter specifically to this
+large-document API workload:
+
+| Dimension | Cosmos DB for MongoDB (RU) — **measured here** | Azure DocumentDB — **documented only** |
+| --- | --- | --- |
+| Entra data-plane auth | **No.** Account key only | **Yes** |
+| Customer-managed keys with 16 MB docs | **Impossible, permanently** | Not subject to the RU capability conflict |
+| Cost model | Per-request RU; write cost tracks document size | vCore-based, so cost does not move per request |
+| Vendor direction | Steered away from | The recommended target for MQL workloads |
+| Fabric mirroring | None native | Not verified |
+
+The vCore/cost-model difference is the interesting one for this workload. Part 1
+of this document showed that Cosmos NoSQL's bill moves 8.7x with API shape while
+Azure SQL's stays flat, and section 13.2 shows the same dynamic on Mongo RU
+writes. A vCore-priced engine would remove that sensitivity — which is precisely
+the property that makes Azure SQL attractive here.
+
+**Recommendation on scope:** do **not** expand this POC into a fifth full
+implementation. The evidence does not show it is necessary, because Azure SQL
+Full JSON already answers the customer's question with better measured numbers
+and fewer constraints. Azure DocumentDB belongs on the list of things the
+customer should evaluate **if** they decide a MongoDB-compatible API is a
+requirement in its own right — for driver portability or team familiarity —
+rather than as a way to store large documents, which Azure SQL does better here.
+
+### 16.4 What would need measuring before recommending DocumentDB
+
+Nothing in 16.3 is a benchmark. If the customer wants that option taken
+seriously, the same four measurements this POC ran would need repeating on it:
+single-document acceptance by size, point-read latency by size, update cost for a
+one-field change, and behaviour at 50 RPS. Until then it is a documented
+alternative, not a measured one.
