@@ -1,0 +1,56 @@
+%% Full-document comparison - the four operational designs.
+%%
+%% The distinction this diagram exists to make: every design returns the SAME
+%% full JSON API response, but only two of them physically STORE the complete
+%% logical order as one database item. The other two reassemble it on read.
+%%
+%% Measured acceptance limits are on the nodes. See docs/DOCUMENT_SIZE_RESULTS.md.
+flowchart TD
+    SRC["<b>FULL LOGICAL ORDER JSON</b><br/>1-5 MB typical, deeply nested<br/>parties, properties, loans, title, CDF, checklists"]
+
+    SRC --> ONE{"stored as ONE<br/>database item?"}
+
+    %% ---------------- one item ----------------
+    ONE -->|yes| A["<b>SCENARIO A - SQL Full JSON</b><br/>Azure SQL Database<br/><i>ONE ROW</i><br/>JsonPayload nvarchar(max) + ISJSON<br/>accepted to 16.70 MB"]
+    ONE -->|yes| B["<b>SCENARIO B - Cosmos Mongo</b><br/>Cosmos DB for MongoDB<br/><i>ONE BSON DOCUMENT</i><br/>16 MB capability required<br/>accepted to 15.04 MB"]
+
+    %% ---------------- decomposed ----------------
+    ONE -->|no| DEC["<b>DECOMPOSITION</b><br/>split along business boundaries"]
+
+    DEC --> D["<b>SCENARIO D - SQL Hybrid</b><br/>Azure SQL Database<br/><i>RELATIONAL ROWS + JSON BLOCKS</i><br/>8 business tables + 2 operational"]
+    DEC --> C["<b>SCENARIO C - Cosmos NoSQL</b><br/>Cosmos DB for NoSQL<br/><i>MANY DOCUMENTS</i><br/>~34 items per order<br/>2 MB per-item ceiling"]
+
+    D --> RE["<b>RECONSTRUCTION</b><br/>API reassembles the complete order"]
+    C --> RE
+
+    %% ---------------- one contract ----------------
+    A --> API["<b>SAME API CONTRACT</b><br/>GET /orders/{id} + summary, title, cdf, search, health<br/>semantically equivalent JSON from all four"]
+    B --> API
+    RE --> API
+
+    API --> RESP["<b>FULL JSON API RESPONSE</b><br/>the complete logical order"]
+
+    %% ---------------- analytics, deliberately off the request path ----------------
+    A -.->|Open Mirroring| FAB["<b>Microsoft Fabric</b><br/>OneLake -> Lakehouse -> Warehouse<br/>curated star schema -> Power BI"]
+    D -.->|Open Mirroring| FAB
+    C -.->|Open Mirroring| FAB
+    B -.->|no native mirroring<br/>for the MongoDB API| FAB
+
+    FAB -.->|<b>NOT</b> in the synchronous<br/>API request path| RESP
+
+    %% ---------------- the counterfactual ----------------
+    ONE -.->|attempted| X["<b>counterfactual</b><br/>whole order as ONE Cosmos NoSQL item<br/>rejected at 2.01 MB - HTTP 413<br/><i>constrains the document model,<br/>not the engine choice</i>"]
+
+    classDef oneItem fill:#0f5132,stroke:#0a3622,color:#ffffff,stroke-width:2px;
+    classDef decomposed fill:#084298,stroke:#052c65,color:#ffffff,stroke-width:2px;
+    classDef contract fill:#664d03,stroke:#3d2e02,color:#ffffff,stroke-width:2px;
+    classDef analytics fill:#41464b,stroke:#212529,color:#ffffff,stroke-width:1px;
+    classDef bad fill:#842029,stroke:#58151c,color:#ffffff,stroke-width:2px;
+    classDef source fill:#212529,stroke:#000000,color:#ffffff,stroke-width:2px;
+
+    class SRC source;
+    class A,B oneItem;
+    class C,D,DEC,RE decomposed;
+    class API,RESP contract;
+    class FAB analytics;
+    class X bad;
