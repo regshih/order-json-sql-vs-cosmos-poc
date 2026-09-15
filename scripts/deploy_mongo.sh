@@ -30,6 +30,13 @@
 #     bash scripts/deploy_mongo.sh --dry-run
 set -euo pipefail
 
+# Git Bash on Windows rewrites any argument that looks like a POSIX path, so an
+# ARM resource id "/subscriptions/..." arrives at the CLI as
+# "C:/Program Files/Git/subscriptions/...". Disable that conversion or the
+# private-endpoint step fails with LinkedInvalidPropertyId.
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL='*'
+
 RG="${RG:-rg-order-json-poc-westus3}"
 LOCATION="${LOCATION:-westus3}"
 BASE="${BASE:-orderjsonpoc}"

@@ -1,0 +1,14 @@
+{
+  "backupPolicy": "Periodic",
+  "capabilities": [
+    "EnableMongo",
+    "EnableMongo16MBDocumentSupport",
+    "DisableRateLimitingResponses"
+  ],
+  "consistency": "Session",
+  "kind": "MongoDB",
+  "location": "West US 3",
+  "name": "mongo-orderjsonpoc-c2ec6443ea08d",
+  "publicNetworkAccess": "Disabled",
+  "serverVersion": "7.0"
+}

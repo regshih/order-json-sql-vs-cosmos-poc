@@ -94,16 +94,20 @@ class MongoOrderRepository(OrderRepository):
         pool = 1 if capture_ru else int(os.getenv("MONGO_POOL_SIZE", "32"))
         self._ru_lock = threading.Lock()
 
-        self.client = MongoClient(
-            cs,
+        opts: dict[str, Any] = dict(
             maxPoolSize=pool,
             minPoolSize=1,
             retryWrites=False,  # Cosmos RU rejects retryable writes unless the capability is on
             serverSelectionTimeoutMS=30_000,
             connectTimeoutMS=30_000,
             socketTimeoutMS=120_000,  # a 15 MB document read needs room
-            compressors=os.getenv("MONGO_COMPRESSORS") or None,
         )
+        # Only pass compressors when actually configured: pymongo validates the
+        # option by iterating it, so an explicit None raises TypeError rather
+        # than meaning "default".
+        if os.getenv("MONGO_COMPRESSORS"):
+            opts["compressors"] = os.environ["MONGO_COMPRESSORS"]
+        self.client = MongoClient(cs, **opts)
         self.db = self.client[self.database_name]
         self.col = self.db[self.collection_name]
 
